@@ -9,13 +9,14 @@ package IC.Parser;
 %type Token
 %line
 %scanerror LexicalError
-%state COMMENTS
-%state CLASS
+%state SINGLE_LINE_COMMENTS
+%state MULTI_LINE_COMMENTS
+%state QUOTE
 DIGIT=[0-9]
 LOWERALPHA=[a-z]
 UPPERALPHA=[A-Z]
 ALPHA=[A-Za-z_]
-ALPHANUMERIC=({ALPHA|DIGIT})*
+ALPHA_NUMERIC={ALPHA}|{DIGIT}
 CLASS_IDENTIFIER={UPPERALPHA}({ALPHA_NUMERIC})*
 IDENTIFIER={LOWERALPHA}({ALPHA_NUMERIC})*
 
@@ -26,6 +27,10 @@ IDENTIFIER={LOWERALPHA}({ALPHA_NUMERIC})*
 
 %%
 
+<YYINITIAL> "//" { yybegin(SINGLE_LINE_COMMENTS); }
+<YYINITIAL> "/*" { yybegin(MULTI_LINE_COMMENTS); }
+<QUOTE> "\"" { yybegin(YYINITIAL); return new Token(sym.QUOTE, yyline, yytext()); }
+<YYINITIAL> "\"" { yybegin(QUOTE); }
 <YYINITIAL> "(" { return new Token(sym.LP,yyline); }
 <YYINITIAL> ")" { return new Token(sym.RP,yyline); }
 <YYINITIAL> "{" { return new Token(sym.LCBR,yyline); }
@@ -42,17 +47,16 @@ IDENTIFIER={LOWERALPHA}({ALPHA_NUMERIC})*
 <YYINITIAL> "." { return new Token(sym.DOT,yyline); }
 <YYINITIAL> "*" { return new Token(sym.MULTIPLY,yyline); }
 <YYINITIAL> ">" { return new Token(sym.GT,yyline); }
-<YYINITIAL> ">=" { return new Token(sym.GTE,yyline); }
 <YYINITIAL> "<" { return new Token(sym.LT,yyline); }
+<YYINITIAL> ">=" { return new Token(sym.GTE,yyline); }
 <YYINITIAL> "<=" { return new Token(sym.LTE,yyline); }
 <YYINITIAL> "==" { return new Token(sym.EQUAL,yyline); }
 <YYINITIAL> "!=" { return new Token(sym.NEQUAL,yyline); }
 <YYINITIAL> "&&" { return new Token(sym.LAND,yyline); }
 <YYINITIAL> "||" { return new Token(sym.LOR,yyline); }
-<YYINITIAL> "//" { yybegin(COMMENTS); }
 <YYINITIAL> "!" { return new Token(sym.LNEG,yyline); }
 <YYINITIAL> "break" { return new Token(sym.BREAK,yyline); }
-<YYINITIAL> "class" { yybegin(CLASS);return new Token(sym.CLASS,yyline); }
+<YYINITIAL> "class" { return new Token(sym.CLASS,yyline); }
 <YYINITIAL> "extends" { return new Token(sym.EXTENDS,yyline); }
 <YYINITIAL> "static" { return new Token(sym.STATIC,yyline); }
 <YYINITIAL> "continue" { return new Token(sym.CONTINUE,yyline); }
@@ -71,9 +75,13 @@ IDENTIFIER={LOWERALPHA}({ALPHA_NUMERIC})*
 <YYINITIAL> "string" { return new Token(sym.STRING,yyline); }
 <YYINITIAL> "this" { return new Token(sym.THIS,yyline); }
 <YYINITIAL> "boolean" { return new Token(sym.BOOLEAN,yyline); }
-<COMMENTS> [^\n] { }
-<COMMENTS> [\n] { yybegin(YYINITIAL); }
-<CLASS> {CLASS_IDENTIFIER} { yybegin(YYINITIAL); return new Token(sym.CLASS_ID,yyline,yytext()); }
-<<YYINITIAL> {IDENTIFIER} { return new Token(sym.ID,yyline,yytext()); }
+<SINGLE_LINE_COMMENTS> [.] { }
+<SINGLE_LINE_COMMENTS> [\n] { yybegin(YYINITIAL); }
+<MULTI_LINE_COMMENTS> "*/" { yybegin(YYINITIAL); }
+<MULTI_LINE_COMMENTS> {ALPHA_NUMERIC} { }
+<MULTI_LINE_COMMENTS> ^{ALPHA_NUMERIC} { }
+<YYINITIAL> {CLASS_IDENTIFIER} { return new Token(sym.CLASS_ID,yyline,yytext()); }
+<YYINITIAL> {IDENTIFIER} { return new Token(sym.ID,yyline,yytext()); }
+<YYINITIAL> [ \t\n\x0B\f\r] { }
 
 

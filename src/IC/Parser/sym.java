@@ -11,7 +11,7 @@ public class sym {
   public static final int BOOLEAN = 8;
   public static final int BREAK = 9;
   public static final int CLASS = 10;
-  public static final int CLASSID = 11;
+  public static final int CLASS_ID = 11;
   public static final int COMMA = 12;
   public static final int CONTINUE = 13;
   public static final int DIVIDE = 14;
@@ -47,4 +47,6 @@ public class sym {
   public static final int VOID = 44;
   public static final int WHILE = 45;
   public static final int EOF = 46;
+  public static final int STATIC = 47;
+  public static final int DOT = 48;
 }
