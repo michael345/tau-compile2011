@@ -2,8 +2,6 @@ package IC.Parser;
 
 import java_cup.runtime.Symbol;
 
-
-
 public class Token extends Symbol {
     
     final private int id;
@@ -37,7 +35,10 @@ public class Token extends Symbol {
     }
 
     public String toString() {
-        return "" + line + ": " + id + "(" + value + ")";   
+        if (value == null) { 
+            return "" + line + ": " + Utils.tokenIDToString(id); 
+        }
+        return "" + line + ": " + Utils.tokenIDToString(id) + "(" + value + ")";   
     }
     
     

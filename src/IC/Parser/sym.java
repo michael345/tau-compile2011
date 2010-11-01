@@ -49,4 +49,6 @@ public class sym {
   public static final int EOF = 46;
   public static final int STATIC = 47;
   public static final int DOT = 48;
+  public static final int NUM = 49;
+
 }
