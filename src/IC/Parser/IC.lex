@@ -18,7 +18,6 @@ package IC.Parser;
 %state MULTI_LINE_COMMENTS
 %state QUOTE
 
-
 INTEGERLITERAL=0|[1-9][0-9]*
 LOWERALPHA=[a-z]
 UPPERALPHA=[A-Z]
@@ -26,13 +25,13 @@ ALPHA=[A-Za-z_]
 ALPHA_NUMERIC=({ALPHA}|{INTEGERLITERAL})+
 CLASS_IDENTIFIER={UPPERALPHA}({ALPHA_NUMERIC})*
 IDENTIFIER={LOWERALPHA}({ALPHA_NUMERIC})*
+WHITESPACE=[ \t\n\r]
 
 %eofval{
   	return new Token(sym.EOF,getLine());
 %eofval}
 
 %%
-
 
 <SINGLE_LINE_COMMENTS> { 
 	[^\n] { }
@@ -107,7 +106,8 @@ IDENTIFIER={LOWERALPHA}({ALPHA_NUMERIC})*
 	 {INTEGERLITERAL} { return new Token(sym.INTEGER,getLine(),yytext()); }
 	 {CLASS_IDENTIFIER} { return new Token(sym.CLASS_ID,getLine(),yytext()); }
 	 {IDENTIFIER} { return new Token(sym.ID,getLine(),yytext()); }
-	 [ \t\n] { }
+	 {INTEGERLITERAL}{ALPHA_NUMERIC} { throw new LexicalError(getLine(),"bad input"); }
+	 {WHITESPACE} { }
 	 .|\n { throw new LexicalError(getLine(),"Unexpected input: " + yytext()); } 
 }
 

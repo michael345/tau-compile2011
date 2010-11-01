@@ -19,7 +19,6 @@ public class Compiler {
             do {
                 currToken = lexer.next_token();
                 System.out.println(currToken);
-                // do something with currToken
             } while (currToken.getId() != sym.EOF);
         }
         catch (LexicalError e) {
@@ -27,6 +26,7 @@ public class Compiler {
             return;
         }
         catch (Exception e) {
+            // Throw non-lexical error messages 
             throw new RuntimeException("IO Error (brutal exit)" + e.toString());
         }
     }

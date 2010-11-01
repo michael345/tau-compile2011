@@ -1,0 +1,2 @@
+/* this is a comment that doens't end until the file is over.
+this should result in a lexical error.
