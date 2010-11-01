@@ -1,0 +1,82 @@
+
+         CLASS HIERARCHY
+        -----------------
+src:
+	package IC:
+		compiler.java
+
+	package IC.Parser:
+			Lexer.java
+			LexicalError.java
+			sym.java
+			Token.java
+			Utils.java
+			IC.lex
+			
+
+	
+         DESCRIPTION OF CLASSES
+         -----------------------
+
+CLASS Compiler:
+	The Compiler is the class where the main is.
+	It basicly takes an IC filename as an input, and runs a while loop which scans over
+	the IC doc until it reaches EOF or until it throws an error.
+	On each char read from the IC file the Compiler outputs: LINE: ID(VALUE)
+	unless ofcourse an error occures.
+
+CLASS LexicalError:
+	Extends Exception.
+	This class represents a lexical error, and has a printMessage method
+	which outputs to the console the line and error message recieved while 
+	constructing the object by the IC.lex.
+	
+CLASS sym:
+	Holds all Token ID's as integers.
+	
+
+CLASS Token:
+	Implements the object Token. 
+	
+	It has 3 final private int fields: 
+	(id) an integer representing its ID
+	(value) a string representing its value
+	(line) an integer which represents the number of line where
+		the token appears in the IC file.
+
+	the class containd getters for these 3 fields as well as the method
+	toString() which returns a string which contains the information of the specific 
+	Token.
+	
+	
+CLASS Utils:
+	Contains a simple function whose job is to recieve an integer and return it's 
+	corresponding Token as set in class sym.
+
+
+REGULAR EXPRESSIONS(& their macros)
+-------------------
+INTEGERLITERAL=0|[1-9][0-9]*
+LOWERALPHA=[a-z]
+UPPERALPHA=[A-Z]
+ALPHA=[A-Za-z_]
+ALPHA_NUMERIC=({ALPHA}|{INTEGERLITERAL})+
+CLASS_IDENTIFIER={UPPERALPHA}({ALPHA_NUMERIC})*
+IDENTIFIER={LOWERALPHA}({ALPHA_NUMERIC})*
+WHITESPACE=[ \t\n\r]
+.|\n
+
+CODE STRUCTURE
+----------------
+???? ???
+
+TESTING STRATEGY
+-----------------
+We wrote some interesting IC files, with all sort of edge cases (each file represents different edge case)
+some are correct, meaning has no lexical error (maybe syntactic errors). Also worte these files expected output from the Compiler we wrote,
+and checked weather the expected and the actual are equal.
+
+BUGS
+----
+1) our error message says:"Unexpected input" insted of "Unexpected char"+'$' (for example) as stated in "Quicksort_bad".ic
+   but since the exercise instructions didn't state the exact syntax of an error message we wrote it as we did. 
