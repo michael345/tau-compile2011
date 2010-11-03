@@ -20,7 +20,7 @@ public class Compiler {
                 currToken = lexer.next_token();
                 System.out.println(currToken);
             } while (currToken.getId() != sym.EOF);
-        }
+        } 
         catch (LexicalError e) {
             e.printMessage();
             return;
