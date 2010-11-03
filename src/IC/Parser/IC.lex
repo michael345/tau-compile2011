@@ -27,6 +27,21 @@ CLASS_IDENTIFIER={UPPERALPHA}({ALPHA_NUMERIC})*
 IDENTIFIER={LOWERALPHA}({ALPHA_NUMERIC})*
 WHITESPACE=[ \t\n\r]
 
+VALID_STRING_ASCII=[\040\041\043-\133\135-\176]|\\[nt\"\\]
+
+NON32BITINT=
+	 [1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*|
+	 [3-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*|
+	 2[2-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*|
+	 21[5-8][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*|
+	 214[8-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*|
+	 2147[5-9][0-9][0-9][0-9][0-9][0-9][0-9]*|
+	 21474[9-9][0-9][0-9][0-9][0-9][0-9]*|
+	 214748[4-9][0-9][0-9][0-9][0-9]*|
+	 2147483[7-9][0-9][0-9][0-9]*|
+	 21474836[5-9][0-9][0-9]*|
+	 214748364[8-9][0-9]*
+
 %eofval{
   	return new Token(sym.EOF,getLine());
 %eofval}
@@ -41,7 +56,7 @@ WHITESPACE=[ \t\n\r]
 <MULTI_LINE_COMMENTS>  {
 	"*/" { yybegin(YYINITIAL); }
 	.|\n { }
-	<<EOF>> { throw new LexicalError(getLine(),"Unexpected EOF"); }
+	<<EOF>> { throw new LexicalError(getLine(),"Unclosed comment "); }
 }
 
 <QUOTE> { 
@@ -50,9 +65,12 @@ WHITESPACE=[ \t\n\r]
 		yybegin(YYINITIAL);
 	 	return new Token(sym.QUOTE, getLine(), curString.toString()); 
 	 }
-	.|\n { curString.append(yytext());}
-	<<EOF>> { throw new LexicalError(getLine(),"Unexpected EOF"); }
+	{VALID_STRING_ASCII}+|\\|\n|\t|\r   { curString.append(yytext()); } 
+	<<EOF>> { throw new LexicalError(getLine(),"Unclosed string"); }
+	 .      { throw new LexicalError(getLine(),"illegal literal inside a string: " + yytext()); } 
+	                 
 }
+
 
 <YYINITIAL> {
 	 \" { curString.setLength(0);curString.append(yytext()); yybegin(QUOTE); }
@@ -103,6 +121,9 @@ WHITESPACE=[ \t\n\r]
 	 "this" { return new Token(sym.THIS,getLine()); }
 	 "boolean" { return new Token(sym.BOOLEAN,getLine()); }
 	 "return" { return new Token(sym.RETURN,getLine()); }
+	 
+	 "-2147483648" { }
+	 {NON32BITINT} { throw new LexicalError(getLine(),"integer out of range: " + yytext()); } // OUT OF RANGE
 	 {INTEGERLITERAL} { return new Token(sym.INTEGER,getLine(),yytext()); }
 	 {CLASS_IDENTIFIER} { return new Token(sym.CLASS_ID,getLine(),yytext()); }
 	 {IDENTIFIER} { return new Token(sym.ID,getLine(),yytext()); }
