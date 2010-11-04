@@ -4,7 +4,7 @@ public class Utils {
     public static String tokenIDToString(int t) { 
         switch (t) {
             case sym.LP: return "LP";
-            case sym.IF: return "IF";
+            case sym.IF: return "IF"; 
             case sym.RP: return "RP";
             case sym.PLUS: return "PLUS";
             case sym.MINUS: return "MINUS";
