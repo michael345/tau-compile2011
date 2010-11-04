@@ -6,4 +6,4 @@
 2: RB
 2: ID(a)
 2: SEMI
-4: Lexical error: illegal character '$'
+Line 4: illegal character: $

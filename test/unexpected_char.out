@@ -1,4 +1,4 @@
 1: INT
 1: ID(a)
 1: ASSIGN
-Line 1: Unexpected input: $
+Line 1: illegal character: $

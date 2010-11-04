@@ -27,9 +27,9 @@ CLASS_IDENTIFIER={UPPERALPHA}({ALPHA_NUMERIC})*
 IDENTIFIER={LOWERALPHA}({ALPHA_NUMERIC})*
 WHITESPACE=[ \t\n\r]
 
-PRINTABLE_STRING=[040\041\043-\133\135-\176]
-ESCAPE_STRING="\\\""|"\\\\"|{WHITESPACE}
-VALID_STRING_ASCII={PRINTABLE_STRING}|{ESCAPE_STRING}
+OK_IN_STRING=[\x20\x21\x23-\x5B\x5D-\x7E]
+ESC_STRING="\\\""|"\\\\"|"\\t"|"\\n"|{WHITESPACE} 
+VALID_ASCII_IN_STRING={OK_IN_STRING}|{ESC_STRING}
 
 NON32BITINT=
 	 [1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*|
@@ -58,7 +58,7 @@ NON32BITINT=
 <MULTI_LINE_COMMENTS>  {
 	"*/" { yybegin(YYINITIAL); }
 	.|\n { }
-	<<EOF>> { throw new LexicalError(getLine(),"Unclosed comment "); }
+	<<EOF>> { throw new LexicalError(getLine(),"Unclosed comment"); }
 }
 
 <QUOTE> { 
@@ -67,11 +67,11 @@ NON32BITINT=
 		yybegin(YYINITIAL);
 	 	return new Token(sym.QUOTE, getLine(), curString.toString()); 
 	 }
-	{VALID_STRING_ASCII}+  { curString.append(yytext()); } 
+	
+	{VALID_ASCII_IN_STRING}  { curString.append(yytext()); } 
 	
 	<<EOF>> { throw new LexicalError(getLine(),"Unclosed string"); }
-	
-	 .     { throw new LexicalError(getLine(),"illegal literal inside a string: " + yytext()); } 
+	 .      { throw new LexicalError(getLine(),"illegal literal inside a string: " + yytext()); } 
 	                 
 }
 
@@ -127,12 +127,12 @@ NON32BITINT=
 	 "return" { return new Token(sym.RETURN,getLine()); }
 	 
 	 "-2147483648" {  }
-	 {NON32BITINT} { throw new LexicalError(getLine(),"integer out of range: " + yytext()); } // OUT OF RANGE
+	 {NON32BITINT} { throw new LexicalError(getLine(),"Integer out of range: " + yytext()); } // OUT OF RANGE
 	 {INTEGERLITERAL} { return new Token(sym.INTEGER,getLine(),yytext()); }
 	 {CLASS_IDENTIFIER} { return new Token(sym.CLASS_ID,getLine(),yytext()); }
 	 {IDENTIFIER} { return new Token(sym.ID,getLine(),yytext()); }
-	 {INTEGERLITERAL}{ALPHA_NUMERIC} { throw new LexicalError(getLine(),"bad input"); }
+	 {INTEGERLITERAL}{ALPHA_NUMERIC} { throw new LexicalError(getLine(),"bad input: " + yytext()); }
 	 {WHITESPACE} { }
-	 .|\n { throw new LexicalError(getLine(),"Unexpected input: " + yytext()); } 
+	 . { throw new LexicalError(getLine(),"illegal character: " + yytext()); } //why were there /n here?
 }
 
