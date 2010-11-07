@@ -4,8 +4,21 @@ package IC.Parser;
 
 %cup
 %{
+	private int minusRowLoc, minusColLoc;
+  			
   	private StringBuffer curString = new StringBuffer();
   	private int getLine() {return yyline+1;}
+  	private void setMinus(){
+  			minusRowLoc = yyline;
+  			minusColLoc = yycolumn;
+  			}
+  	public boolean isMinus(){
+  			return 	(minusRowLoc==yyline && minusColLoc==yycolumn - 1);
+  			}
+  	private void setMinusForward(){
+  			if (isMinus()) 
+  			setMinus();
+  			}	
 %}
 
 %class Lexer
@@ -13,6 +26,7 @@ package IC.Parser;
 %function next_token
 %type Token
 %line
+%column
 %scanerror LexicalError
 %state SINGLE_LINE_COMMENTS
 %state MULTI_LINE_COMMENTS
@@ -89,7 +103,8 @@ NON32BITINT=
 	 "," { return new Token(sym.COMMA,getLine()); }
 	 ";" { return new Token(sym.SEMI,getLine()); }
 	 "=" { return new Token(sym.ASSIGN,getLine()); }
-	 "-" { return new Token(sym.MINUS,getLine()); }
+	 "-" { setMinus();
+	 	   return new Token(sym.MINUS,getLine()); }
 	 "+" { return new Token(sym.PLUS,getLine()); }
 	 "/" { return new Token(sym.DIVIDE,getLine()); }
 	 "%" { return new Token(sym.MOD,getLine()); }
@@ -125,8 +140,15 @@ NON32BITINT=
 	 "this" { return new Token(sym.THIS,getLine()); }
 	 "boolean" { return new Token(sym.BOOLEAN,getLine()); }
 	 "return" { return new Token(sym.RETURN,getLine()); }
+	 " " {setMinusForward();}
 	 
-	 "-2147483648" {  }
+	 "2147483648" { if (isMinus()) {
+	 						return new Token(sym.INTEGER,getLine(),yytext());
+	 						}
+	 				else{ 
+	 				throw new LexicalError(getLine(),"Integer out of range: " + yytext());
+        				}
+        			}
 	 {NON32BITINT} { throw new LexicalError(getLine(),"Integer out of range: " + yytext()); } // OUT OF RANGE
 	 {INTEGERLITERAL} { return new Token(sym.INTEGER,getLine(),yytext()); }
 	 {CLASS_IDENTIFIER} { return new Token(sym.CLASS_ID,getLine(),yytext()); }

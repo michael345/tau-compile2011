@@ -53,9 +53,9 @@ CLASS Utils:
 	Contains a simple function whose job is to recieve an integer and return it's 
 	corresponding Token as set in class sym.
 
-
 REGULAR EXPRESSIONS(& their macros)
 -------------------
+
 INTEGERLITERAL=0|[1-9][0-9]*
 LOWERALPHA=[a-z]
 UPPERALPHA=[A-Z]
@@ -66,17 +66,38 @@ IDENTIFIER={LOWERALPHA}({ALPHA_NUMERIC})*
 WHITESPACE=[ \t\n\r]
 .|\n
 
+OK_IN_STRING=[\x20\x21\x23-\x5B\x5D-\x7E]
+ESC_STRING="\\\""|"\\\\"|"\\t"|"\\n"|{WHITESPACE} 
+VALID_ASCII_IN_STRING={OK_IN_STRING}|{ESC_STRING}
+
+NON32BITINT=
+	 [1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*|
+	 [3-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*|
+	 2[2-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*|
+	 21[5-8][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*|
+	 214[8-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*|
+	 2147[5-9][0-9][0-9][0-9][0-9][0-9][0-9]*|
+	 21474[9-9][0-9][0-9][0-9][0-9][0-9]*|
+	 214748[4-9][0-9][0-9][0-9][0-9]*|
+	 2147483[7-9][0-9][0-9][0-9]*|
+	 21474836[5-9][0-9][0-9]*|
+	 214748364[8-9][0-9]*
+
+
 CODE STRUCTURE
 ----------------
-???? ???
+n/a
 
 TESTING STRATEGY
 -----------------
 We wrote some interesting IC files, with all sort of edge cases (each file represents different edge case)
 some are correct, meaning has no lexical error (maybe syntactic errors). Also worte these files expected output from the Compiler we wrote,
-and checked weather the expected and the actual are equal.
+and checked weather the expected and the actual are equal using a Junit testcase which assert the
+equality of each ic-out pair.
 
 BUGS
 ----
-1) our error message says:"Unexpected input" insted of "Unexpected char"+'$' (for example) as stated in "Quicksort_bad".ic
+1) our error message says:"Unexpected input" instead of "Unexpected char"+'$' (for example) as stated in "Quicksort_bad".ic
    but since the exercise instructions didn't state the exact syntax of an error message we wrote it as we did. 
+2) a bug we decide not to deal with: in case we have the following regular expression: -(*2147483648)*
+   we dont deal with it correctly

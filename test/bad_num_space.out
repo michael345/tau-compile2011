@@ -1,11 +1,12 @@
 1: INT
 1: ID(legal1)
 1: ASSIGN
-1: INTEGER(1147483999)
+1: MINUS
+1: INTEGER(1214000003)
 2: INT
 2: ID(legal2)
 2: ASSIGN
-2: INTEGER(2147483647)
+2: INTEGER(2049999999)
 3: INT
 3: ID(legal3)
 3: ASSIGN
@@ -14,4 +15,4 @@
 4: INT
 4: ID(illegal)
 4: ASSIGN
-Line 4: Integer out of range: 2147483648
+Line 4: Integer out of range: 2147489999

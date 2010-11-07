@@ -1,0 +1,5 @@
+1: INT
+1: ID(malo_numero)
+1: ASSIGN
+1: MINUS
+Line 1: Integer out of range: 2147483649
