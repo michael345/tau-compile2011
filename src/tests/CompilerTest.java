@@ -14,7 +14,7 @@ public class CompilerTest {
 	    
 	    String[] ICfileNames = {"Quicksort","badid","Sieve","goodlex_badsyn",
 	    		"one_line_comment","Quicksort_bad","unexpected_char","unexpected_eof",
-	    		"oor","backslash_str"
+	    		"oor","backslash_str","bad_num","bad_num_negative","bad_num_space"
 	    };
 	    
 	    @Test
@@ -58,7 +58,7 @@ public class CompilerTest {
 	            String[] expectedLines = expectedOutput.split("\n");
 	           	            
 	            for (int i=0; i<actualLines.length; i++) {
-	            	System.out.println(file+", "+i);
+	            	System.out.println(file+", "+i+", expected: "+expectedLines[i]+"actual: "+ actualLines[i]);
 	                assertEquals(expectedLines[i], actualLines[i]);
 	            }
 	            
