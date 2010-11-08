@@ -7,14 +7,18 @@ package IC.Parser;
 	private int minusRowLoc, minusColLoc;
   			
   	private StringBuffer curString = new StringBuffer();
+  	
   	private int getLine() {return yyline+1;}
+  	
   	private void setMinus(){
   			minusRowLoc = yyline;
   			minusColLoc = yycolumn;
   			}
+  	
   	public boolean isMinus(){
   			return 	(minusRowLoc==yyline && minusColLoc==yycolumn - 1);
   			}
+  	
   	private void setMinusForward(){
   			if (isMinus()) 
   			setMinus();

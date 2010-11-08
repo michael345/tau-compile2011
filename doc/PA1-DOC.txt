@@ -3,9 +3,11 @@
         -----------------
 src:
 	package IC:
-		compiler.java
+		    
+		    Compiler.java
 
 	package IC.Parser:
+			
 			Lexer.java
 			LexicalError.java
 			sym.java
@@ -44,7 +46,7 @@ CLASS Token:
 	(line) an integer which represents the number of line where
 		the token appears in the IC file.
 
-	the class containd getters for these 3 fields as well as the method
+	the class contains getters for these 3 fields as well as the method
 	toString() which returns a string which contains the information of the specific 
 	Token.
 	
@@ -86,7 +88,12 @@ NON32BITINT=
 
 CODE STRUCTURE
 ----------------
-n/a
+the logic which led us was pretty simple, on <YYINIATIAL> we almost always returned the
+corresponding token, or got into the <QUOTE> or <COMMENT> states.
+special attention was given to the part that had to confirm well-formed integers including
+error-throwing for integers out of range, worth mentioning: we had to write a set of functions 
+which helped us distinguish between -2^31 and 2^31, and decide wether a number is legal.
+error handling was also an issue dealt with vastly.
 
 TESTING STRATEGY
 -----------------
