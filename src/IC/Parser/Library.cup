@@ -1,0 +1,12 @@
+package IC.Parser;
+
+import IC.AST.*;
+
+
+INT
+ID("x")
+ASSIGN
+INTEGER(10)
+
+
+   
