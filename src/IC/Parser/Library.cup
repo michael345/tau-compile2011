@@ -89,7 +89,6 @@ terminal BOOLEAN;
 terminal NULL;
 terminal UMINUS;
 
-
 non terminal ICClass class;
 non terminal List<Method> LMethods;
 non terminal LibraryMethod LMethod;
@@ -97,6 +96,18 @@ non terminal Type ReturnType;
 non terminal Type Type;
 non terminal List<Formal> Formals;
 non terminal Formal Formal;
+non terminal Program program;
+non terminal ArrayList<ICClass> class_list;
+
+program ::= class_list:cl
+      {: RESULT = new Program(cl); :};
+
+class_list ::= class:c {:
+      	RESULT = new ArrayList<ICClass>(); RESULT.add(c);
+      :}
+      	| class_list:cl class:c
+      {: cl.add(c); RESULT = cl; :}
+;
 
 class ::= CLASS CLASS_ID:name LCBR LMethods:lmethods RCBR {: 
 			RESULT = new ICClass(parser.getLine(),name, new ArrayList<Field>(), lmethods);	:}
