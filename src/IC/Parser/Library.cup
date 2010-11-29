@@ -2,5 +2,150 @@ package IC.Parser;
 
 import IC.AST.*;
 
+import IC.DataTypes;
+import java_cup.runtime.*;
+import IC.Parser.Utils;
+import java.util.ArrayList;
+import java.util.List;
+
+parser code {:
+	/**
+	 * Causes the parsr to print every token it reads. useful for debugging
+	 */
+	public boolean printTokens;
+	
+	private Lexer lexer;
+
+	public LibraryParser(Lexer lexer) {
+		super(lexer);
+		this.lexer = lexer;
+	}
+	
+	public int getLine() {
+		return lexer.getLine();
+	}
+	
+	public void syntax_error(Symbol s) {
+		Token tok = (Token) s;
+		System.out.println("Line " + tok.getLine()+": Syntax error; unexpected " + Utils.tokenIDToString(tok.getId()));
+	}
+:};
+// This is just for debugging
+scan with {:
+	Token t = lexer.next_token();
+	if (printTokens)
+		System.out.println(t.getLine() + ":" + Utils.tokenIDToString(t.getId()));
+	return t; 
+:};
+
+terminal String CLASS_ID;
+terminal String ID;
+terminal Integer INTEGER;
+terminal String  QUOTE;
+
+terminal FALSE;
+terminal TRUE;
+terminal LENGTH;
+terminal NEQUAL;
+terminal EQUAL;
+terminal RP;
+terminal SEMI;
+terminal DOT;
+terminal LP;
+terminal PLUS;
+terminal MINUS;
+terminal MULTIPLY;
+terminal DIVIDE;
+terminal GT;
+terminal GTE;
+terminal LT;
+terminal LTE;
+terminal LB;
+terminal LCBR;
+terminal RCBR;
+terminal RB;
+terminal LNEG;
+terminal LAND;
+terminal LOR;
+terminal MOD;
+terminal COMMA;
+terminal IF;
+terminal ASSIGN;
+terminal BREAK;
+terminal CLASS;
+terminal CONTINUE;
+terminal EXTENDS;
+terminal ELSE;
+terminal NEW;
+terminal RETURN;
+terminal THIS;
+terminal VOID;
+terminal WHILE;
+
+terminal STATIC;
+terminal INT;
+terminal STRING;
+terminal BOOLEAN;
+terminal NULL;
+terminal UMINUS;
+
+
+non terminal ICClass class;
+non terminal List<Method> LMethods;
+non terminal LibraryMethod LMethod;
+non terminal Type ReturnType;      
+non terminal Type Type;
+non terminal List<Formal> Formals;
+non terminal Formal Formal;
+
+class ::= CLASS CLASS_ID:name LCBR LMethods:lmethods RCBR {: 
+			RESULT = new ICClass(parser.getLine(),name, new ArrayList<Field>(), lmethods);	:}
+			|
+			CLASS CLASS_ID:name LCBR RCBR{:
+			RESULT = new ICClass(parser.getLine(), name, new ArrayList<Field>(), new ArrayList<Method>());:};
+	
+LMethods ::= LMethod:lmethod{:
+			List<Method> lmethods = new ArrayList<Method>();
+			lmethods.add(lmethod);
+			RESULT = lmethods;:}
+			| 
+			LMethods:lmethods LMethod:lmethod{:
+			lmethods.add(lmethod);
+			RESULT = lmethods;:};
+	
+LMethod ::= STATIC ReturnType:rType ID:f LP Formals:formals RP SEMI{:
+			RESULT = new LibraryMethod(rType, f, formals);:}
+			|
+			STATIC ReturnType:rType ID:f LP RP SEMI{:
+			RESULT = new LibraryMethod(rType, f, new ArrayList<Formal>());:};
+	
+ReturnType ::= Type:type{:
+			RESULT = type;:} 
+			| 
+			VOID{:
+			RESULT = new PrimitiveType(parser.getLine(), DataTypes.VOID);:};
+	
+Type ::= INT {:
+		RESULT = new PrimitiveType(parser.getLine(), DataTypes.INT);:}
+	    | 
+	    STRING{:
+		RESULT = new PrimitiveType(parser.getLine(), DataTypes.STRING);:} 
+	    | 
+	    BOOLEAN{:
+		RESULT = new PrimitiveType(parser.getLine(), DataTypes.BOOLEAN);:} 
+		| 
+		Type:type LB RB{:
+		type.incrementDimension();
+		RESULT = type;:};
+
+Formals ::= Formal:fo {:
+			List<Formal> flist = new ArrayList<Formal>();
+			flist.add(fo); RESULT = flist; :}
+			|
+			Formals:flist COMMA Formal:fo {:
+			flist.add(fo); RESULT = flist; :};
+			
+Formal ::= Type:t ID:id {: RESULT = new Formal(t,id); :};
+
 
    

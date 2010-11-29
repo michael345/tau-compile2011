@@ -8,7 +8,7 @@ package IC.Parser;
   			
   	private StringBuffer curString = new StringBuffer();
   	
-  	private int getLine() {return yyline+1;}
+  	public int getLine() {return yyline+1;}
   	
   	private void setMinus(){
   			minusRowLoc = yyline;
