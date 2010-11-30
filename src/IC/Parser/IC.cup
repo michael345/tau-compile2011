@@ -298,11 +298,11 @@ expr ::=
 			LP expr:e1 RP {:
 				 parser.log("expr ::= LP expr RP");
 				 RESULT = new ExpressionBlock(e1); :} |
-			NEW:id CLASS_ID:name LP RP SEMI {:
-				parser.log("expr ::= NEW CLASS_ID LP RP SEMI");
+			NEW:id CLASS_ID:name LP RP  {:
+				parser.log("expr ::= NEW CLASS_ID LP RP ");
 				RESULT = new NewClass(parser.getLine(),name); :} |
-			NEW:id type:name LB expr:size RB SEMI {:
-				parser.log("expr ::= NEW type LB exp RB SEMI");
+			NEW:id type:name LB expr:size RB {:
+				parser.log("expr ::= NEW type LB expr RB");
 				RESULT = new NewArray(name,size); :} |
 			location:e {:
 				parser.log("expr ::= location");
