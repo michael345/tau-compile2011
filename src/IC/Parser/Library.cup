@@ -39,12 +39,12 @@ scan with {:
 :};
 
 terminal Integer INTEGER;
-terminal String  QUOTE, ID, CLASS_ID;
+terminal String QUOTE, ID, CLASS_ID;
 terminal Boolean FALSE, TRUE;
 terminal LENGTH, NEQUAL, EQUAL, RP, SEMI, DOT, LP, PLUS, MINUS, MULTIPLY, DIVIDE, GT, GTE, LT, LTE, LB, LCBR, RCBR, RB, LNEG, LAND, LOR, MOD, COMMA,
 		 IF, ASSIGN, BREAK, CLASS, CONTINUE, EXTENDS, ELSE, NEW, RETURN, THIS, VOID, WHILE, STATIC;
 terminal INT, STRING, BOOLEAN, UMINUS;
-terminal null NULL;
+terminal NULL;
 
 non terminal ICClass class;
 non terminal List<Method> LMethods;

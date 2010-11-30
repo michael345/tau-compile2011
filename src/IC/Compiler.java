@@ -5,20 +5,15 @@ import java.io.*;
 import java_cup.runtime.Symbol;
 import IC.AST.PrettyPrinter;
 import IC.AST.Program;
-import IC.Parser.Lexer;
-import IC.Parser.LexicalError;
-import IC.Parser.LibraryParser;
-import IC.Parser.Token;
-import IC.Parser.sym;
+import IC.Parser.*;
 
 public class Compiler {
-        public static void printUsage() {
-        }
         
         public static boolean isPrint(String[] args) {
             for (int i = 0; i < args.length; i++) { 
-                if (args[i].compareTo("-print-ast") == 0); 
+                if (args[i].compareTo("-print-ast") == 0) { 
                     return true;
+                }
             }
             return false;
         }
@@ -33,7 +28,8 @@ public class Compiler {
             try {           
                 textFile = new FileReader(args[0]);
                 Lexer lexer = new Lexer(textFile);
-                LibraryParser parser = new LibraryParser(lexer);
+                //LibraryParser parser = new LibraryParser(lexer);
+                Parser parser = new Parser(lexer);
                 
                 parser.printTokens = false;
                 
