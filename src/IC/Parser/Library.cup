@@ -38,56 +38,13 @@ scan with {:
 	return t; 
 :};
 
-terminal String CLASS_ID;
-terminal String ID;
 terminal Integer INTEGER;
 terminal String  QUOTE;
-
-terminal FALSE;
-terminal TRUE;
-terminal LENGTH;
-terminal NEQUAL;
-terminal EQUAL;
-terminal RP;
-terminal SEMI;
-terminal DOT;
-terminal LP;
-terminal PLUS;
-terminal MINUS;
-terminal MULTIPLY;
-terminal DIVIDE;
-terminal GT;
-terminal GTE;
-terminal LT;
-terminal LTE;
-terminal LB;
-terminal LCBR;
-terminal RCBR;
-terminal RB;
-terminal LNEG;
-terminal LAND;
-terminal LOR;
-terminal MOD;
-terminal COMMA;
-terminal IF;
-terminal ASSIGN;
-terminal BREAK;
-terminal CLASS;
-terminal CONTINUE;
-terminal EXTENDS;
-terminal ELSE;
-terminal NEW;
-terminal RETURN;
-terminal THIS;
-terminal VOID;
-terminal WHILE;
-
-terminal STATIC;
-terminal INT;
-terminal STRING;
-terminal BOOLEAN;
-terminal NULL;
-terminal UMINUS;
+terminal Boolean FALSE, TRUE;
+terminal LENGTH, NEQUAL, EQUAL, RP, SEMI, DOT, LP, PLUS, MINUS, MULTIPLY, DIVIDE, GT, GTE, LT, LTE, LB, LCBR, RCBR, RB, LNEG, LAND, LOR, MOD, COMMA,
+		ID, IF, ASSIGN, BREAK, CLASS, CLASS_ID, CONTINUE, EXTENDS, ELSE, NEW, RETURN, THIS, VOID, WHILE, STATIC;
+terminal INT, STRING, BOOLEAN, UMINUS;
+terminal null NULL;
 
 non terminal ICClass class;
 non terminal List<Method> LMethods;
