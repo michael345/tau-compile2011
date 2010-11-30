@@ -28,7 +28,7 @@
        ===================================================================
   -->
     <target name="parser" depends="init" description="-> generates the IC parser">
-    <!-- <java classname="java_cup.Main" output="${src}/IC/Parser/cup_dump.txt"> -->
+    	  <!-- <java classname="java_cup.Main" output="${src}/IC/Parser/cup_dump.txt">  -->
        <java classname="java_cup.Main">
        <arg value="-parser"/>
        <arg value="Parser"/>
@@ -42,7 +42,6 @@
     <move file="Parser.java" todir="${src}/IC/Parser"/>
     <move file="sym.java" todir="${src}/IC/Parser"/>
     </target>
-
     <!--
        ===================================================================
          Generates the Library parser
@@ -60,7 +59,7 @@
 	 <replacetoken>class LibraryParser</replacetoken>
     </replace>		
 
-    <move file="LibraryParser.java" todir="${src}/IC/LibraryParser"/>
+    <move file="LibraryParser.java" todir="${src}/IC/Parser"/>
     </target>
 
     <!--
