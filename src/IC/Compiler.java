@@ -1,33 +1,56 @@
 package IC;
 
 import java.io.*;
+
+import java_cup.runtime.Symbol;
+import IC.AST.PrettyPrinter;
+import IC.AST.Program;
 import IC.Parser.Lexer;
 import IC.Parser.LexicalError;
+import IC.Parser.LibraryParser;
 import IC.Parser.Token;
 import IC.Parser.sym;
 
 public class Compiler {
-    public static void main(String[] args) {
-        Token currToken;
-        if (args.length != 1) { 
-            System.out.println("Requires exactly one argument: <filename>");
-            return;
+        public static void printUsage() {
         }
-        try { 
-            FileReader txtFile = new FileReader(args[0]);
-            Lexer lexer = new Lexer(txtFile);
-            do {
-                currToken = lexer.next_token();
-                System.out.println(currToken);
-            } while (currToken.getId() != sym.EOF);
-        } 
-        catch (LexicalError e) {
-            e.printMessage();
-            return;
+        
+        public static boolean isPrint(String[] args) {
+            for (int i = 0; i < args.length; i++) { 
+                if (args[i].compareTo("-print-ast") == 0); 
+                    return true;
+            }
+            return false;
         }
-        catch (Exception e) {
-            // Throw non-lexical error messages 
-            throw new RuntimeException("IO Error (brutal exit)" + e.toString());
+        
+        public static void main(String[] args) {
+            if (args.length == 0 || args.length > 3) { 
+                System.out.println("Input error - expected: java IC.Compiler <file.ic> [ -L</path/to/libic.sig> ] [ -print-ast ]");
+            }
+            FileReader textFile = null;
+            boolean isPrint = isPrint(args);
+            
+            try {           
+                textFile = new FileReader(args[0]);
+                Lexer lexer = new Lexer(textFile);
+                LibraryParser parser = new LibraryParser(lexer);
+                
+                parser.printTokens = false;
+                
+                Symbol parseSymbol = parser.parse();
+                
+                if (isPrint) {
+                    Program prog = (Program) parseSymbol.value;
+                    PrettyPrinter printer = new PrettyPrinter(args[0]);
+                    String traverse = (String)printer.visit(prog);
+                    System.out.println(traverse);
+                }
+                
+                textFile.close();
+                
+            } catch (Exception e) {
+                e.toString();
+            }
         }
+
     }
-}
