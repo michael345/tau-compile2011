@@ -3,11 +3,14 @@ package IC.Parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import java_cup.runtime.Symbol;
+import java_cup.runtime.*;
 import IC.*;
 import IC.AST.*;
 import IC.Parser.*;
+
 parser code {:
+
+
 	/**
 	 * Causes the parsr to print every token it reads. useful for debugging
 	 */
