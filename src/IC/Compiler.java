@@ -11,7 +11,9 @@ public class Compiler {
         
         public static boolean isPrint(String[] args) {
             for (int i = 0; i < args.length; i++) { 
+
                 if (args[i].compareTo("-print-ast") == 0) { 
+
                     return true;
                 }
             }
@@ -28,9 +30,10 @@ public class Compiler {
             try {           
                 textFile = new FileReader(args[0]);
                 Lexer lexer = new Lexer(textFile);
+
                 //LibraryParser parser = new LibraryParser(lexer);
                 Parser parser = new Parser(lexer);
-                
+  
                 parser.printTokens = false;
                 
                 Symbol parseSymbol = parser.parse();
@@ -45,7 +48,7 @@ public class Compiler {
                 textFile.close();
                 
             } catch (Exception e) {
-                e.toString();
+                e.printStackTrace();
             }
         }
 

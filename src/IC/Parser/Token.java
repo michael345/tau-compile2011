@@ -9,7 +9,7 @@ public class Token extends Symbol {
     final private String value;
     
     public Token(int id, int line, String value) {
-        super(id, null);
+        super(id, value);
         this.id = id;
         this.line = line;
         this.value = value;

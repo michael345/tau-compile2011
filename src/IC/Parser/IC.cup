@@ -70,10 +70,10 @@ non terminal StaticCall staticCall;
 non terminal VirtualCall virtualCall;
 
 
-terminal Integer INTEGER;
+terminal String INTEGER;
 terminal String  QUOTE;
 terminal String ID, CLASS_ID;
-terminal Boolean FALSE, TRUE;
+terminal FALSE, TRUE;
 terminal LENGTH, NEQUAL, EQUAL, RP, SEMI, DOT, LP, PLUS, MINUS, MULTIPLY, DIVIDE, GT, GTE, LT, LTE, LB, LCBR, RCBR, RB, LNEG, LAND, LOR, MOD, COMMA,
 		 IF, ASSIGN, BREAK, CLASS, CONTINUE, EXTENDS, ELSE, NEW, RETURN, THIS, VOID, WHILE, STATIC;
 terminal INT, STRING, BOOLEAN, UMINUS;
@@ -273,7 +273,7 @@ expr ::=
 				RESULT = new MathBinaryOp(e1,BinaryOps.LT,e2); :} |
 			expr:e1 LTE expr:e2 {:
 				parser.log("expr ::= expr LTE expr");
-				new MathBinaryOp(e1,BinaryOps.LTE,e2); :} |
+				RESULT = new MathBinaryOp(e1,BinaryOps.LTE,e2); :} |
 			expr:e1 LAND expr:e2 {: 
 				parser.log("expr ::= expr LAND expr");
 				RESULT = new LogicalBinaryOp(e1,BinaryOps.LAND,e2); :} |
@@ -417,7 +417,11 @@ call ::= 	staticCall:c {:
 
 staticCall ::= CLASS_ID:c DOT ID:f LP exprlist:args RP {:
 				parser.log("staticCall ::= CLASS_ID DOT ID LP exprlist RP");
-				RESULT = new StaticCall(parser.getLine(),c, f,args);  :}
+				RESULT = new StaticCall(parser.getLine(),c, f,args);  :} |
+			CLASS_ID:c DOT ID:f LP RP {:
+				parser.log("staticCall ::= CLASS_ID DOT ID LP RP");
+				RESULT = new StaticCall(parser.getLine(),c, f,new ArrayList<Expression>());  :}
+				
 ;
 
 virtualCall ::= expr:e DOT ID:f LP exprlist:args RP {:
@@ -425,6 +429,12 @@ virtualCall ::= expr:e DOT ID:f LP exprlist:args RP {:
 					RESULT = new VirtualCall(parser.getLine(),e,f,args);:} |
 				ID:name LP actualParams:args RP {:
 					parser.log("virtualCall ::= ID LP actualParams:args RP");
-					RESULT = new VirtualCall(parser.getLine(),name,args);:}
+					RESULT = new VirtualCall(parser.getLine(),name,args);:} |
+				expr:e DOT ID:f LP RP {:
+					parser.log("virtualCall ::= expr DOT ID LP RP");
+					RESULT = new VirtualCall(parser.getLine(),e,f,new ArrayList<Expression>());:} |
+				ID:name LP RP {:
+					parser.log("virtualCall ::= ID LP RP");
+					RESULT = new VirtualCall(parser.getLine(),name,new ArrayList<Expression>());:}
 ;
 			  	
