@@ -93,6 +93,7 @@ precedence left MULTIPLY, DIVIDE, MOD;
 precedence right UMINUS, LNEG; 
 precedence left DOT, LP, RP, LB, RB;
 
+
 //////////////
 // The grammar
 
@@ -350,12 +351,12 @@ stmt_list ::= statement:st {:
 			RESULT = new StatementsBlock(parser.getLine(), temp); :}
 ;
 
-statement ::= 	IF LP expr:e RP statement:s ELSE statement:es {: 
-					parser.log("statement ::= IF LP expr RP statement ELSE statement");
-					RESULT = new If(e,s,es);:}  |
-				IF LP expr:e RP statement:s {:
+statement ::= 	IF LP expr:e RP statement:s {:
 					parser.log("statement ::= IF LP expr RP statement");
 					RESULT = new If(e,s);:} |
+				IF LP expr:e RP statement:s ELSE statement:es {: 
+					parser.log("statement ::= IF LP expr RP statement ELSE statement");
+					RESULT = new If(e,s,es);:} |
 				WHILE LP expr:e RP statement:s {: 
 					parser.log("statement ::= WHILE LP expr RP statement");
 					RESULT = new While(e,s);:} |

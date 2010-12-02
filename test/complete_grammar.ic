@@ -1,0 +1,85 @@
+class CompleteGrammar { 
+	int n;
+	string str;
+	int x,y,z;
+	boolean bool;
+	
+	boolean isOne(int x) { 
+		return (x==1);
+	}
+	
+	static string sayHi() { 
+		return "Hi";
+	}
+	
+	int checkExpressions(CompleteGrammar cg) { 
+		int a;
+		int b;
+		int c;
+		int [] h;
+		boolean d = true;
+		boolean e;
+		boolean f;
+		string g;
+		a = 4; b = 1; c = 2; 
+		d = true; e = false;
+		g = null;
+		b = c * a;
+		a = b / a;
+		b = a % c;
+		c = -c;
+		d = a == b;
+		e = b != c;
+		f = d || e;
+		d = (e && f);
+		e = !d;
+		f = a < b;
+		d = b <= c;
+		e = a > b;
+		f = b >= a;
+		
+		if (e) { 
+			return 5;
+		}
+		
+		/*
+		if (f == true) { 
+			c = a +b;
+		}
+		else {  
+			c = a - b;
+		}
+		*/
+		
+		while (a < b) {
+			a = a+1;
+			continue;
+			break;
+		}
+		
+		
+		if (isOne(1)) { 
+			return 0;
+		}
+		
+		h = new int[5];
+		h[0] = 1;
+		a = h.length;
+		sayHi();
+		int d = h[0];
+		CompleteGrammar.sayHi();
+		CompleteGrammar sugar = new CompleteGrammar();
+		return cg;
+	}
+	
+	static void wassup(boolean b) { 
+		return b;
+	}
+	
+	
+}
+
+class CompleteDouchebag extends CompleteGrammar { 
+	int n;
+	string monkey;
+}
