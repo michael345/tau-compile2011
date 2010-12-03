@@ -59,13 +59,12 @@ non terminal List<Formal> formals;
 non terminal Statement statement;
 non terminal StatementsBlock stmt_list;
 non terminal If ifStatement;
+non terminal Statement elseStatement;
 non terminal Expression expr;
-non terminal List<Expression> exprlist, actualParams, properActualParams;
-non terminal Type returnType;      
+non terminal List<Expression> exprlist, actualParams;     
 non terminal ClassContents classcontents;
 non terminal Location location;
 non terminal Call call;
-non terminal Literal literal;
 non terminal StaticCall staticCall;
 non terminal VirtualCall virtualCall;
 
@@ -79,10 +78,9 @@ terminal LENGTH, NEQUAL, EQUAL, RP, SEMI, DOT, LP, PLUS, MINUS, MULTIPLY, DIVIDE
 terminal INT, STRING, BOOLEAN, UMINUS;
 terminal NULL;
 
-
 //////////////////////////
 // Precedence declarations
-
+precedence left ELSE;
 precedence right ASSIGN;
 precedence left LOR;
 precedence left LAND;
@@ -344,19 +342,33 @@ stmt_list ::= statement:st {:
 		List<Statement> temp = new ArrayList<Statement>(); temp.add(st); 
 		RESULT = new StatementsBlock(parser.getLine(),temp);
 	:} 	|
-		stmt_list:s1 statement:s {:
-			parser.log("stmt_list ::= stmt_list statement");
-			List<Statement> temp = s1.getStatements();
-			temp.add(s);
-			RESULT = new StatementsBlock(parser.getLine(), temp); :}
+	stmt_list:s1 statement:s {:
+		parser.log("stmt_list ::= stmt_list statement");
+		List<Statement> temp = s1.getStatements();
+		temp.add(s);
+		RESULT = new StatementsBlock(parser.getLine(), temp); 
+	:}
 ;
 
-statement ::= 	IF LP expr:e RP statement:s {:
-					parser.log("statement ::= IF LP expr RP statement");
-					RESULT = new If(e,s);:} |
-				IF LP expr:e RP statement:s ELSE statement:es {: 
-					parser.log("statement ::= IF LP expr RP statement ELSE statement");
-					RESULT = new If(e,s,es);:} |
+ifStatement ::= IF LP expr:e RP statement:s {:
+					parser.log("ifStatement ::= IF LP expr RP statement");
+					RESULT = new If(e,s);
+				:}
+;
+elseStatement ::= ELSE statement:es {:
+					parser.log("elseStatement ::= ELSE statement:");
+					RESULT = es;
+				:}
+;
+
+statement ::= 	ifStatement:ifs {:
+					parser.log("statement ::= ifStatement");
+					RESULT = ifs;:} |
+				ifStatement:ifs elseStatement:est {: 
+					parser.log("statement ::= ifStatement elseStatement");
+					Statement then = ifs.getOperation();
+					Expression cond = ifs.getCondition();
+					RESULT = new If(cond,then,est);:} |
 				WHILE LP expr:e RP statement:s {: 
 					parser.log("statement ::= WHILE LP expr RP statement");
 					RESULT = new While(e,s);:} |
