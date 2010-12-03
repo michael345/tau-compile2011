@@ -42,14 +42,14 @@ class CompleteGrammar {
 			return 5;
 		}
 		
-		/*
+		
 		if (f == true) { 
 			c = a +b;
 		}
 		else {  
 			c = a - b;
 		}
-		*/
+		
 		
 		while (a < b) {
 			a = a+1;
