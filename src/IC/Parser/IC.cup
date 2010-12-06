@@ -17,6 +17,7 @@ parser code {:
 	public boolean printTokens;
 	
 	private Lexer lexer;
+	private int ecode;
 
 	public Parser(Lexer lexer) {
 		super(lexer);
@@ -24,6 +25,7 @@ parser code {:
 	}
 	
 	public void log(String msg) {
+			String curcut = msg;
 			System.out.println(getLine() + " : " + msg);
 	}
 	public int getLine() {
@@ -32,8 +34,12 @@ parser code {:
 	
 	public void syntax_error(Symbol s) {
 		Token tok = (Token) s;
-		System.out.println("Line " + tok.getLine()+": Syntax error; unexpected " + Utils.tokenIDToString(tok.getId()));
+		SyntaxError e = new SyntaxError(tok);
+		e.printErrorMsg();
+		//System.out.println("Line " + tok.getLine()+": Syntax error; unexpected " + Utils.tokenIDToString(tok.getId()));
+	                                   //Line 7:         Syntax error; unexpected        ELSE
 	}
+	
 :};
 // This is just for debugging
 scan with {:
@@ -111,11 +117,19 @@ class_list ::= class:c {:
 
 class ::= CLASS CLASS_ID:name EXTENDS CLASS_ID:superclassico LCBR classcontents:cc RCBR {: 
 	parser.log("class::= CLASS CLASS_ID EXTENDS CLASS_ID LCBR classcontents RCBR");
-	RESULT = new ICClass(parser.getLine(),name,superclassico, cc.getFields(), cc.getMethods());	
+	RESULT = new ICClass(nameleft,name,superclassico, cc.getFields(), cc.getMethods());	
 	:} | 
 	CLASS CLASS_ID:name LCBR classcontents:cc RCBR {: 
 		parser.log("class::= CLASS CLASS_ID  CLASS_ID LCBR classcontents RCBR");
-		RESULT = new ICClass(parser.getLine(),name, cc.getFields(), cc.getMethods());	
+		RESULT = new ICClass(nameleft,name, cc.getFields(), cc.getMethods());	
+	:} | 
+	CLASS CLASS_ID:name EXTENDS CLASS_ID:superclassico LCBR RCBR {: 
+		parser.log("class::= CLASS CLASS_ID EXTENDS CLASS_ID LCBR RCBR");
+	RESULT = new ICClass(nameleft,name,superclassico, new ArrayList<Field>(), new ArrayList<Method>());
+	:} | 
+	CLASS CLASS_ID:name LCBR RCBR {: 
+		parser.log("class::= CLASS CLASS_ID  CLASS_ID LCBR RCBR");
+		RESULT = new ICClass(nameleft,name, new ArrayList<Field>(), new ArrayList<Method>());
 	:}
 ;
 	
@@ -143,7 +157,8 @@ classcontents ::=
 	 	fields.addAll(f);
 	 	cc.setFields(fields);
 		RESULT = cc;
-	 :} | classcontents:cc method:m {:
+	 :} | 
+	 classcontents:cc method:m {:
 	 	parser.log("classcontents ::= classcontents method");
 	 	List<Method> methods = cc.getMethods();
 		methods.add(m);
