@@ -86,6 +86,7 @@ terminal NULL;
 
 //////////////////////////
 // Precedence declarations
+precedence left RCBR;
 precedence left ELSE;
 precedence right ASSIGN;
 precedence left LOR;
@@ -421,7 +422,11 @@ statement ::= 	ifStatement:ifs {:
 					parser.log("statement ::= LCBR stmt_list RCBR");
 					st.setLine(lleft);
 					RESULT = st;
-				:}
+				:}  |
+				LCBR:l RCBR {:
+					parser.log("statement ::= LCBR RCBR");
+					RESULT = new StatementsBlock(lleft, new ArrayList<Statement>());
+					:} 
 ;
 
 location ::=	ID:id {:
