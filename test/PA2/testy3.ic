@@ -1,0 +1,41 @@
+class Testy3 {
+	int score;
+	
+	int[] arr;
+	
+	string game(){
+		Random r = new Random();
+		int count;
+		int mount;///remember to fix
+		score = 0;
+		mount = 0;
+		count = 0;
+		arr = new int[4];
+		
+		int i;
+		int j = 0;
+		while(j<4){
+		while(true){
+			i = r.nextInt(2);	
+			if ((i==1)&&(count<2)){
+				arr[j] = i;
+				count=count+1;
+				break;
+			}
+			if ((i==0)&&(mount<2)){
+				arr[j] = i;
+				mount=mount+1;
+				break;
+			}
+			j = j+1;
+		}
+		}
+		
+	}
+	
+	void increment(){
+		score = score+1;
+	}
+	
+
+}

@@ -1,0 +1,95 @@
+class Testy4 extends MyAnimal{
+	int energy;
+	Species species;
+	
+String hare(){
+	int energy;
+	energy = 1;
+	Species s;
+	s = new SpeciesHare();
+	
+}
+	
+	Action act(){
+		Action action=new Action();
+		if (getEnergy()>getSpecies().getSizeOfOffspring()+1)///         0.05
+			action.setSpawn(true);
+		int[] obj= new int[2];
+		int[] predetor = detecet_predetor();
+		if (predetor[0]==getSpecies().getRangeOfVision()*2)
+			obj = detect_food();
+		else
+		    obj = runaway(predetor);
+		action.setMove(obj[0], obj[1]);
+		return action;
+	}
+
+	/**
+	 * Looks for a fox as nearby as posible.
+	 * @return - the location of the closest fox in a an array, if there isnt any
+	 * returns an unreasonble set of coordinates, as th hare cannot see that tile.
+	 * to represent no danger nearby.
+	 */
+	static int[] detecet_predetor(){
+			int view=getSpecies().getRangeOfVision();
+			int[] ret=new int[2];
+			int i;
+			int j;
+			i = 1; 
+			while (i < view+1) {
+			 j=-i;
+					while (j < i+1) {
+					j=j+1;
+					j2=-i;
+						while (j2 < i+1) {
+							Tile check=World.getWorld().getTileAt(this, j, j2);
+							if (check.getAnimal()!=null&&check.getAnimal().getSpecies().isCarnivore())
+								{ret[0]=j;
+								ret[1]=j2;
+								return ret;
+								j2=j2+1;}
+							}
+							i=i+1;
+							}
+					}
+				 ret[0]=view*2;
+				 ret[1]=view*2;
+				 return ret;
+	}
+	/**
+	 * Looks for a good escape tile from a fox.
+	 * @return - the location of the tile far enough from the fox, if there isnt any
+	 * returns no movement...
+	 */
+	int[] runaway(int[] pred){
+		int[] ret;
+		ret = new int[2];
+	
+	ret[0]=0;
+	ret[1]=0;
+	return ret;}
+	
+	/**
+	 * Looks for vegetation as nearby as posible.
+	 * @return - the location of the closest vegetation in a an array, if there isnt any
+	 * returns a random move, and if it is blocked just returns an array of 0,0 to
+	 * represent no move.
+	 */
+	int[] detect_food(){
+		int view=getSpecies().getRangeOfVision();
+		int[] ret=new int[2];
+		
+		Random generator = new Random();
+		 ret[0]=generator.nextInt(3)-1;
+		 ret[1]=generator.nextInt(3)-1;
+		 if (World.getWorld().getTileAt(this, ret[0], ret[1]).getAnimal()!=null)
+		 {ret[0]=0;
+		 ret[1]=0;
+		 }
+		 return ret;
+}
+		
+		
+	}
+		
+		

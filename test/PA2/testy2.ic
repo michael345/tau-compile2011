@@ -1,0 +1,14 @@
+class Testy2{
+
+	string cat(string a, string b){
+		return a+b;
+		}	
+}
+
+class Testy2a{
+
+	string cat(string a, string b){
+		return a+b;
+		}
+		
+}
