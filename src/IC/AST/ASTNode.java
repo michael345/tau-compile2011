@@ -32,5 +32,9 @@ public abstract class ASTNode {
 	public int getLine() {
 		return line;
 	}
+	
+	public void setLine(int line) {
+		this.line = line;
+	}
 
 }

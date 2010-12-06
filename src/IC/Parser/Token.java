@@ -13,6 +13,7 @@ public class Token extends Symbol {
         this.id = id;
         this.line = line;
         this.value = value;
+        this.left = line;
     }
     
     public Token(int id, int line) {
@@ -20,6 +21,7 @@ public class Token extends Symbol {
         this.id = id;
         this.line = line;
         value = null;
+        this.left = line;
     }
     
     public int getId() {
