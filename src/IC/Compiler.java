@@ -20,24 +20,58 @@ public class Compiler {
             return false;
         }
         
+        public static boolean shouldParseLibrary(String[] args) {
+            for (int i = 0; i < args.length; i++) { 
+                if (args[i].startsWith("-L")) { 
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        public static String getSignature(String[] args) { 
+            for (int i = 0; i < args.length; i++) { 
+                if (args[i].startsWith("-L")) { 
+                    return args[i].substring(2, args[i].length());
+                }
+            }
+            return ""; // program will never reach here
+        }
+        
         public static void main(String[] args) {
             if (args.length == 0 || args.length > 3) { 
                 System.out.println("Input error - expected: java IC.Compiler <file.ic> [ -L</path/to/libic.sig> ] [ -print-ast ]");
             }
-            FileReader textFile = null;
+            FileReader icTextFile = null;
+            FileReader libSigTextFile = null;
             boolean isPrint = isPrint(args);
+            boolean parseLibrary = shouldParseLibrary(args);
+            String signaturePath = "";
+            if (parseLibrary) {
+                signaturePath = getSignature(args);
+            }
             
             try {           
-                textFile = new FileReader(args[0]);
-                Lexer lexer = new Lexer(textFile);
-
-                //LibraryParser parser = new LibraryParser(lexer);
-                Parser parser = new Parser(lexer);
-  
-                parser.printTokens = false;
+                icTextFile = new FileReader(args[0]);
+                Lexer icLexer = new Lexer(icTextFile);
+                Parser icParser = new Parser(icLexer);
+                icParser.printTokens = false;
+                Symbol parseSymbol = icParser.parse();
                 
-                Symbol parseSymbol = parser.parse();
-                
+                if (parseLibrary) { 
+                    libSigTextFile = new FileReader(signaturePath);
+                    Lexer libSigLexer = new Lexer(libSigTextFile);
+                    LibraryParser libSigParser = new LibraryParser(libSigLexer);
+                    libSigParser.printTokens = false;
+                    Symbol libParseSymbol = libSigParser.parse(); 
+                    if (isPrint) {  
+                        Program lib = (Program) libParseSymbol.value;
+                        PrettyPrinter printer = new PrettyPrinter(signaturePath);
+                        String traverse = (String)printer.visit(lib);
+                        System.out.println(traverse);
+                    }
+                }
+              
                 if (isPrint) {
                     Program prog = (Program) parseSymbol.value;
                     PrettyPrinter printer = new PrettyPrinter(args[0]);
@@ -45,7 +79,7 @@ public class Compiler {
                     System.out.println(traverse);
                 }
                 
-                textFile.close();
+                icTextFile.close();
                 
             } catch (Exception e) {
                 e.printStackTrace();
