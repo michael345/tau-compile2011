@@ -1,0 +1,16 @@
+class Ibra{
+
+boolean[][][][][] multarr;
+
+void foo(int x, int y){
+	while(x <= 0) {
+		while (y<=0){
+			while (x+y<=0){
+				x=x+1;
+				y=y+1;
+			}
+		}
+	
+		}
+}
+}

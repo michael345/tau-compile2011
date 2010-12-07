@@ -67,10 +67,10 @@ class_list ::= class:c {:
 ;
 
 class ::= CLASS CLASS_ID:name LCBR LMethods:lmethods RCBR {: 
-			RESULT = new ICClass(parser.getLine(),name, new ArrayList<Field>(), lmethods);	:}
+			RESULT = new ICClass(nameleft,name, new ArrayList<Field>(), lmethods);	:}
 			|
 			CLASS CLASS_ID:name LCBR RCBR{:
-			RESULT = new ICClass(parser.getLine(), name, new ArrayList<Field>(), new ArrayList<Method>());:};
+			RESULT = new ICClass(nameleft, name, new ArrayList<Field>(), new ArrayList<Method>());:};
 	
 LMethods ::= LMethod:lmethod{:
 			List<Method> lmethods = new ArrayList<Method>();
@@ -91,16 +91,16 @@ ReturnType ::= Type:type{:
 			RESULT = type;:} 
 			| 
 			VOID{:
-			RESULT = new PrimitiveType(parser.getLine(), DataTypes.VOID);:};
+			RESULT = new PrimitiveType(typeleft, DataTypes.VOID);:};
 	
-Type ::= INT {:
-		RESULT = new PrimitiveType(parser.getLine(), DataTypes.INT);:}
+Type ::= INT:t {:
+		RESULT = new PrimitiveType(tleft, DataTypes.INT);:}
 	    | 
-	    STRING{:
-		RESULT = new PrimitiveType(parser.getLine(), DataTypes.STRING);:} 
+	    STRING:t {:
+		RESULT = new PrimitiveType(tleft, DataTypes.STRING);:} 
 	    | 
-	    BOOLEAN{:
-		RESULT = new PrimitiveType(parser.getLine(), DataTypes.BOOLEAN);:} 
+	    BOOLEAN:t{:
+		RESULT = new PrimitiveType(tleft, DataTypes.BOOLEAN);:} 
 		| 
 		Type:type LB RB{:
 		type.incrementDimension();

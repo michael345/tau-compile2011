@@ -1,0 +1,12 @@
+class Out{
+	int j;
+	
+	class In{
+	
+	string spill(){
+		string str;
+		str = "hello";
+		return str;
+		}
+	}
+}

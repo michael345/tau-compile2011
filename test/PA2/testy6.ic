@@ -1,0 +1,80 @@
+ class Board {
+    Tile[][] board;
+    boolean[] companies;
+    
+
+    void board(Tile tileList) {
+        board = new Tile[9][12];
+
+        {
+            board[tile.getLocation().getX()][tile.getLocation().getY()] = tile;
+        }
+		int i;
+		i = 0;
+		
+        while (i < 7) {
+            companies[i] = false;
+            i= i+1;
+        }
+    }
+
+    Tile getTile(Coordinate cord) {
+        return board[cord.getX()][cord.getY()];
+    }
+
+    Tile getTile(int x, int y) {
+       
+    }
+
+    void setCompanyOnBoard(EnumCompany company, boolean isOnBoard)
+    {
+    	companies[company.getIndex()]= isOnBoard;
+    }
+    
+        
+    boolean isCompanyOnBoard(int company) {
+        return companies[company.getIndex()];
+    }
+
+    int numOfCompaniesOnBoard() {
+        int count;
+        count = 0;
+        int i;
+        i = 0;
+        while (i < 7) {
+            if (companies[i])
+                count = count+1;
+                i = i+1;
+        }
+        return count;
+    }
+    
+     Tile[] getNeighbors(Tile tile)
+    {
+    	int x;
+    	int y;
+    	x = tile.getLocation().getX();
+        y = tile.getLocation().getY();
+        Tile[] neighbors;
+        neighbors = new Tile[4];
+            	
+    	if (x>=0)
+    	{
+    		neighbors[0] = board[x-1][y];
+    	}
+    	if (x<=8)
+    	{
+    		neighbors[1] = board[x+1][y];
+    	}
+    	if (y>0)
+    	{
+    		neighbors[2] = board[x][y-1];
+    	}
+    	if (y<11)
+    	{
+    		neighbors[3] = board[x][y+1];
+    	}
+    	
+    	return neighbors;
+    }
+}
