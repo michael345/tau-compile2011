@@ -90,7 +90,7 @@ LMethod ::= STATIC ReturnType:rType ID:f LP Formals:formals RP SEMI{:
 ReturnType ::= Type:type{:
 			RESULT = type;:} 
 			| 
-			VOID{:
+			VOID:type{:
 			RESULT = new PrimitiveType(typeleft, DataTypes.VOID);:};
 	
 Type ::= INT:t {:
