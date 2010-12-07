@@ -1,0 +1,10 @@
+class Falsy{
+int a = 6;
+int k,b = 8;
+
+boolean funcy(int i,int j){
+	if(i<j) return true;
+	return false;
+}
+
+}

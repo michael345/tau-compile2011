@@ -1,0 +1,24 @@
+class Ops{
+	int a,b,c,d,e,f;
+	
+boolean isTrue(boolean x, boolean y){
+	
+	
+	a = 10;
+	b = 12;
+	c = 4;
+	d = 3;
+	f = 2;
+	
+	c = a*(-b)+a-b;
+	a = a + a;
+	b = c - a;
+	d = a * b;
+	a = c / b;
+	e = c % a;
+	if (a>b){d = a + b;}
+	if (a<b){d = a + b;}
+	if ((c<=d)||(d>=e)){return x&&y;}
+	if ((a==b)&&(c!=f)){return x||y;}
+}
+}

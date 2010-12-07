@@ -1,0 +1,38 @@
+class A{}
+
+class B{
+	int x,y;
+	
+	int foo(int a, int b){
+		if(a==b){
+			while (x>5){
+				y = x % 2;
+				x = x + 1;
+				if (x < 3) break;
+				}		
+		}
+	}
+	
+	int foot(int a, int b){
+		if(a!=b){
+			while (x>5){
+				y = x % 2;
+				x = x + 1;
+				if (x < 3) continue;
+				}		
+		}
+	}
+		
+	
+	int bar(){}
+	int foo1(int x){}
+	int bar1(){
+		int x;
+		x = x + 1;
+		x = x * x;
+		if (x > 3) return x;
+		else return x-1;
+	
+	boolean b;
+	}
+}
