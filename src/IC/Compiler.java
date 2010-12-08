@@ -57,13 +57,15 @@ public class Compiler {
                 Parser icParser = new Parser(icLexer);
                 icParser.printTokens = false;
                 Symbol parseSymbol = icParser.parse();
-                
                 if (parseLibrary) { 
                     libSigTextFile = new FileReader(signaturePath);
                     Lexer libSigLexer = new Lexer(libSigTextFile);
                     LibraryParser libSigParser = new LibraryParser(libSigLexer);
                     libSigParser.printTokens = false;
                     Symbol libParseSymbol = libSigParser.parse(); 
+                    if (!parseSuccessful(signaturePath, libParseSymbol)) {
+                    	return;
+                    }
                     if (isPrint) {  
                         Program lib = (Program) libParseSymbol.value;
                         PrettyPrinter printer = new PrettyPrinter(signaturePath);
@@ -71,6 +73,11 @@ public class Compiler {
                         System.out.println(traverse);
                     }
                 }
+                if (!parseSuccessful(args[0], parseSymbol)) {
+                	return;
+                }
+                
+                
               
                 if (isPrint) {
                     Program prog = (Program) parseSymbol.value;
@@ -80,10 +87,25 @@ public class Compiler {
                 }
                 
                 icTextFile.close();
-                
-            } catch (Exception e) {
-                e.printStackTrace();
+            }catch (SyntaxError se) { 
+            	se.printErrorMsg();
+            }  
+            
+            
+            catch (Exception e) {
+               e.printStackTrace();
             }
         }
+
+		private static boolean parseSuccessful(String path, Symbol parseSymbol) {
+			if (parseSymbol == null) {
+				System.out.println("Error parsing " + path + ".");
+				return false;
+			}
+			else {
+				System.out.println("Parsed " + path + " successfully.");
+				return true;
+			}
+		}
 
     }

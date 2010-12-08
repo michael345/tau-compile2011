@@ -10,7 +10,7 @@ import java.util.List;
 
 parser code {:
 	/**
-	 * Causes the parsr to print every token it reads. useful for debugging
+	 * Causes the parser to print every token it reads. useful for debugging
 	 */
 	public boolean printTokens;
 	
