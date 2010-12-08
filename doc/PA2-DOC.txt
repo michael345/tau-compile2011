@@ -33,7 +33,10 @@ IC
 ===
 CLASS Compiler:
 	The Compiler is the class where the main is.
-	//TODO amit
+	It recieves command line arguments and works accordingly.
+	It parses the input .ic file according to the parser which is generated from IC.CUP.
+	If needed it parses a .sig file.
+	If requires it prints the output AST's by using the PrettyPrinter visitor. 
 
 IC.Parser
 =========
@@ -85,13 +88,13 @@ CLASS ClassContents:
 	A class we wrote in order to contain two lists:
 		(1)A list of class fields.
 		(2)A list of class methods.
-	So, it is ment to contain as it name derives the class contents,
+	So, it is meant to contain as it name derives the class contents,
 	accesing these fields (the two lists) is posible and setting them as well, essential in
 	order to have the correct representation for a class with fields and methods.
 							 
 					CODE STRUCTURE
 				  -----------------
-The main work was on IC.cup, basicly we followed the grammer rules stated in the IC specifications,
+The main work was on IC.cup, basicly we followed the grammar rules stated in the IC specifications,
 we declared the terminals and non-terminals.
 The reason that led us was looking at a program top-down, and that is the way we wrote the grammer
 
@@ -117,7 +120,7 @@ AST tree from that stream of tokens, an error is thrown if needed.
    equality of each ic-out pair.
 
 (2)We wrote some IC files, with all sort of edge cases some are correct, meaning has no syntactic error, and in 
-   those files we checked all the correct grammer rules.
+   those files we checked all the correct grammar rules.
    We also wrote some files containing errors, and checked weather the bad sytax files really
    invoked the correct error message, and checked weather the good syntax ones caused the correct
    output-the correct AST tree.
@@ -126,7 +129,7 @@ AST tree from that stream of tokens, an error is thrown if needed.
 							----
 no bugs found.
 
-				DESCRIPTION OF THE GRAMMER
+				DESCRIPTION OF THE GRAMMAR
 				---------------------------
 based on the IC-specifications
 		
@@ -244,8 +247,15 @@ based on the IC-specifications
 						expr DOT ID LP RP |
 						ID LP RP 
 			  	
-special choices you have made when creating the grammar//TODO amit
-special precedence options//TODO amit
+special choices you have made when creating the grammar
+------------------------------------------------------
+None, just according to the IC specification.
+Special precedence options
+--------------------------
+We basically used the precedence and accosiativity according to the IC specification, but added two precedence terminals:
+We gave ELSE precedence to resolve a shift/reduce conflict between IF and IF ELSE.
+Without giving precedence to ELSE over IF the rule IF then ELSE would never be derived.
+We also gave precedence to RCBR '}' to allow special cases such as an empty class or an empty statement block.
 ---------------------------
 precedence left RCBR;
 precedence left ELSE;
