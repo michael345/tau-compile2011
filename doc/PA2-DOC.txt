@@ -247,16 +247,19 @@ based on the IC-specifications
 						expr DOT ID LP RP |
 						ID LP RP 
 			  	
-special choices you have made when creating the grammar
+special choices we have made when creating the grammar
 ------------------------------------------------------
 None, just according to the IC specification.
+
 Special precedence options
 --------------------------
 We basically used the precedence and accosiativity according to the IC specification, but added two precedence terminals:
 We gave ELSE precedence to resolve a shift/reduce conflict between IF and IF ELSE.
 Without giving precedence to ELSE over IF the rule IF then ELSE would never be derived.
 We also gave precedence to RCBR '}' to allow special cases such as an empty class or an empty statement block.
----------------------------
+
+the precedences
+----------------
 precedence left RCBR;
 precedence left ELSE;
 precedence right ASSIGN;
