@@ -404,8 +404,7 @@ statement ::= 	ifStatement:ifs {:
 					RESULT = new CallStatement(new VirtualCall(fleft,f,args)); :} |
 				type:t ID:id ASSIGN expr:e SEMI {: 
 					parser.log("statement ::= type ID ASSIGN expr SEMI");
-					Location loc = new VariableLocation(tleft,id);
-					RESULT = new Assignment(loc,e); :}  |
+					RESULT = new LocalVariable(t,id,e); :}  |
 				type:t ID:id SEMI {:
 					parser.log("statement ::= type ID SEMI");
 					RESULT = new LocalVariable(t,id); :} |
