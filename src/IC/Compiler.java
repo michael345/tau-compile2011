@@ -88,12 +88,12 @@ public class Compiler {
                 
                 icTextFile.close();
             }catch (SyntaxError se) { 
-            	se.printErrorMsg();
+                System.exit(-1);
             }  
             
             
             catch (Exception e) {
-               e.printStackTrace();
+               System.exit(-1);
             }
         }
 
