@@ -193,31 +193,56 @@ field ::=
    		  	RESULT = new Field(t,id); :}
 ;
 			 	 	 
-method ::=  STATIC type:t ID:f LP formals:formals RP stmt_list:st {:
+method ::=  STATIC type:t ID:f LP formals:formals RP LCBR stmt_list:st RCBR{:
 				parser.log("method ::= STATIC type ID LP formals RP stmt_list");
 				RESULT = new StaticMethod(t,f,formals, st.getStatements()); :} |
-			type:t ID:f LP formals:formals RP stmt_list:st  {:
+			type:t ID:f LP formals:formals RP LCBR stmt_list:st RCBR {:
 				parser.log("method ::= type ID LP formals RP stmt_list");
 				RESULT = new VirtualMethod(t,f,formals, st.getStatements()); :} |
-			STATIC type:t ID:f LP RP stmt_list:st  {:
+			STATIC type:t ID:f LP RP LCBR stmt_list:st RCBR {:
 				parser.log("method ::= STATIC type ID LP RP stmt_list");
 				RESULT = new StaticMethod(t,f,new ArrayList<Formal>(), st.getStatements()); :} |
-			type:t ID:f LP RP stmt_list:st  {:
+			type:t ID:f LP RP LCBR stmt_list:st RCBR {:
 				parser.log("method ::= type ID LP RP stmt_list");
 				RESULT = new VirtualMethod(t,f,new ArrayList<Formal>(), st.getStatements()); :} |
-			STATIC VOID ID:f LP formals:formals RP stmt_list:st  {:
+			STATIC VOID ID:f LP formals:formals RP LCBR stmt_list:st RCBR {:
 				parser.log("method ::= STATIC VOID ID LP formals RP stmt_list");
 				RESULT = new StaticMethod(new PrimitiveType(fleft, DataTypes.VOID),f,formals, st.getStatements()); :} |
-			VOID ID:f LP formals:formals RP stmt_list:st  {:
+			VOID ID:f LP formals:formals RP LCBR stmt_list:st RCBR {:
 				parser.log("method ::= VOID ID LP formals RP stmt_list");
 				RESULT = new VirtualMethod(new PrimitiveType(fleft, DataTypes.VOID),f,formals, st.getStatements()); :} |
-			STATIC VOID ID:f LP RP stmt_list:st  {:
+			STATIC VOID ID:f LP RP LCBR stmt_list:st RCBR {:
 				parser.log("method ::= STATIC VOID ID LP RP stmt_list");
 				RESULT = new StaticMethod(new PrimitiveType(fleft, DataTypes.VOID),f,new ArrayList<Formal>(), st.getStatements()); :} |
-			VOID ID:f LP RP stmt_list:st  {:
+			VOID ID:f LP RP LCBR stmt_list:st RCBR {:
 				parser.log("method ::= VOID ID LP RP stmt_list");
-				RESULT = new VirtualMethod(new PrimitiveType(fleft, DataTypes.VOID),f,new ArrayList<Formal>(), st.getStatements()); :}
+				RESULT = new VirtualMethod(new PrimitiveType(fleft, DataTypes.VOID),f,new ArrayList<Formal>(), st.getStatements()); :} |
+			STATIC type:t ID:f LP formals:formals RP LCBR RCBR{:
+				parser.log("method ::= STATIC type ID LP formals RP stmt_list");
+				RESULT = new StaticMethod(t,f,formals, new ArrayList<Statement>()); :} |
+			type:t ID:f LP formals:formals RP LCBR RCBR {:
+				parser.log("method ::= type ID LP formals RP stmt_list");
+				RESULT = new VirtualMethod(t,f,formals, new ArrayList<Statement>()); :} |
+			STATIC type:t ID:f LP RP LCBR RCBR {:
+				parser.log("method ::= STATIC type ID LP RP stmt_list");
+				RESULT = new StaticMethod(t,f,new ArrayList<Formal>(), new ArrayList<Statement>()); :} |
+			type:t ID:f LP RP LCBR RCBR {:
+				parser.log("method ::= type ID LP RP stmt_list");
+				RESULT = new VirtualMethod(t,f,new ArrayList<Formal>(), new ArrayList<Statement>()); :} |
+			STATIC VOID ID:f LP formals:formals RP LCBR RCBR {:
+				parser.log("method ::= STATIC VOID ID LP formals RP stmt_list");
+				RESULT = new StaticMethod(new PrimitiveType(fleft, DataTypes.VOID),f,formals, new ArrayList<Statement>()); :} |
+			VOID ID:f LP formals:formals RP LCBR RCBR {:
+				parser.log("method ::= VOID ID LP formals RP stmt_list");
+				RESULT = new VirtualMethod(new PrimitiveType(fleft, DataTypes.VOID),f,formals, new ArrayList<Statement>()); :} |
+			STATIC VOID ID:f LP RP LCBR RCBR {:
+				parser.log("method ::= STATIC VOID ID LP RP stmt_list");
+				RESULT = new StaticMethod(new PrimitiveType(fleft, DataTypes.VOID),f,new ArrayList<Formal>(), new ArrayList<Statement>()); :} |
+			VOID ID:f LP RP LCBR RCBR {:
+				parser.log("method ::= VOID ID LP RP stmt_list");
+				RESULT = new VirtualMethod(new PrimitiveType(fleft, DataTypes.VOID),f,new ArrayList<Formal>(), new ArrayList<Statement>()); :}
 ;
+
 
 formal ::= type:t ID:id {:
 	parser.log("formal ::= type ID");
@@ -272,22 +297,22 @@ expr ::=
 				RESULT = new MathBinaryOp(e1,BinaryOps.MOD,e2); :} |
 			expr:e1 EQUAL expr:e2 {:
 				parser.log("expr ::= expr EQUAL expr");
-				RESULT = new MathBinaryOp(e1,BinaryOps.EQUAL,e2); :} |
+				RESULT = new LogicalBinaryOp(e1,BinaryOps.EQUAL,e2); :} |
 			expr:e1 NEQUAL expr:e2 {:
 				parser.log("expr ::= expr NEQUAL expr");
-				RESULT = new MathBinaryOp(e1,BinaryOps.NEQUAL,e2); :} |
+				RESULT = new LogicalBinaryOp(e1,BinaryOps.NEQUAL,e2); :} |
 			expr:e1 GT expr:e2 {: 
 				parser.log("expr ::= expr GT expr");
-				RESULT = new MathBinaryOp(e1,BinaryOps.GT,e2); :} |
+				RESULT = new LogicalBinaryOp(e1,BinaryOps.GT,e2); :} |
 			expr:e1 GTE expr:e2 {: 
 				parser.log("expr ::= expr GTE expr");
-				RESULT = new MathBinaryOp(e1,BinaryOps.GTE,e2); :} |
+				RESULT = new LogicalBinaryOp(e1,BinaryOps.GTE,e2); :} |
 			expr:e1 LT expr:e2 {:
 				parser.log("expr ::= expr LT expr");
-				RESULT = new MathBinaryOp(e1,BinaryOps.LT,e2); :} |
+				RESULT = new LogicalBinaryOp(e1,BinaryOps.LT,e2); :} |
 			expr:e1 LTE expr:e2 {:
 				parser.log("expr ::= expr LTE expr");
-				RESULT = new MathBinaryOp(e1,BinaryOps.LTE,e2); :} |
+				RESULT = new LogicalBinaryOp(e1,BinaryOps.LTE,e2); :} |
 			expr:e1 LAND expr:e2 {: 
 				parser.log("expr ::= expr LAND expr");
 				RESULT = new LogicalBinaryOp(e1,BinaryOps.LAND,e2); :} |
