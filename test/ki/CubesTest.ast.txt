@@ -1,0 +1,146 @@
+Parsed test/resources/PA2/CubesTest.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/CubesTest.ic
+
+1: Declaration of class: A
+  4: Declaration of field: x
+   4: Primitive data type: int
+  4: Declaration of field: y
+   4: Primitive data type: int
+  4: Declaration of field: z
+   4: Primitive data type: int
+  5: Declaration of field: str
+   5: Primitive data type: string
+  7: Declaration of virtual method: aMethod
+    7: Primitive data type: 3-dimensional array of string
+    7: Parameter: n
+     7: Primitive data type: string
+    9: Declaration of local variable: y
+     9: Primitive data type: int
+    10: Assignment statement
+      10: Reference to variable: y
+      10: Integer literal: 1
+    11: Assignment statement
+      11: Reference to variable: y, in external scope
+       11: Reference to 'this' instance
+      11: Reference to variable: y
+    13: Declaration of local variable: array, with initial value
+      13: User-defined data type: 3-dimensional array of A
+      13: Reference to array
+        13: Reference to array
+          13: Array allocation
+            13: User-defined data type: A
+            13: Mathematical binary operation: subtraction
+              13: Integer literal: 6
+              13: Parenthesized expression
+               13: Mathematical unary operation: unary subtraction
+                13: Integer literal: 3
+          13: Parenthesized expression
+           13: Parenthesized expression
+            13: Mathematical binary operation: division
+              13: Parenthesized expression
+               13: Mathematical binary operation: modulo
+                 13: Integer literal: 79
+                 13: Integer literal: 4
+              13: Integer literal: 5
+        13: Mathematical unary operation: unary subtraction
+         13: Mathematical unary operation: unary subtraction
+          13: Parenthesized expression
+           13: Mathematical unary operation: unary subtraction
+            13: Mathematical unary operation: unary subtraction
+             13: Integer literal: 5
+    14: Assignment statement
+      14: Reference to array
+        14: Reference to array
+          14: Reference to array
+            14: Reference to variable: array
+            14: Integer literal: 0
+          14: Reference to variable: y
+        14: Integer literal: 2
+      14: Reference to variable: n
+    16: Return statement, with return value
+     16: Reference to variable: array
+  19: Declaration of static method: bMethod
+    19: Primitive data type: void
+    19: Parameter: cube
+     19: Primitive data type: 3-dimensional array of string
+    19: Parameter: s
+     19: Primitive data type: string
+    19: Parameter: x
+     19: Primitive data type: int
+    21: Declaration of local variable: len
+     21: Primitive data type: int
+    22: If statement, with Else operation
+      22: Logical binary operation: less than
+        22: Reference to variable: x
+        22: Reference to array length
+         22: Reference to variable: cube
+      23: Block of statements
+        24: If statement  ////////////if(x < cube[x].length)
+          24: Reference to array length
+           24: Reference to array
+             24: Logical binary operation: less than
+               24: Reference to variable: x
+               24: Reference to variable: cube
+             24: Reference to variable: x
+          25: Assignment statement
+            25: Reference to variable: len
+            25: Reference to array length
+             25: Reference to array
+               25: Reference to array
+                 25: Reference to variable: cube
+                 25: Reference to variable: x
+               25: Reference to variable: x
+      28: Return statement
+    30: Declaration of local variable: y
+     30: Primitive data type: int
+    31: Assignment statement
+      31: Reference to variable: y
+      31: Integer literal: 0
+    32: While statement
+      32: Logical binary operation: less than
+        32: Reference to variable: y
+        32: Reference to variable: x
+      33: Block of statements
+        34: Assignment statement
+          34: Reference to array
+            34: Reference to array
+              34: Reference to array
+                34: Reference to variable: cube
+                34: Reference to variable: x
+              34: Reference to variable: x
+            34: Reference to variable: y
+          34: Reference to variable: s
+    37: While statement
+      37: Boolean literal: true
+      38: Block of statements
+        38: Break statement
+    40: Assignment statement
+      40: Reference to variable: y
+      40: Mathematical binary operation: addition
+        40: Reference to variable: y
+        40: Integer literal: 1
+    42: Return statement
+46: Declaration of class: B, subclass of A
+  48: Declaration of static method: nothing
+    48: Primitive data type: void
+    49: Return statement
+  51: Declaration of virtual method: foo
+    51: Primitive data type: 3-dimensional array of string
+    51: Parameter: s
+     51: Primitive data type: string
+    53: Declaration of local variable: thing, with initial value
+      53: User-defined data type: A
+      53: Instantiation of class: A
+    55: Declaration of local variable: cube1, with initial value
+      55: Primitive data type: 3-dimensional array of string
+      55: Call to virtual method: aMethod, in external scope
+        55: Reference to variable: thing
+        55: String literal: "\"Hello\""
+    57: Method call statement
+     57: Call to static method: bMethod, in class A
+       57: Reference to variable: cube1
+       57: String literal: "\"World\""
+       57: Integer literal: 1
+    59: Return statement, with return value
+     59: Reference to variable: cube1

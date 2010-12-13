@@ -1,0 +1,57 @@
+Parsed test/resources/PA2/WhileWithinWhile.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/WhileWithinWhile.ic
+
+1: Declaration of class: Abracadabra
+  2: Declaration of field: a
+   2: Primitive data type: int
+  3: Declaration of field: b
+   3: Primitive data type: int
+  4: Declaration of field: bb
+   4: Primitive data type: 1-dimensional array of boolean
+  5: Declaration of virtual method: f
+    5: Primitive data type: void
+    6: Assignment statement
+      6: Reference to variable: a
+      6: Integer literal: 4
+    7: Assignment statement
+      7: Reference to variable: b
+      7: Integer literal: 4
+    8: While statement
+      8: Logical binary operation: inequality
+        8: Reference to variable: a
+        8: Integer literal: 0
+      8: Block of statements
+        9: Assignment statement
+          9: Reference to variable: a
+          9: Mathematical binary operation: subtraction
+            9: Reference to variable: a
+            9: Integer literal: 1
+        10: Assignment statement
+          10: Reference to variable: b
+          10: Mathematical binary operation: addition
+            10: Reference to variable: b
+            10: Reference to variable: b
+        11: While statement
+          11: Logical binary operation: less than or equal to
+            11: Reference to variable: b
+            11: Integer literal: 40
+          11: Block of statements
+            12: Declaration of local variable: c, with initial value
+              12: Primitive data type: int
+              12: Mathematical binary operation: modulo
+                12: Reference to variable: b
+                12: Integer literal: 2
+            13: If statement
+              13: Logical binary operation: equality
+                13: Reference to variable: c
+                13: Integer literal: 0
+              13: Block of statements
+                13: Method call statement
+                 13: Call to static method: printi, in class Library
+                   13: Reference to variable: c
+            14: Assignment statement
+              14: Reference to variable: b
+              14: Mathematical binary operation: addition
+                14: Reference to variable: b
+                14: Integer literal: 1

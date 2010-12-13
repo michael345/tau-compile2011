@@ -1,0 +1,81 @@
+Parsed test/resources/PA2/EmptyThingsAndDifferentOrderTest.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/EmptyThingsAndDifferentOrderTest.ic
+
+12: Declaration of class: A
+  14: Declaration of field: a
+   14: Primitive data type: int
+  14: Declaration of field: b
+   14: Primitive data type: int
+  24: Declaration of field: str1
+   24: Primitive data type: string
+  24: Declaration of field: str2
+   24: Primitive data type: string
+  24: Declaration of field: str3
+   24: Primitive data type: string
+  25: Declaration of field: str4
+   25: Primitive data type: string
+  39: Declaration of field: aaa
+   39: Primitive data type: string
+  16: Declaration of static method: zero
+    16: Primitive data type: int
+    17: Return statement, with return value
+     17: Integer literal: 0
+  20: Declaration of static method: identity
+    20: Primitive data type: boolean
+    20: Parameter: bool
+     20: Primitive data type: boolean
+    21: Return statement, with return value
+     21: Reference to variable: bool
+  27: Declaration of virtual method: someMethod
+    27: Primitive data type: void
+    28: Method call statement
+     28: Call to static method: println, in class Library
+       28: String literal: "\"This is someMethod()\""
+  31: Declaration of static method: emptyMethod
+    31: Primitive data type: void
+  35: Declaration of virtual method: anotherEmptyMethod
+    35: Primitive data type: void
+    35: Parameter: a
+     35: Primitive data type: int
+  41: Declaration of static method: testNestedStatementBlocks
+    41: Primitive data type: int
+    43: Block of statements
+      44: Assignment statement
+        44: Reference to variable: aaa
+        44: String literal: "\"aaa\""
+      45: Declaration of local variable: a, with initial value
+        45: Primitive data type: int
+        45: Integer literal: 3
+      46: Assignment statement
+        46: Reference to variable: a
+        46: Mathematical binary operation: addition
+          46: Reference to variable: a
+          46: Integer literal: 5
+      48: Block of statements
+      52: Block of statements
+        53: Block of statements
+          54: Block of statements
+            55: Declaration of local variable: b, with initial value
+              55: Primitive data type: int
+              55: Integer literal: 5
+            56: Declaration of local variable: c, with initial value
+              56: Primitive data type: int
+              56: Integer literal: 3
+            57: Declaration of local variable: d, with initial value
+              57: Primitive data type: int
+              57: Mathematical binary operation: addition
+                57: Reference to variable: b
+                57: Reference to variable: c
+        61: Block of statements
+          62: Method call statement
+           62: Call to static method: random, in class Library
+             62: Integer literal: 10
+    67: Return statement, with return value
+     67: Integer literal: 0
+  70: Declaration of static method: emptyStatementMethod
+    70: Primitive data type: void
+    71: Block of statements
+      72: Block of statements
+        73: Block of statements
+          74: Block of statements

@@ -1,0 +1,5 @@
+Parsed test/resources/PA2/EmptyClass.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/EmptyClass.ic
+
+1: Declaration of class: Gimel

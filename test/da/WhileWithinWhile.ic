@@ -1,0 +1,19 @@
+class Abracadabra{
+int a;
+int b;
+boolean[] bb;
+void f(){
+a = 4;
+b = 4;
+while(a != 0) {
+	a=a-1;
+	b=b+b;
+	while (b<=40){
+	int c = b%2;
+	if (c==0) {Library.printi(c);}
+	b=b+1;
+	}
+}
+}
+
+}

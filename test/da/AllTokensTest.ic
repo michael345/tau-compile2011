@@ -1,0 +1,42 @@
+class AllTokens extends Object
+{	 
+	 boolean boolVar;	 
+	 
+	 //this is a comment
+	 
+	 static void main(string[] args)
+	 {
+	    (new AllTokens()).func2();	    
+	 }
+	 
+	 
+	 /*
+	  * this is a * m*u*l*t*i*l*i*n*e * comment.
+	  */
+	
+	 
+	 
+	 string func2()
+	 {
+		 this.boolVar = true;
+		 int[] intArr = new int[2];
+		 intArr[0] = 5;
+		 intArr[1] = 7;
+		 
+		 while (boolVar != false)			 
+		 {
+			 if ((0 < -2) && 0 <= 1 && 2 > 1 || 2 >= 1 && (intArr.length == 2))
+			 {
+				 continue;
+			 }
+			 else
+			 {
+				 intArr[0] = 2 +0- 5 * -7/ 2 %2109203;
+				 
+				 break;
+			 }
+		 }
+		 
+		 return "THIS   //   IS   \t\\  A    \n    string";
+	 }	 
+}

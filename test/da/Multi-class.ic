@@ -1,0 +1,53 @@
+/* 
+   This is a program with more then one class:
+*/
+
+
+class FirstClass {
+
+    int[][] firstClassArrayField;
+    int firstClassField1;
+    boolean firstClassField2;
+    
+    boolean firstClassMethod(boolean boo) {
+        boolean result = boo;
+        return result;
+    }
+    
+    boolean firstClassField2;
+    string commonNameField;
+    
+    void commonNameMethod() {}
+}
+
+class SecondClass {
+
+    boolean[][][] secondClassArrayField;
+       
+    string commonNameField;
+    
+    string secondClassMethod(string str, int i) {
+        return str;
+    }
+    
+    void commonNameMethod() {}
+}
+
+class ThirdClass {
+
+    void commonNameMethod() {}   
+     
+    string commonNameField;
+}
+
+class FourthClass extends ThirdClass {
+    
+    boolean fourthClassMethod(boolean boo) {
+        boolean result = boo;
+        return result;
+    }
+  
+    string commonNameField;
+    
+    void commonNameMethod() {}
+}

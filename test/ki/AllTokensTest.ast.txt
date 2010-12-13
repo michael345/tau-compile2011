@@ -1,0 +1,87 @@
+Parsed test/resources/PA2/AllTokensTest.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/AllTokensTest.ic
+
+1: Declaration of class: AllTokens, subclass of Object
+  3: Declaration of field: boolVar
+   3: Primitive data type: boolean
+  7: Declaration of static method: main
+    7: Primitive data type: void
+    7: Parameter: args
+     7: Primitive data type: 1-dimensional array of string
+    9: Method call statement
+     9: Call to virtual method: func2, in external scope
+       9: Parenthesized expression
+        9: Instantiation of class: AllTokens
+  19: Declaration of virtual method: func2
+    19: Primitive data type: string
+    21: Assignment statement
+      21: Reference to variable: boolVar, in external scope
+       21: Reference to 'this' instance
+      21: Boolean literal: true
+    22: Declaration of local variable: intArr, with initial value
+      22: Primitive data type: 1-dimensional array of int
+      22: Array allocation
+        22: Primitive data type: int
+        22: Integer literal: 2
+    23: Assignment statement
+      23: Reference to array
+        23: Reference to variable: intArr
+        23: Integer literal: 0
+      23: Integer literal: 5
+    24: Assignment statement
+      24: Reference to array
+        24: Reference to variable: intArr
+        24: Integer literal: 1
+      24: Integer literal: 7
+    26: While statement
+      26: Logical binary operation: inequality
+        26: Reference to variable: boolVar
+        26: Boolean literal: false
+      27: Block of statements
+        28: If statement, with Else operation
+          28: Logical binary operation: logical or
+            28: Logical binary operation: logical and
+              28: Logical binary operation: logical and
+                28: Parenthesized expression
+                 28: Logical binary operation: less than
+                   28: Integer literal: 0
+                   28: Mathematical unary operation: unary subtraction
+                    28: Integer literal: 2
+                28: Logical binary operation: less than or equal to
+                  28: Integer literal: 0
+                  28: Integer literal: 1
+              28: Logical binary operation: greater than
+                28: Integer literal: 2
+                28: Integer literal: 1
+            28: Logical binary operation: logical and
+              28: Logical binary operation: greater than or equal to
+                28: Integer literal: 2
+                28: Integer literal: 1
+              28: Parenthesized expression
+               28: Logical binary operation: equality
+                 28: Reference to array length
+                  28: Reference to variable: intArr
+                 28: Integer literal: 2
+          29: Block of statements
+            30: Continue statement
+          33: Block of statements
+            34: Assignment statement
+              34: Reference to array
+                34: Reference to variable: intArr
+                34: Integer literal: 0
+              34: Mathematical binary operation: subtraction
+                34: Mathematical binary operation: addition
+                  34: Integer literal: 2
+                  34: Integer literal: 0
+                34: Mathematical binary operation: modulo
+                  34: Mathematical binary operation: division
+                    34: Mathematical binary operation: multiplication
+                      34: Integer literal: 5
+                      34: Mathematical unary operation: unary subtraction
+                       34: Integer literal: 7
+                    34: Integer literal: 2
+                  34: Integer literal: 2109203
+            36: Break statement
+    40: Return statement, with return value
+     40: String literal: "\"THIS   //   IS   \\t\\\\  A    \\n    string\""

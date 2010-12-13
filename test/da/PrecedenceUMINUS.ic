@@ -1,0 +1,8 @@
+class A{
+void f(){
+int n = -7*6;
+int m = -6/2;
+int k = -6%3;
+boolean b = -6>0;
+}
+}

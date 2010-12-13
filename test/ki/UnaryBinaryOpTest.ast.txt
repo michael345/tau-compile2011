@@ -1,0 +1,71 @@
+Parsed test/resources/PA2/UnaryBinaryOpTest.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/UnaryBinaryOpTest.ic
+
+1: Declaration of class: UnaryBinaryOpTest
+  3: Declaration of virtual method: run
+    3: Primitive data type: void
+    5: Assignment statement
+      5: Reference to variable: a
+      5: Integer literal: 1
+    6: Assignment statement
+      6: Reference to variable: a
+      6: Mathematical unary operation: unary subtraction
+       6: Integer literal: 2
+    7: Assignment statement
+      7: Reference to variable: a
+      7: Mathematical binary operation: addition
+        7: Integer literal: 3
+        7: Integer literal: 4
+    8: Assignment statement
+      8: Reference to variable: a
+      8: Mathematical binary operation: subtraction
+        8: Integer literal: 5
+        8: Integer literal: 6
+    9: Assignment statement
+      9: Reference to variable: a
+      9: Mathematical binary operation: addition
+        9: Integer literal: 7
+        9: Mathematical unary operation: unary subtraction
+         9: Integer literal: 8
+    10: Assignment statement
+      10: Reference to variable: a
+      10: Mathematical binary operation: subtraction
+        10: Integer literal: 9
+        10: Mathematical unary operation: unary subtraction
+         10: Integer literal: 10
+    11: Assignment statement
+      11: Reference to variable: a
+      11: Mathematical binary operation: addition
+        11: Mathematical unary operation: unary subtraction
+         11: Integer literal: 11
+        11: Mathematical unary operation: unary subtraction
+         11: Integer literal: 12
+    13: Assignment statement
+      13: Reference to variable: a
+      13: Logical binary operation: logical or
+        13: Logical binary operation: logical and
+          13: Reference to variable: b
+          13: Reference to variable: a
+        13: Reference to variable: c
+    14: Assignment statement
+      14: Reference to variable: a
+      14: Logical binary operation: logical or
+        14: Reference to variable: e
+        14: Logical binary operation: logical and
+          14: Reference to variable: f
+          14: Reference to variable: g
+    15: Assignment statement
+      15: Reference to variable: a
+      15: Logical binary operation: logical and
+        15: Logical unary operation: logical negation
+         15: Reference to variable: b
+        15: Logical unary operation: logical negation
+         15: Reference to variable: c
+    17: Assignment statement
+      17: Reference to variable: a
+      17: Mathematical binary operation: addition
+        17: Reference to variable: b
+        17: Mathematical binary operation: multiplication
+          17: Reference to variable: c
+          17: Reference to variable: d

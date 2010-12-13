@@ -1,0 +1,80 @@
+Parsed test/resources/PA2/SynTest2.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/SynTest2.ic
+
+1: Declaration of class: A
+  3: Declaration of field: a
+   3: Primitive data type: string
+  5: Declaration of virtual method: aMethod1
+    5: User-defined data type: A
+    5: Parameter: object
+     5: User-defined data type: A
+    7: Return statement, with return value
+     7: Reference to variable: object
+  10: Declaration of virtual method: aMethod2
+    10: User-defined data type: 1-dimensional array of A
+    10: Parameter: object
+     10: User-defined data type: A
+    12: Declaration of local variable: array, with initial value
+      12: User-defined data type: 1-dimensional array of A
+      12: Array allocation
+        12: User-defined data type: A
+        12: Integer literal: 2
+    13: Assignment statement
+      13: Reference to array
+        13: Reference to variable: array
+        13: Integer literal: 0
+      13: Reference to variable: object
+    14: Assignment statement
+      14: Reference to array
+        14: Reference to variable: array
+        14: Integer literal: 1
+      14: Instantiation of class: A
+    16: Return statement, with return value
+     16: Reference to variable: array
+  19: Declaration of virtual method: aMethod3
+    19: User-defined data type: A
+    19: Parameter: object
+     19: User-defined data type: A
+    21: Return statement, with return value
+     21: Reference to variable: object
+26: Declaration of class: B, subclass of A
+  28: Declaration of field: array
+   28: User-defined data type: 1-dimensional array of A
+  30: Declaration of virtual method: bMethod1
+    30: Primitive data type: void
+    32: Assignment statement
+      32: Reference to variable: array
+      32: Array allocation
+        32: User-defined data type: A
+        32: Integer literal: 3
+    34: Assignment statement
+      34: Reference to array
+        34: Reference to variable: array
+        34: Integer literal: 0
+      34: Instantiation of class: A
+    35: Assignment statement
+      35: Reference to array
+        35: Reference to variable: array
+        35: Integer literal: 1
+      35: Instantiation of class: A
+    37: Declaration of local variable: str, with initial value
+      37: Primitive data type: string
+      37: Reference to variable: a, in external scope
+       37: Call to virtual method: aMethod3, in external scope
+         37: Reference to array
+           37: Call to virtual method: aMethod2, in external scope
+             37: Call to virtual method: aMethod1, in external scope
+               37: Reference to array
+                 37: Reference to variable: array
+                 37: Integer literal: 0
+               37: Reference to array
+                 37: Reference to variable: array
+                 37: Integer literal: 1
+             37: Reference to array
+               37: Reference to variable: array
+               37: Integer literal: 1
+           37: Integer literal: 0
+         37: Reference to array
+           37: Reference to variable: array
+           37: Integer literal: 0
