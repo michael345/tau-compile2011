@@ -1,0 +1,31 @@
+Parsed test/resources/PA2/PrecedenceUMINUS.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/PrecedenceUMINUS.ic
+
+1: Declaration of class: A
+  2: Declaration of virtual method: f
+    2: Primitive data type: void
+    3: Declaration of local variable: n, with initial value
+      3: Primitive data type: int
+      3: Mathematical binary operation: multiplication
+        3: Mathematical unary operation: unary subtraction
+         3: Integer literal: 7
+        3: Integer literal: 6
+    4: Declaration of local variable: m, with initial value
+      4: Primitive data type: int
+      4: Mathematical binary operation: division
+        4: Mathematical unary operation: unary subtraction
+         4: Integer literal: 6
+        4: Integer literal: 2
+    5: Declaration of local variable: k, with initial value
+      5: Primitive data type: int
+      5: Mathematical binary operation: modulo
+        5: Mathematical unary operation: unary subtraction
+         5: Integer literal: 6
+        5: Integer literal: 3
+    6: Declaration of local variable: b, with initial value
+      6: Primitive data type: boolean
+      6: Logical binary operation: greater than
+        6: Mathematical unary operation: unary subtraction
+         6: Integer literal: 6
+        6: Integer literal: 0

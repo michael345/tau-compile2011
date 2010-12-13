@@ -1,0 +1,11 @@
+Parsed test/resources/PA2/EmptyMethod.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/EmptyMethod.ic
+
+1: Declaration of class: Suffo
+  2: Declaration of field: j
+   2: Primitive data type: int
+  3: Declaration of virtual method: func
+    3: Primitive data type: void
+    3: Parameter: a
+     3: Primitive data type: int

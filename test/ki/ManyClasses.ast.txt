@@ -1,0 +1,57 @@
+Parsed test/resources/PA2/ManyClasses.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/ManyClasses.ic
+
+1: Declaration of class: Abcd, subclass of A
+  2: Declaration of field: a
+   2: Primitive data type: int
+  3: Declaration of field: b
+   3: Primitive data type: string
+  5: Declaration of static method: printMe
+    5: Primitive data type: void
+    5: Parameter: s
+     5: Primitive data type: string
+    6: Assignment statement
+      6: Reference to variable: a
+      6: Integer literal: 6
+    7: Method call statement
+     7: Call to static method: print, in class Library
+       7: Reference to variable: s
+13: Declaration of class: Efgh
+  14: Declaration of field: i
+   14: Primitive data type: int
+  15: Declaration of field: j
+   15: Primitive data type: int
+  16: Declaration of field: b
+   16: Primitive data type: boolean
+  18: Declaration of static method: printMe
+    18: Primitive data type: void
+    18: Parameter: s
+     18: Primitive data type: string
+    19: If statement, with Else operation
+      19: Logical unary operation: logical negation
+       19: Reference to variable: b
+      19: Block of statements
+        20: Method call statement
+         20: Call to static method: print, in class Library
+           20: Reference to variable: s
+      21: Block of statements
+        22: Method call statement
+         22: Call to static method: print, in class Library
+           22: String literal: "\"horomena\""
+29: Declaration of class: Ijkl
+  30: Declaration of field: p
+   30: Primitive data type: int
+  31: Declaration of field: t
+   31: Primitive data type: int
+  38: Declaration of field: s
+   38: Primitive data type: string
+  33: Declaration of virtual method: byteMe
+    33: Primitive data type: int
+    33: Parameter: s
+     33: Primitive data type: string
+    34: Declaration of local variable: p, with initial value
+      34: Primitive data type: int
+      34: Integer literal: 8
+    35: Return statement, with return value
+     35: Reference to variable: p

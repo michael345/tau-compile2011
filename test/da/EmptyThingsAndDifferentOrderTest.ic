@@ -1,0 +1,82 @@
+/*
+This class tests the following:
+
+1) method and fields spread in random order (not the usual fields and then methods)
+2) an empty method
+3) nested statement blocks
+4) empty statement blocks
+
+*/
+
+
+class A {
+
+	int a,b;
+	
+	static int zero() {
+		return 0;
+	}
+
+	static boolean identity(boolean bool) {
+		return bool;
+	} 
+	
+	string str1, str2, str3;
+	string str4;
+	
+	void someMethod() {
+		Library.println("This is someMethod()");
+	}
+
+	static void emptyMethod() {
+
+	}
+	
+	void anotherEmptyMethod(int a) {
+	
+	}
+
+	string aaa;
+	
+	static int testNestedStatementBlocks() {
+	
+		{
+			aaa = "aaa";
+			int a = 3;
+			a = a + 5;
+			
+			{
+				// empty
+			}
+			
+			{
+				{
+					{
+						int b = 5;
+						int c = 3;
+						int d = b + c;
+					}
+				}
+				
+				{
+					Library.random(10);
+				}	
+			}
+		}
+	
+		return 0;
+	}
+	
+	static void emptyStatementMethod() {
+		{
+			{
+				{
+					{
+					
+					}
+				}
+			}
+		}
+	}
+	
+}

@@ -1,0 +1,37 @@
+Parsed test/resources/PA2/ComplexIf.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/ComplexIf.ic
+
+1: Declaration of class: ComplexIf
+  3: Declaration of virtual method: f
+    3: Primitive data type: void
+    4: If statement
+      4: Boolean literal: false
+      4: Block of statements
+        5: If statement
+          5: Boolean literal: true
+          5: Block of statements
+            6: If statement
+              6: Boolean literal: false
+              7: If statement
+                7: Boolean literal: true
+                8: Return statement
+  13: Declaration of virtual method: g
+    13: Primitive data type: void
+    14: If statement, with Else operation
+      14: Boolean literal: false
+      14: Block of statements
+        15: If statement, with Else operation
+          15: Boolean literal: true
+          15: Block of statements
+            16: Return statement
+          18: Return statement
+      19: Block of statements
+        20: If statement, with Else operation
+          20: Boolean literal: false
+          21: Return statement
+          22: Block of statements
+            23: If statement, with Else operation
+              23: Boolean literal: true
+              24: Return statement
+              26: Return statement

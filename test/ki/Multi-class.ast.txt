@@ -1,0 +1,60 @@
+Parsed test/resources/PA2/Multi-class.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/Multi-class.ic
+
+6: Declaration of class: FirstClass
+  8: Declaration of field: firstClassArrayField
+   8: Primitive data type: 2-dimensional array of int
+  9: Declaration of field: firstClassField1
+   9: Primitive data type: int
+  10: Declaration of field: firstClassField2
+   10: Primitive data type: boolean
+  17: Declaration of field: firstClassField2
+   17: Primitive data type: boolean
+  18: Declaration of field: commonNameField
+   18: Primitive data type: string
+  12: Declaration of virtual method: firstClassMethod
+    12: Primitive data type: boolean
+    12: Parameter: boo
+     12: Primitive data type: boolean
+    13: Declaration of local variable: result, with initial value
+      13: Primitive data type: boolean
+      13: Reference to variable: boo
+    14: Return statement, with return value
+     14: Reference to variable: result
+  20: Declaration of virtual method: commonNameMethod
+    20: Primitive data type: void
+23: Declaration of class: SecondClass
+  25: Declaration of field: secondClassArrayField
+   25: Primitive data type: 3-dimensional array of boolean
+  27: Declaration of field: commonNameField
+   27: Primitive data type: string
+  29: Declaration of virtual method: secondClassMethod
+    29: Primitive data type: string
+    29: Parameter: str
+     29: Primitive data type: string
+    29: Parameter: i
+     29: Primitive data type: int
+    30: Return statement, with return value
+     30: Reference to variable: str
+  33: Declaration of virtual method: commonNameMethod
+    33: Primitive data type: void
+36: Declaration of class: ThirdClass
+  40: Declaration of field: commonNameField
+   40: Primitive data type: string
+  38: Declaration of virtual method: commonNameMethod
+    38: Primitive data type: void
+43: Declaration of class: FourthClass, subclass of ThirdClass
+  50: Declaration of field: commonNameField
+   50: Primitive data type: string
+  45: Declaration of virtual method: fourthClassMethod
+    45: Primitive data type: boolean
+    45: Parameter: boo
+     45: Primitive data type: boolean
+    46: Declaration of local variable: result, with initial value
+      46: Primitive data type: boolean
+      46: Reference to variable: boo
+    47: Return statement, with return value
+     47: Reference to variable: result
+  52: Declaration of virtual method: commonNameMethod
+    52: Primitive data type: void

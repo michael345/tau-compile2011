@@ -1,0 +1,234 @@
+Parsed test/resources/PA2/SynTest1.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/SynTest1.ic
+
+1: Declaration of class: A
+  3: Declaration of field: a
+   3: Primitive data type: int
+  3: Declaration of field: d
+   3: Primitive data type: int
+  5: Declaration of virtual method: aMethod1
+    5: Primitive data type: void
+    7: Assignment statement
+      7: Reference to variable: a, in external scope
+       7: Reference to 'this' instance
+      7: Integer literal: 5
+    9: Declaration of local variable: b
+     9: Primitive data type: int
+    10: Declaration of local variable: c
+     10: Primitive data type: int
+    12: Assignment statement
+      12: Reference to variable: b
+      12: Mathematical unary operation: unary subtraction
+       12: Integer literal: 6
+    13: Assignment statement
+      13: Reference to variable: b
+      13: Mathematical binary operation: addition
+        13: Reference to variable: a
+        13: Parenthesized expression
+         13: Mathematical unary operation: unary subtraction
+          13: Reference to variable: b
+    14: Assignment statement
+      14: Reference to variable: c
+      14: Mathematical binary operation: subtraction
+        14: Mathematical unary operation: unary subtraction
+         14: Reference to variable: b
+        14: Mathematical unary operation: unary subtraction
+         14: Reference to variable: a
+  17: Declaration of static method: aMethod2
+    17: Primitive data type: boolean
+    17: Parameter: a
+     17: Primitive data type: string
+    17: Parameter: array
+     17: Primitive data type: 1-dimensional array of int
+    19: Declaration of local variable: b, with initial value
+      19: Primitive data type: boolean
+      19: Boolean literal: false
+    21: While statement
+      21: Logical unary operation: logical negation
+       21: Reference to variable: b
+      22: Block of statements
+        23: Block of statements
+          24: Declaration of local variable: c, with initial value
+            24: Primitive data type: boolean
+            24: Boolean literal: true
+          25: Assignment statement
+            25: Reference to variable: b
+            25: Reference to variable: c
+          26: While statement
+            26: Boolean literal: false
+            27: Block of statements
+        31: Continue statement
+    35: Return statement, with return value
+     35: Reference to variable: b
+  38: Declaration of virtual method: virtMethod3
+    38: Primitive data type: void
+    40: Assignment statement
+      40: Reference to variable: a
+      40: Mathematical binary operation: addition
+        40: Reference to variable: a, in external scope
+         40: Reference to 'this' instance
+        40: Integer literal: 5
+46: Declaration of class: B, subclass of A
+  48: Declaration of virtual method: virtMethod3
+    48: Primitive data type: void
+    50: Assignment statement
+      50: Reference to variable: a, in external scope
+       50: Reference to 'this' instance
+      50: Mathematical binary operation: addition
+        50: Reference to variable: a
+        50: Integer literal: 3
+55: Declaration of class: C, subclass of B
+  57: Declaration of field: array
+   57: User-defined data type: 1-dimensional array of A
+  59: Declaration of virtual method: cMethod1
+    59: Primitive data type: void
+    61: Assignment statement
+      61: Reference to variable: array
+      61: Array allocation
+        61: User-defined data type: A
+        61: Integer literal: 2
+    62: Assignment statement
+      62: Reference to array
+        62: Reference to variable: array
+        62: Integer literal: 0
+      62: Instantiation of class: B
+    63: Assignment statement
+      63: Reference to array
+        63: Reference to variable: array
+        63: Integer literal: 1
+      63: Literal: null
+    65: Method call statement
+     65: Call to virtual method: aMethod1, in external scope
+       65: Reference to array
+         65: Reference to variable: array
+         65: Integer literal: 0
+    67: Declaration of local variable: c, with initial value
+      67: Primitive data type: int
+      67: Reference to variable: a, in external scope
+       67: Reference to array
+         67: Reference to variable: array
+         67: Integer literal: 0
+    69: Declaration of local variable: d, with initial value
+      69: Primitive data type: boolean
+      69: Boolean literal: true
+    71: If statement
+      71: Logical binary operation: logical or
+        71: Logical binary operation: logical or
+          71: Logical binary operation: logical and
+            71: Reference to variable: d
+            71: Logical unary operation: logical negation
+             71: Logical unary operation: logical negation
+              71: Reference to variable: d
+          71: Logical binary operation: logical and
+            71: Boolean literal: false
+            71: Boolean literal: true
+        71: Boolean literal: false
+      72: Block of statements
+        73: Break statement
+    76: If statement, with Else operation
+      76: Call to static method: aMethod2, in class A
+        76: String literal: "\"hello\""
+        76: Array allocation
+          76: Primitive data type: int
+          76: Mathematical binary operation: addition
+            76: Integer literal: 5
+            76: Mathematical unary operation: unary subtraction
+             76: Integer literal: 2
+      77: Block of statements
+        78: Declaration of local variable: complicated, with initial value
+          78: Primitive data type: int
+          78: Mathematical binary operation: addition
+            78: Reference to variable: a, in external scope
+             78: Reference to array
+               78: Call to static method: cMethod2, in class C
+                 78: Reference to array
+                   78: Reference to variable: array
+                   78: Integer literal: 0
+               78: Integer literal: 3
+            78: Integer literal: 7
+      80: If statement, with Else operation
+        80: Boolean literal: false
+        81: Block of statements
+        84: Block of statements
+          85: Declaration of local variable: e, with initial value
+            85: Primitive data type: boolean
+            85: Logical binary operation: logical or
+              85: Logical binary operation: logical or
+                85: Boolean literal: true
+                85: Logical binary operation: logical and
+                  85: Logical binary operation: logical and
+                    85: Boolean literal: false
+                    85: Parenthesized expression
+                     85: Boolean literal: true
+                  85: Logical binary operation: equality
+                    85: Boolean literal: true
+                    85: Boolean literal: false
+              85: Parenthesized expression
+               85: Logical binary operation: inequality
+                 85: Logical unary operation: logical negation
+                  85: Boolean literal: true
+                 85: Boolean literal: false
+          86: Declaration of local variable: f, with initial value
+            86: Primitive data type: int
+            86: Mathematical binary operation: addition
+              86: Mathematical binary operation: addition
+                86: Integer literal: 5
+                86: Mathematical binary operation: modulo
+                  86: Mathematical binary operation: division
+                    86: Mathematical binary operation: multiplication
+                      86: Parenthesized expression
+                       86: Mathematical unary operation: unary subtraction
+                        86: Integer literal: 7
+                      86: Integer literal: 22
+                    86: Mathematical unary operation: unary subtraction
+                     86: Integer literal: 5
+                  86: Integer literal: 8
+              86: Parenthesized expression
+               86: Mathematical binary operation: subtraction
+                 86: Integer literal: 3
+                 86: Mathematical unary operation: unary subtraction
+                  86: Integer literal: 2
+          87: Declaration of local variable: g, with initial value
+            87: Primitive data type: int
+            87: Mathematical binary operation: addition
+              87: Mathematical binary operation: multiplication
+                87: Mathematical binary operation: multiplication
+                  87: Integer literal: 8
+                  87: Parenthesized expression
+                   87: Mathematical binary operation: addition
+                     87: Integer literal: 2
+                     87: Mathematical unary operation: unary subtraction
+                      87: Integer literal: 5
+                87: Integer literal: 9
+              87: Integer literal: 7
+  92: Declaration of static method: cMethod2
+    92: User-defined data type: 1-dimensional array of A
+    92: Parameter: object
+     92: User-defined data type: B
+    94: Declaration of local variable: array2, with initial value
+      94: User-defined data type: 1-dimensional array of A
+      94: Array allocation
+        94: User-defined data type: A
+        94: Integer literal: 5
+    96: Assignment statement
+      96: Reference to array
+        96: Reference to variable: array2
+        96: Integer literal: 3
+      96: Instantiation of class: A
+    98: Method call statement
+     98: Call to virtual method: aMethod1, in external scope
+       98: Reference to array
+         98: Reference to variable: array2
+         98: Integer literal: 3
+    100: Method call statement
+     100: Call to virtual method: virtMethod3, in external scope
+       100: Reference to array
+         100: Reference to variable: array2
+         100: Integer literal: 3
+    102: Method call statement
+     102: Call to virtual method: virtMethod3, in external scope
+       102: Reference to variable: object
+    104: Return statement, with return value
+     104: Reference to variable: array2
+108: Declaration of class: D, subclass of C

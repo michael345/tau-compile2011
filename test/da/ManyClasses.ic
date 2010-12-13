@@ -1,0 +1,39 @@
+class Abcd extends A{
+int a;
+string b;
+
+static void printMe(string s){
+a = 6;
+Library.print(s);
+}
+
+}
+
+
+class Efgh {
+int i;
+int j;
+boolean b;
+
+static void printMe(string s){
+if (!b){
+Library.print(s);
+} else {
+Library.print("horomena");
+}
+}
+
+}
+
+
+class Ijkl {
+int p;
+int t;
+
+int byteMe(string s){
+int p = 8;
+return p;
+}
+
+string s;
+}

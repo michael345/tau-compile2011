@@ -1,0 +1,110 @@
+class A 
+{
+	int a, d;
+		
+	void aMethod1()
+	{
+		this.a = 5;
+		
+		int b;
+		int c;
+		
+		b = -6;
+		b = a + (-b);
+		c = -b - -a;
+	}
+
+	static boolean aMethod2(string a, int[] array)
+	{
+		boolean b = false;
+	
+		while (!b)
+		{
+			{
+				boolean c = true;
+				b = c;
+				while (false)
+				{
+				}
+			}
+								
+			continue;
+		}
+				
+		
+		return b;
+	}
+	
+	void virtMethod3()
+	{
+		a = this.a + 5;
+	}
+}
+
+
+
+class B extends A 
+{
+	void virtMethod3()
+	{
+		this.a = a + 3;
+	}
+}
+
+
+class C extends B 
+{
+	A[] array;
+	
+	void cMethod1()
+	{
+		array = new A[2];
+		array[0] = new B();
+		array[1] = null;
+		
+		array[0].aMethod1();
+		
+		int c = array[0].a;
+		
+		boolean d = true;
+		
+		if (d && !!d || false && true || false)
+		{
+			break;
+		}
+		
+		if (A.aMethod2("hello", new int[5 + -2]))
+		{
+			int complicated = C.cMethod2(array[0])[3].a + 7;
+		}
+		else if (false)
+		{
+		}
+		else
+		{
+			boolean e = true || false && (true) && true == false || (!true != false);
+			int f = 5 + (-7) * 22 / -5 % 8 + (3 - -2);
+			int g = 8 * (2 + -5) * 9 + 7;
+		}
+	}
+	
+	
+	static A[] cMethod2(B object)
+	{
+		A[] array2 = new A[5];
+		
+		array2[3] = new A();
+		
+		array2[3].aMethod1();
+		
+		array2[3].virtMethod3();
+		
+		object.virtMethod3();
+		
+		return array2;
+	}
+}
+
+class D extends C 
+{
+} 

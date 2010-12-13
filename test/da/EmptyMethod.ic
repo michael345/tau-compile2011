@@ -1,0 +1,4 @@
+class Suffo{
+int j;
+void func(int a){}
+}

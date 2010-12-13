@@ -1,0 +1,100 @@
+Parsed test/resources/PA2/Break,Continue.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/Break,Continue.ic
+
+2: Declaration of class: Classy
+  3: Declaration of field: a
+   3: Primitive data type: 1-dimensional array of int
+  6: Declaration of virtual method: voidy
+    6: Primitive data type: void
+    7: Assignment statement
+      7: Reference to variable: a
+      7: Array allocation
+        7: Primitive data type: int
+        7: Integer literal: 3
+    8: Assignment statement
+      8: Reference to array
+        8: Reference to variable: a
+        8: Integer literal: 0
+      8: Integer literal: 5
+    9: While statement
+      9: Logical binary operation: greater than
+        9: Reference to array
+          9: Reference to variable: a
+          9: Integer literal: 0
+        9: Integer literal: 0
+      9: Block of statements
+        10: Assignment statement
+          10: Reference to array
+            10: Reference to variable: a
+            10: Integer literal: 0
+          10: Mathematical binary operation: subtraction
+            10: Reference to array
+              10: Reference to variable: a
+              10: Integer literal: 0
+            10: Integer literal: 1
+        11: If statement, with Else operation
+          11: Logical binary operation: equality
+            11: Mathematical binary operation: modulo
+              11: Reference to array
+                11: Reference to variable: a
+                11: Integer literal: 0
+              11: Integer literal: 2
+            11: Integer literal: 0
+          11: Block of statements
+            12: Method call statement
+             12: Call to static method: printi, in class Library
+               12: Reference to array length
+                12: Reference to variable: a
+          14: Continue statement
+    16: Assignment statement
+      16: Reference to array
+        16: Reference to variable: a
+        16: Integer literal: 1
+      16: Reference to array
+        16: Reference to variable: a
+        16: Integer literal: 0
+  19: Declaration of virtual method: stringy
+    19: Primitive data type: string
+    19: Parameter: x
+     19: Primitive data type: int
+    20: While statement
+      20: Logical binary operation: greater than or equal to
+        20: Reference to array
+          20: Reference to variable: a
+          20: Integer literal: 1
+        20: Integer literal: 0
+      20: Block of statements
+        21: Assignment statement
+          21: Reference to array
+            21: Reference to variable: a
+            21: Integer literal: 1
+          21: Mathematical binary operation: addition
+            21: Reference to array
+              21: Reference to variable: a
+              21: Integer literal: 1
+            21: Integer literal: 1
+        22: If statement, with Else operation
+          22: Logical binary operation: equality
+            22: Mathematical binary operation: subtraction
+              22: Reference to array
+                22: Reference to variable: a
+                22: Integer literal: 1
+              22: Integer literal: 2
+            22: Integer literal: 0
+          22: Block of statements
+            23: Method call statement
+             23: Call to static method: printi, in class Library
+               23: Reference to array length
+                23: Reference to variable: a
+          25: Break statement
+    27: Assignment statement
+      27: Reference to array
+        27: Reference to variable: a
+        27: Integer literal: 1
+      27: Reference to array
+        27: Reference to variable: a
+        27: Integer literal: 0
+    28: Return statement, with return value
+     28: Parenthesized expression
+      28: String literal: "\"8 ze badam, avi nimni leolam!\""

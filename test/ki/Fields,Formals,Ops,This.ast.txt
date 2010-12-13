@@ -1,0 +1,68 @@
+Parsed test/resources/PA2/Fields,Formals,Ops,This.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/Fields,Formals,Ops,This.ic
+
+1: Declaration of class: Guru
+  3: Declaration of field: a
+   3: Primitive data type: int
+  3: Declaration of field: b
+   3: Primitive data type: int
+  3: Declaration of field: c
+   3: Primitive data type: int
+  5: Declaration of virtual method: a
+    5: Primitive data type: boolean
+    5: Parameter: i
+     5: Primitive data type: int
+    5: Parameter: j
+     5: Primitive data type: int
+    5: Parameter: k
+     5: Primitive data type: int
+    6: If statement
+      6: Logical binary operation: logical and
+        6: Parenthesized expression
+         6: Logical unary operation: logical negation
+          6: Parenthesized expression
+           6: Logical binary operation: greater than
+             6: Parenthesized expression
+              6: Mathematical binary operation: addition
+                6: Mathematical unary operation: unary subtraction
+                 6: Reference to variable: k
+                6: Mathematical binary operation: multiplication
+                  6: Reference to variable: j
+                  6: Parenthesized expression
+                   6: Mathematical unary operation: unary subtraction
+                    6: Reference to variable: i
+             6: Integer literal: 0
+        6: Parenthesized expression
+         6: Logical binary operation: logical or
+           6: Parenthesized expression
+            6: Logical binary operation: greater than
+              6: Integer literal: 1
+              6: Integer literal: 0
+           6: Parenthesized expression
+            6: Logical binary operation: less than
+              6: Integer literal: 1
+              6: Integer literal: 0
+      7: Return statement, with return value
+       7: Boolean literal: true
+    9: Declaration of local variable: x, with initial value
+      9: Primitive data type: int
+      9: Mathematical binary operation: division
+        9: Integer literal: 6
+        9: Integer literal: 3
+    10: Assignment statement
+      10: Reference to variable: a, in external scope
+       10: Reference to 'this' instance
+      10: Mathematical binary operation: addition
+        10: Mathematical unary operation: unary subtraction
+         10: Integer literal: 7
+        10: Reference to variable: d, in external scope
+         10: Reference to 'this' instance
+    11: Assignment statement
+      11: Reference to variable: b, in external scope
+       11: Reference to 'this' instance
+      11: Mathematical binary operation: multiplication
+        11: Reference to variable: a
+        11: Reference to variable: a
+    14: Return statement, with return value
+     14: Boolean literal: false

@@ -1,0 +1,39 @@
+class A
+{
+	string a;
+
+	A aMethod1(A object)
+	{
+		return object;
+	}
+	
+	A[] aMethod2(A object)
+	{
+		A[] array = new A[2];
+		array[0] = object;
+		array[1] = new A();
+		
+		return array;
+	}
+	
+	A aMethod3(A object)
+	{
+		return object;
+	}
+}
+
+
+class B extends A
+{
+	A[] array;
+	
+	void bMethod1()
+	{
+		array = new A[3];
+		
+		array[0] = new A();
+		array[1] = new A();
+		
+		string str = array[0].aMethod1(array[1]).aMethod2(array[1])[0].aMethod3(array[0]).a;
+	}
+}

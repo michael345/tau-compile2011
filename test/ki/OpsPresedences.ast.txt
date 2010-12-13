@@ -1,0 +1,101 @@
+Parsed test/resources/PA2/OpsPresedences.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/OpsPresedences.ic
+
+1: Declaration of class: A
+  3: Declaration of virtual method: aMethod1
+    3: Primitive data type: void
+    5: Declaration of local variable: a, with initial value
+      5: Primitive data type: int
+      5: Integer literal: 5
+    6: Declaration of local variable: b
+     6: Primitive data type: int
+    7: Assignment statement
+      7: Reference to variable: b
+      7: Integer literal: 10
+    10: Assignment statement
+      10: Reference to variable: a
+      10: Mathematical binary operation: addition
+        10: Mathematical binary operation: addition
+          10: Mathematical binary operation: addition
+            10: Mathematical binary operation: subtraction
+              10: Mathematical binary operation: addition
+                10: Reference to variable: b
+                10: Mathematical binary operation: division
+                  10: Integer literal: 5
+                  10: Integer literal: 3
+              10: Mathematical unary operation: unary subtraction
+               10: Integer literal: 3
+            10: Mathematical unary operation: unary subtraction
+             10: Integer literal: 2
+          10: Mathematical binary operation: division
+            10: Parenthesized expression
+             10: Integer literal: 1
+            10: Parenthesized expression
+             10: Mathematical binary operation: modulo
+               10: Integer literal: 4
+               10: Integer literal: 2
+        10: Mathematical binary operation: multiplication
+          10: Integer literal: 8
+          10: Parenthesized expression
+           10: Integer literal: 5
+    13: Declaration of local variable: c, with initial value
+      13: Primitive data type: boolean
+      13: Boolean literal: true
+    14: Declaration of local variable: d, with initial value
+      14: Primitive data type: boolean
+      14: Logical unary operation: logical negation
+       14: Logical unary operation: logical negation
+        14: Logical unary operation: logical negation
+         14: Reference to variable: c
+    16: Declaration of local variable: e, with initial value
+      16: Primitive data type: boolean
+      16: Parenthesized expression
+       16: Logical binary operation: equality
+         16: Reference to variable: c
+         16: Reference to variable: d
+    17: Assignment statement
+      17: Reference to variable: e
+      17: Logical binary operation: equality
+        17: Reference to variable: c
+        17: Reference to variable: d
+    18: Assignment statement
+      18: Reference to variable: e
+      18: Logical binary operation: logical or
+        18: Logical unary operation: logical negation
+         18: Reference to variable: e
+        18: Logical binary operation: logical and
+          18: Logical unary operation: logical negation
+           18: Reference to variable: d
+          18: Logical unary operation: logical negation
+           18: Reference to variable: c
+    19: Assignment statement
+      19: Reference to variable: e
+      19: Logical binary operation: logical or
+        19: Logical binary operation: logical or
+          19: Logical binary operation: logical or
+            19: Logical binary operation: logical and
+              19: Logical binary operation: logical and
+                19: Logical unary operation: logical negation
+                 19: Parenthesized expression
+                  19: Logical unary operation: logical negation
+                   19: Reference to variable: e
+                19: Logical unary operation: logical negation
+                 19: Parenthesized expression
+                  19: Logical binary operation: logical or
+                    19: Reference to variable: c
+                    19: Reference to variable: d
+              19: Reference to variable: d
+            19: Logical binary operation: logical and
+              19: Boolean literal: false
+              19: Logical binary operation: greater than or equal to
+                19: Reference to variable: a
+                19: Reference to variable: b
+          19: Logical binary operation: less than
+            19: Reference to variable: a
+            19: Reference to variable: b
+        19: Logical unary operation: logical negation
+         19: Parenthesized expression
+          19: Logical binary operation: inequality
+            19: Reference to variable: a
+            19: Reference to variable: b

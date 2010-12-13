@@ -1,0 +1,3 @@
+Parsed test/resources/PA2/EmptyProgram.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/EmptyProgram.ic

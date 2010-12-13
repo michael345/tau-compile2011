@@ -1,0 +1,45 @@
+class C extends A
+{
+	int x;
+	int[] arr;
+	
+	void cMethod(int n)
+	{
+		x = n;
+	}
+	
+	int foo(int y)
+	{
+		return (y+1);
+	}
+}
+
+class D
+{
+	void bar()
+	{
+		C c = new C();
+		c.cMethod(20);
+		
+		if(c.arr == null)
+			c.arr = new int[c.x];
+		
+		int i;
+		i = 0;
+		while((i < c.arr.length) && true)
+		{
+			c.arr[i] = i;
+			i = i + 1;
+		}
+		
+		int[] arr2 = new int[30%11];
+		i = 0;
+		while((i < arr2.length) || false)
+		{
+			arr2[i] = i-5+80/10;
+			i = i + 1;
+		}
+		
+		c.arr[c.arr[arr2[1]]] = arr2[foo(arr2[c.arr[c.x-1]])];
+	}
+}

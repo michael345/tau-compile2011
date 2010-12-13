@@ -1,0 +1,19 @@
+Parsed test/resources/PA2/IfElseTest.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/IfElseTest.ic
+
+1: Declaration of class: IfElseTest
+  3: Declaration of virtual method: f
+    3: Primitive data type: string
+    4: If statement, with Else operation
+      4: Boolean literal: false
+      4: Return statement, with return value
+       4: String literal: "\"1\""
+      5: Return statement, with return value
+       5: String literal: "\"2\""
+  8: Declaration of virtual method: g
+    8: Primitive data type: string
+    9: If statement
+      9: Boolean literal: true
+      9: Return statement, with return value
+       9: String literal: "\"1\""

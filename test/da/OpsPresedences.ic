@@ -1,0 +1,21 @@
+class A
+{
+	void aMethod1()
+	{
+		int a = 5;
+		int b;
+		b = 10;
+		
+		
+		a = b + 5 / 3 --3 + -2 +(1) / (4%2) + 8 * (5);
+
+		
+		boolean c = true;
+		boolean d = !!!c;
+		
+		boolean e = (c == d);
+		e = c == d;
+		e = !e || !d && !c;
+		e = !(!e) && !(c||d) && d || false && a >= b || a < b || !(a != b);	
+	}	
+}

@@ -1,0 +1,31 @@
+
+class Classy{
+int[] a;
+
+
+void voidy(){
+a = new int[3];
+a[0] = 5;
+	while (a[0] > 0){
+		a[0] = a[0]-1;
+		if (a[0]%2 == 0){
+			Library.printi(a.length);
+		}
+		else continue;
+	}
+a[1] = a[0];
+}
+
+string stringy(int x){
+	while (a[1] >= 0){
+		a[1] = a[1]+1;
+		if (a[1]-2 == 0){
+			Library.printi(a.length);
+		}
+		else break;
+	}
+a[1] = a[0];
+return ("8 ze badam, avi nimni leolam!");
+}
+
+}

@@ -1,0 +1,130 @@
+Parsed test/resources/PA2/LocationsAndArrays.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/LocationsAndArrays.ic
+
+1: Declaration of class: C, subclass of A
+  3: Declaration of field: x
+   3: Primitive data type: int
+  4: Declaration of field: arr
+   4: Primitive data type: 1-dimensional array of int
+  6: Declaration of virtual method: cMethod
+    6: Primitive data type: void
+    6: Parameter: n
+     6: Primitive data type: int
+    8: Assignment statement
+      8: Reference to variable: x
+      8: Reference to variable: n
+  11: Declaration of virtual method: foo
+    11: Primitive data type: int
+    11: Parameter: y
+     11: Primitive data type: int
+    13: Return statement, with return value
+     13: Parenthesized expression
+      13: Mathematical binary operation: addition
+        13: Reference to variable: y
+        13: Integer literal: 1
+17: Declaration of class: D
+  19: Declaration of virtual method: bar
+    19: Primitive data type: void
+    21: Declaration of local variable: c, with initial value
+      21: User-defined data type: C
+      21: Instantiation of class: C
+    22: Method call statement
+     22: Call to virtual method: cMethod, in external scope
+       22: Reference to variable: c
+       22: Integer literal: 20
+    24: If statement
+      24: Logical binary operation: equality
+        24: Reference to variable: arr, in external scope
+         24: Reference to variable: c
+        24: Literal: null
+      25: Assignment statement
+        25: Reference to variable: arr, in external scope
+         25: Reference to variable: c
+        25: Array allocation
+          25: Primitive data type: int
+          25: Reference to variable: x, in external scope
+           25: Reference to variable: c
+    27: Declaration of local variable: i
+     27: Primitive data type: int
+    28: Assignment statement
+      28: Reference to variable: i
+      28: Integer literal: 0
+    29: While statement
+      29: Logical binary operation: logical and
+        29: Parenthesized expression
+         29: Logical binary operation: less than
+           29: Reference to variable: i
+           29: Reference to array length
+            29: Reference to variable: arr, in external scope
+             29: Reference to variable: c
+        29: Boolean literal: true
+      30: Block of statements
+        31: Assignment statement
+          31: Reference to array
+            31: Reference to variable: arr, in external scope
+             31: Reference to variable: c
+            31: Reference to variable: i
+          31: Reference to variable: i
+        32: Assignment statement
+          32: Reference to variable: i
+          32: Mathematical binary operation: addition
+            32: Reference to variable: i
+            32: Integer literal: 1
+    35: Declaration of local variable: arr2, with initial value
+      35: Primitive data type: 1-dimensional array of int
+      35: Array allocation
+        35: Primitive data type: int
+        35: Mathematical binary operation: modulo
+          35: Integer literal: 30
+          35: Integer literal: 11
+    36: Assignment statement
+      36: Reference to variable: i
+      36: Integer literal: 0
+    37: While statement
+      37: Logical binary operation: logical or
+        37: Parenthesized expression
+         37: Logical binary operation: less than
+           37: Reference to variable: i
+           37: Reference to array length
+            37: Reference to variable: arr2
+        37: Boolean literal: false
+      38: Block of statements
+        39: Assignment statement
+          39: Reference to array
+            39: Reference to variable: arr2
+            39: Reference to variable: i
+          39: Mathematical binary operation: addition
+            39: Mathematical binary operation: subtraction
+              39: Reference to variable: i
+              39: Integer literal: 5
+            39: Mathematical binary operation: division
+              39: Integer literal: 80
+              39: Integer literal: 10
+        40: Assignment statement
+          40: Reference to variable: i
+          40: Mathematical binary operation: addition
+            40: Reference to variable: i
+            40: Integer literal: 1
+    43: Assignment statement
+      43: Reference to array
+        43: Reference to variable: arr, in external scope
+         43: Reference to variable: c
+        43: Reference to array
+          43: Reference to variable: arr, in external scope
+           43: Reference to variable: c
+          43: Reference to array
+            43: Reference to variable: arr2
+            43: Integer literal: 1
+      43: Reference to array
+        43: Reference to variable: arr2
+        43: Call to virtual method: foo
+          43: Reference to array
+            43: Reference to variable: arr2
+            43: Reference to array
+              43: Reference to variable: arr, in external scope
+               43: Reference to variable: c
+              43: Mathematical binary operation: subtraction
+                43: Reference to variable: x, in external scope
+                 43: Reference to variable: c
+                43: Integer literal: 1

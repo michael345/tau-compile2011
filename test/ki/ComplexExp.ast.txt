@@ -1,0 +1,112 @@
+Parsed test/resources/PA2/ComplexExp.ic successfully!
+
+Abstract Syntax Tree: test/resources/PA2/ComplexExp.ic
+
+1: Declaration of class: ComplexExp
+  3: Declaration of virtual method: f
+    3: Primitive data type: void
+    4: Declaration of local variable: a, with initial value
+      4: Primitive data type: int
+      4: Mathematical binary operation: addition
+        4: Mathematical binary operation: subtraction
+          4: Mathematical binary operation: addition
+            4: Mathematical binary operation: addition
+              4: Mathematical unary operation: unary subtraction
+               4: Integer literal: 3
+              4: Mathematical binary operation: multiplication
+                4: Integer literal: 4
+                4: Integer literal: 4
+            4: Mathematical binary operation: division
+              4: Integer literal: 5
+              4: Integer literal: 6
+          4: Integer literal: 7
+        4: Mathematical binary operation: modulo
+          4: Mathematical unary operation: unary subtraction
+           4: Integer literal: 7
+          4: Integer literal: 9
+    5: Declaration of local variable: b, with initial value
+      5: Primitive data type: int
+      5: Logical binary operation: equality
+        5: Parenthesized expression
+         5: Logical binary operation: greater than or equal to
+           5: Mathematical binary operation: addition
+             5: Mathematical binary operation: addition
+               5: Mathematical unary operation: unary subtraction
+                5: Integer literal: 3
+               5: Mathematical binary operation: multiplication
+                 5: Integer literal: 4
+                 5: Integer literal: 4
+             5: Integer literal: 5
+           5: Mathematical binary operation: subtraction
+             5: Integer literal: 6
+             5: Mathematical binary operation: multiplication
+               5: Mathematical binary operation: modulo
+                 5: Integer literal: 7
+                 5: Mathematical unary operation: unary subtraction
+                  5: Integer literal: 7
+               5: Integer literal: 9
+        5: Parenthesized expression
+         5: Logical binary operation: less than or equal to
+           5: Mathematical binary operation: addition
+             5: Mathematical binary operation: addition
+               5: Mathematical unary operation: unary subtraction
+                5: Integer literal: 3
+               5: Mathematical binary operation: division
+                 5: Integer literal: 4
+                 5: Integer literal: 4
+             5: Mathematical unary operation: unary subtraction
+              5: Integer literal: 5
+           5: Mathematical binary operation: addition
+             5: Mathematical binary operation: multiplication
+               5: Integer literal: 6
+               5: Integer literal: 7
+             5: Mathematical binary operation: modulo
+               5: Mathematical unary operation: unary subtraction
+                5: Integer literal: 7
+               5: Integer literal: 9
+    6: Declaration of local variable: arr
+     6: Primitive data type: 3-dimensional array of int
+    7: Assignment statement
+      7: Reference to array
+        7: Reference to array
+          7: Reference to array
+            7: Reference to variable: arr
+            7: Mathematical binary operation: addition
+              7: Mathematical binary operation: addition
+                7: Mathematical unary operation: unary subtraction
+                 7: Integer literal: 3
+                7: Mathematical binary operation: multiplication
+                  7: Integer literal: 4
+                  7: Integer literal: 4
+              7: Integer literal: 5
+          7: Mathematical binary operation: addition
+            7: Mathematical binary operation: subtraction
+              7: Mathematical binary operation: addition
+                7: Mathematical binary operation: addition
+                  7: Mathematical unary operation: unary subtraction
+                   7: Integer literal: 3
+                  7: Mathematical binary operation: modulo
+                    7: Integer literal: 4
+                    7: Integer literal: 4
+                7: Mathematical binary operation: division
+                  7: Integer literal: 5
+                  7: Integer literal: 6
+              7: Integer literal: 7
+            7: Mathematical binary operation: multiplication
+              7: Mathematical unary operation: unary subtraction
+               7: Integer literal: 7
+              7: Integer literal: 9
+        7: Mathematical binary operation: subtraction
+          7: Mathematical binary operation: addition
+            7: Mathematical binary operation: multiplication
+              7: Integer literal: 3
+              7: Integer literal: 4
+            7: Integer literal: 3
+          7: Mathematical binary operation: modulo
+            7: Integer literal: 2
+            7: Integer literal: 4
+      7: Mathematical binary operation: subtraction
+        7: Integer literal: 9
+        7: Mathematical binary operation: multiplication
+          7: Integer literal: 3
+          7: Integer literal: 8
