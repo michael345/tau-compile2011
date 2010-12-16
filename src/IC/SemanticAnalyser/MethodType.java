@@ -29,6 +29,8 @@ public class MethodType extends Type {
     public String toString() {
         int i = 0;
         String result = "{";
+        if (paramTypes == null) 
+            return result + " -> " + returnType + "}";
         for (i = 0; i<paramTypes.length-1; i++) { 
             result += paramTypes[i] + ", ";
         }
