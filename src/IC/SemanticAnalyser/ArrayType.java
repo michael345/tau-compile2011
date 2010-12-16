@@ -2,47 +2,34 @@ package IC.SemanticAnalyser;
 
 public class ArrayType extends Type {
     Type elemType;
-    int dimension;
-
-    public ArrayType(Type elemType, int dimension) {
+    
+    public ArrayType(Type elemType) {
         this.elemType = elemType;
-        this.dimension = dimension;
     }
 
 
-
-    @Override
-    public String toString() {
-        String result = elemType.toString();
-        for (int i = dimension; i>0; i--) { 
-            result += "[]";
+    public String toString() { // surprisingly this actually works
+        Type tempType = elemType;
+        ArrayType tempArrayType;
+        String extraBrackets = "";
+        String baseType = "";
+        while (tempType instanceof ArrayType) {
+            extraBrackets += "[]";
+            tempArrayType = (ArrayType) tempType;
+            tempType = tempArrayType.getElemType();
         }
-        return result;
+        baseType = tempType.toString();
+        return baseType + "[]" + extraBrackets;
     }
-
-
+    
 
     public Type getElemType() {
         return elemType;
     }
 
-
-
     public void setElemType(Type elemType) {
         this.elemType = elemType;
     }
 
-
-
-    public int getDimension() {
-        return dimension;
-    }
-
-
-
-    public void setDimension(int dimension) {
-        this.dimension = dimension;
-    }
-    
     
 }

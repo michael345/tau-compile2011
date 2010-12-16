@@ -76,6 +76,10 @@ class CompleteGrammar {
 		return b;
 	}
 	
+	boolean emptyFunc() { 
+	
+	}
+	
 	
 }
 
