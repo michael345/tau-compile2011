@@ -4,9 +4,15 @@ public class MethodType extends Type {
     private Type[] paramTypes;
     private Type returnType;
     
-    public MethodType(Type[] paramTypes, Type returnType) {
+    public MethodType(Type[] paramTypes, Type returnType, int id) {
+        super();
         this.paramTypes = paramTypes;
         this.returnType = returnType;
+        this.id = id;
+    }
+    
+    public boolean equals(MethodType mt) { 
+        return (mt.toString().compareTo(toString()) == 0);
     }
 
     public Type[] getParamTypes() {

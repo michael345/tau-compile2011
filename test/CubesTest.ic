@@ -1,0 +1,62 @@
+class A
+{
+
+int x,y,z;
+string str;
+	
+	string[][][] aMethod(string n)
+	{
+		int y;
+		y=1;
+		this.y = y;
+		
+		A[][][] array = new A[6 - (-3)][(((79%4)/5))][--(--5)];
+		array[0][y][2] = n;
+		
+		return array;
+	}
+	
+	static void bMethod(string[][][] cube, string s, int x)
+	{
+		int len;
+		if(x < cube.length)
+		{
+			if(x < cube[x].length)
+				len = cube[x][x].length;
+		}
+		else
+			return;
+		
+		int y;
+		y = 0;	
+		while(y < x)
+		{
+			cube[x][x][y] = s;
+		}
+		
+		while(true)
+		{break;}
+		
+		y = y+1;
+		
+		return;
+	}
+}
+
+class B extends A
+{
+	static void nothing()
+	{return;}
+	
+	string[][][] foo(string s)
+	{
+		A thing = new A();
+		
+		string[][][] cube1 = thing.aMethod("Hello");
+		
+		A.bMethod(cube1, "World", 1);
+		
+		return cube1;
+	}		
+}
+		

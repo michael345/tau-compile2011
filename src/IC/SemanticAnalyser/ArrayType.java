@@ -3,8 +3,10 @@ package IC.SemanticAnalyser;
 public class ArrayType extends Type {
     Type elemType;
     
-    public ArrayType(Type elemType) {
+    public ArrayType(Type elemType, int id) {
+        super();
         this.elemType = elemType;
+        this.id = id;
     }
 
 

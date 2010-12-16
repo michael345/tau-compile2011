@@ -2,8 +2,9 @@ package IC.SemanticAnalyser;
 
 public class IntType extends Type {
 
-    public IntType() { 
-        ;
+    public IntType(int id) { 
+        super();
+        this.id = id;
     }
     
     @Override
