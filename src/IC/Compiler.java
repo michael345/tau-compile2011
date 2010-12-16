@@ -19,6 +19,7 @@ import IC.SemanticAnalyser.IntType;
 import IC.SemanticAnalyser.MethodType;
 import IC.SemanticAnalyser.Type;
 import IC.SemanticAnalyser.TypeTable;
+import IC.SemanticAnalyser.TypeTableConstructor;
 import IC.SemanticAnalyser.VoidType;
 
 public class Compiler {
@@ -53,15 +54,15 @@ public class Compiler {
         }
         
         public static void testToString() {
-            Type classType = new ClassType(new ICClass(5,"A",new LinkedList<Field>(),new LinkedList<Method>()));
-            Type intType = new IntType();
-            Type arrayType1 = new ArrayType(classType);
-            Type arrayType2 = new ArrayType(arrayType1);
-            Type voidType = new VoidType();
+            Type classType = new ClassType(new ICClass(5,"A",new LinkedList<Field>(),new LinkedList<Method>()),1);
+            Type intType = new IntType(2);
+            Type arrayType1 = new ArrayType(classType,3);
+            Type arrayType2 = new ArrayType(arrayType1,4);
+            Type voidType = new VoidType(5);
             Type [] paramTypes = new Type[2];
             paramTypes[0] = intType;
             paramTypes[1] = arrayType2;
-            Type methodType1 = new MethodType(paramTypes,voidType);
+            Type methodType1 = new MethodType(paramTypes,voidType,6);
             System.out.println(classType);
             System.out.println(intType);
             System.out.println(arrayType2.toString());
@@ -69,74 +70,87 @@ public class Compiler {
             System.out.println(methodType1);
         }
         
-        public void testTypeTable() { 
-            TypeTable table = new TypeTable();
-            table.printTable();
+        public static void testTypeTable() { 
+            Type classType = new ClassType(new ICClass(5,"A",new LinkedList<Field>(),new LinkedList<Method>()),1);
+            Type intType = new IntType(2);
+            Type arrayType1 = new ArrayType(classType,3);
+            Type arrayType2 = new ArrayType(arrayType1,4);
+            Type voidType = new VoidType(5);
+            Type [] paramTypes = new Type[2];
+            paramTypes[0] = intType;
+            paramTypes[1] = arrayType2;
+            Type methodType1 = new MethodType(paramTypes,voidType,6);
+            System.out.println(classType);
+            System.out.println(intType);
+            System.out.println(arrayType2.toString());
+            System.out.println(arrayType1.toString());
+            System.out.println(methodType1);
             
+            TypeTable table = new TypeTable();
+            table.primitiveType(intType);
+            table.classType(new ICClass(5,"A",new LinkedList<Field>(),new LinkedList<Method>()));
+            ICClass b = new ICClass(6, "B", "A", new LinkedList<Field>(),new LinkedList<Method>());
+            table.classType(b);
+            table.printTable();
             
         } 
         
         
         
         public static void main(String[] args) {
-            testToString();
-//            if (args.length == 0 || args.length > 3) { 
-//                System.out.println("Input error - expected: java IC.Compiler <file.ic> [ -L</path/to/libic.sig> ] [ -print-ast ]");
-//            }
-//            
-//            FileReader icTextFile = null;
-//            FileReader libSigTextFile = null;
-//            boolean isPrint = isPrint(args);
-//            boolean parseLibrary = shouldParseLibrary(args);
-//            String signaturePath = "";
-//            if (parseLibrary) {
-//                signaturePath = getSignature(args);
-//            }
-//            
-//            try {           
-//                icTextFile = new FileReader(args[0]);
-//                Lexer icLexer = new Lexer(icTextFile);
-//                Parser icParser = new Parser(icLexer);
-//                icParser.printTokens = false;
-//                Symbol parseSymbol = icParser.parse();
-//                if (parseLibrary) { 
-//                    libSigTextFile = new FileReader(signaturePath);
-//                    Lexer libSigLexer = new Lexer(libSigTextFile);
-//                    LibraryParser libSigParser = new LibraryParser(libSigLexer);
-//                    libSigParser.printTokens = false;
-//                    Symbol libParseSymbol = libSigParser.parse(); 
-//                    if (!parseSuccessful(signaturePath, libParseSymbol)) {
-//                    	return;
-//                    }
-//                    if (isPrint) {  
-//                        Program lib = (Program) libParseSymbol.value;
-//                        PrettyPrinter printer = new PrettyPrinter(signaturePath);
-//                        String traverse = (String)printer.visit(lib);
-//                        System.out.println(traverse);
-//                    }
-//                }
-//                if (!parseSuccessful(args[0], parseSymbol)) {
-//                	return;
-//                }
-//                
-//                
-//              
-//                if (isPrint) {
-//                    Program prog = (Program) parseSymbol.value;
-//                    PrettyPrinter printer = new PrettyPrinter(args[0]);
-//                    String traverse = (String)printer.visit(prog);
-//                    System.out.println(traverse);
-//                }
-//                
-//                icTextFile.close();
-//            }catch (SyntaxError se) { 
-//                System.exit(-1);
-//            }  
-//            
-//            
-//            catch (Exception e) {
-//               System.exit(-1);
-//            }
+            //testTypeTable();
+            if (args.length == 0 || args.length > 3) { 
+                System.out.println("Input error - expected: java IC.Compiler <file.ic> [ -L</path/to/libic.sig> ] [ -print-ast ]");
+            }
+            
+            FileReader icTextFile = null;
+            FileReader libSigTextFile = null;
+            boolean isPrint = isPrint(args);
+            boolean parseLibrary = shouldParseLibrary(args);
+            String signaturePath = "";
+            if (parseLibrary) {
+                signaturePath = getSignature(args);
+            }
+            
+            try {           
+                icTextFile = new FileReader(args[0]);
+                Lexer icLexer = new Lexer(icTextFile);
+                Parser icParser = new Parser(icLexer);
+                icParser.printTokens = false;
+                Symbol parseSymbol = icParser.parse();
+                if (parseLibrary) { 
+                    libSigTextFile = new FileReader(signaturePath);
+                    Lexer libSigLexer = new Lexer(libSigTextFile);
+                    LibraryParser libSigParser = new LibraryParser(libSigLexer);
+                    libSigParser.printTokens = false;
+                    Symbol libParseSymbol = libSigParser.parse(); 
+                    if (!parseSuccessful(signaturePath, libParseSymbol)) {
+                    	return;
+                    }
+                    Program lib = (Program) libParseSymbol.value;
+                    TypeTableConstructor ttc = new TypeTableConstructor(signaturePath);
+                    TypeTable tt = (TypeTable)ttc.visit(lib);
+                    tt.printTable();
+                }
+                if (!parseSuccessful(args[0], parseSymbol)) {
+                	return;
+                }
+                Program lib = (Program) parseSymbol.value;
+                TypeTableConstructor ttc = new TypeTableConstructor(signaturePath);
+                TypeTable tt = (TypeTable)ttc.visit(lib);
+                tt.printTable();
+                System.out.println(tt.isLegalHeirarchy());
+                
+                
+                icTextFile.close();
+            }catch (SyntaxError se) { 
+                System.exit(-1);
+            }  
+            
+            
+            catch (Exception e) {
+               System.exit(-1);
+            }
         }
 
 		private static boolean parseSuccessful(String path, Symbol parseSymbol) {

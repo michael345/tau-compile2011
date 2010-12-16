@@ -1,0 +1,9 @@
+class Clasico { 
+	int [] nums;
+	Derpy num;
+	
+	void main(string[] args) { 
+		nums = new int[5];
+		Derpy num = new Derpy();
+	} 
+}
