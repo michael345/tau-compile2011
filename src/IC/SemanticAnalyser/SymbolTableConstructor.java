@@ -17,32 +17,51 @@ public class SymbolTableConstructor implements Visitor {
    
    public Object visit(Program program) {
        //output.append("Abstract Syntax Tree: " + ICFilePath + "\n");
+       
        SemanticSymbol temp; 
+       
        for (ICClass icClass : program.getClasses()) {
            temp = new SemanticSymbol(tt.getClassType(icClass.getName()),new Kind(Kind.CLASS),icClass.getName(),false);
+           icClass.setEnclosingScope(st);
            if (st.insert(icClass.getName(),temp)) { 
-               
+               ;// good;
            }
            else { 
-               
+               // TODO: more than one class with same name, probably throw error
            }
        }
        
-       
        for (ICClass icClass : program.getClasses()) {
-           icClass.accept(this);
+           st.addChild((SymbolTable) icClass.accept(this));
        }
+       program.setEnclosingScope(st);
        return st;
    }
 
    public Object visit(ICClass icClass) {
-       for (Field field : icClass.getFields())
-           field.accept(this);
-       for (Method method : icClass.getMethods())
-          method.accept(this);
+       SymbolTable curSt = new SymbolTable(icClass.getName());
+       SemanticSymbol temp;
+       for (Field field : icClass.getFields()) {
+           temp = new SemanticSymbol(field.getSemanticType(),new Kind(Kind.FIELD),field.getName(),false);
+           curSt.insert(field.getName(),temp); //TODO: Requires checking, did this while being talked to
+       }
+       for (Method method : icClass.getMethods()) {
+           if (method instanceof VirtualMethod) {
+               temp = new SemanticSymbol(method.getSemanticType(),new Kind(Kind.VIRTUALMETHOD),method.getName(),false);         
+           }
+           else { 
+               temp = new SemanticSymbol(method.getSemanticType(),new Kind(Kind.STATICMETHOD),method.getName(),false);
+           }
+           curSt.insert(method.getName(), temp); //TODO: if returned false - do something 
+        }
+       
+       for (Method method : icClass.getMethods()) {
+          st.addChild((SymbolTable) method.accept(this));
+       }
        return tt;
    }
-
+   
+   //TODO: we did up to here
    public Object visit(PrimitiveType type) {
        //Type temp = stringToType(type.getName());
        //tt.primitiveType(temp);

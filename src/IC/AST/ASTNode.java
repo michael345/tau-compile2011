@@ -11,6 +11,7 @@ public abstract class ASTNode {
 
 	private int line;
 	private SymbolTable enclosingScope;
+	private IC.SemanticAnalyser.Type semanticType;
 
 	/**
 	 * Double dispatch method, to allow a visitor to visit a specific subclass.
@@ -48,4 +49,12 @@ public abstract class ASTNode {
 		return enclosingScope;
 	}
 
+    public IC.SemanticAnalyser.Type getSemanticType() {
+        return semanticType;
+    }
+
+    public void setSemanticType(IC.SemanticAnalyser.Type semanticType) {
+        this.semanticType = semanticType;
+    }
+    
 }
