@@ -25,7 +25,7 @@ public class TypeTableConstructor implements Visitor {
         return temp;
     }
     
-    private void addAllSubArraysToTypeTable(IC.AST.Type type) { 
+    private Type addAllSubArraysToTypeTable(IC.AST.Type type) { 
         int dim = type.getDimension();
         Type temp = stringToType(type.getName());
         // adding the basic element of the array (if array at all)
@@ -49,6 +49,7 @@ public class TypeTableConstructor implements Visitor {
             temp = new ArrayType(temp,0); //TODO: remove this: id is irrelevant in this line
             dim--;
         }
+        return temp;
     }
     
     private Type stringToType(String type) { // TODO: make sure index doesnt get fucked
@@ -85,6 +86,7 @@ public class TypeTableConstructor implements Visitor {
     }
 
     public Object visit(ICClass icClass) {
+        icClass.setSemanticType(tt.getClassType(icClass.getName()));
         for (Field field : icClass.getFields())
             field.accept(this);
         for (Method method : icClass.getMethods())
@@ -94,47 +96,54 @@ public class TypeTableConstructor implements Visitor {
 
     public Object visit(PrimitiveType type) {
         Type temp = stringToType(type.getName());
-        tt.primitiveType(temp);
-        return tt; // maybe the type we created?
+        type.setSemanticType(tt.primitiveType(temp));
+        return tt; 
     }
 
     public Object visit(UserType type) {
-        // right now we ignore it, cause it will be added upon definition of class "type"
+        type.setSemanticType(tt.getClassType(type.getName()));
         return tt;
     }
 
     public Object visit(Field field) {
         IC.AST.Type type = field.getType();
-        addAllSubArraysToTypeTable(type);
+        field.setSemanticType(addAllSubArraysToTypeTable(type));
         return tt;
     }
 
     public Object visit(LibraryMethod method) {
-        return handleMethod(method);
+        method.setSemanticType((IC.SemanticAnalyser.Type) handleMethod(method));
+        return tt;
     }
 
     public Object visit(Formal formal) {
         IC.AST.Type type = formal.getType();
-        addAllSubArraysToTypeTable(type);
+        formal.setSemanticType(addAllSubArraysToTypeTable(type));
         return tt;   
     }
 
     public Object visit(VirtualMethod method) {
-        return handleMethod(method);
+        method.setSemanticType((IC.SemanticAnalyser.Type) handleMethod(method));
+        return tt;
     }
 
     public Object visit(StaticMethod method) {
-        return handleMethod(method);
+        method.setSemanticType((IC.SemanticAnalyser.Type) handleMethod(method));
+        return tt;
     }
 
 
    
 
     public Object visit(Assignment assignment) {
+        assignment.getAssignment().accept(this);
+        assignment.setSemanticType(assignment.getAssignment().getSemanticType()); 
+        //TODO: does this work?
         return tt;
     }
 
     public Object visit(CallStatement callStatement) {
+        // TODO: set callStatement.setSemanticType() to be the return value of the call?
         return tt;
     }
 
@@ -170,88 +179,95 @@ public class TypeTableConstructor implements Visitor {
     }
 
     public Object visit(StatementsBlock statementsBlock) {
-      
         for (Statement statement : statementsBlock.getStatements())
             statement.accept(this);
         return tt;
     }
 
     public Object visit(LocalVariable localVariable) {
-        addAllSubArraysToTypeTable(localVariable.getType());
+        localVariable.setSemanticType(addAllSubArraysToTypeTable(localVariable.getType()));
         return tt;
     }
 
     public Object visit(VariableLocation location) {
-       if (location.getLocation() != null) 
+        if (location.getLocation() != null) 
            location.getLocation().accept(this);
        return tt;
     }
 
     public Object visit(ArrayLocation location) {
+        //TODO set location.setSemanticType to something
         return tt;
     }
 
     public Object visit(StaticCall call) {
+      //TODO: set call.setSemanticType to something
         return tt;
     }
 
     public Object visit(VirtualCall call) {
+        //TODO: set call.setSemanticType to something
         return tt;
     }
 
     public Object visit(This thisExpression) {
+      //TODO: set call.setSemanticType to something - or not
         return tt;
     }
 
     public Object visit(NewClass newClass) {
+        newClass.setSemanticType(tt.getClassType(newClass.getName())); //TODO: might be errornous :o
         return tt; // TODO: probably handled when class was declared
     }
 
     public Object visit(NewArray newArray) {
-        addAllSubArraysToTypeTable( newArray.getType());
+        newArray.setSemanticType(addAllSubArraysToTypeTable(newArray.getType()));
         return tt;
     }
 
     public Object visit(Length length) {
+        // TODO: maybe set length.setSemanticType to TypeInt ?
         return tt;
     }
 
     public Object visit(MathBinaryOp binaryOp) {
-        tt.primitiveType(new IntType(0));
+        binaryOp.setSemanticType(tt.primitiveType(new IntType(0)));
         binaryOp.getFirstOperand().accept(this);
         binaryOp.getSecondOperand().accept(this);        
         return tt;
     }
 
     public Object visit(LogicalBinaryOp binaryOp) {
-        tt.primitiveType(new BoolType(0));
+        binaryOp.setSemanticType(tt.primitiveType(new BoolType(0)));
         binaryOp.getFirstOperand().accept(this);
         binaryOp.getSecondOperand().accept(this); 
         return tt;
     }
 
     public Object visit(MathUnaryOp unaryOp) {
-        tt.primitiveType(new IntType(0));
+        unaryOp.setSemanticType(tt.primitiveType(new IntType(0)));
         unaryOp.getOperand().accept(this);
         return tt;
     }
 
     public Object visit(LogicalUnaryOp unaryOp) {
-        tt.primitiveType(new BoolType(0));
+        unaryOp.setSemanticType(tt.primitiveType(new BoolType(0)));
         unaryOp.getOperand().accept(this);
         return tt;
     }
 
     public Object visit(Literal literal) {
         String bah = literal.getType().getDescription();
+        IC.SemanticAnalyser.Type temp = null;
         if (bah.compareTo("Literal") == 0) 
-            tt.primitiveType(new NullType(0));
+            temp = tt.primitiveType(new NullType(0));
         else if (bah.compareTo("Boolean literal") == 0) 
-            tt.primitiveType(new BoolType(0));
+            temp = tt.primitiveType(new BoolType(0));
         else if (bah.compareTo("String literal") == 0) 
-            tt.primitiveType(new StringType(0));
+            temp = tt.primitiveType(new StringType(0));
         else if (bah.compareTo("Integer literal") == 0) 
-            tt.primitiveType(new IntType(0));
+            temp = tt.primitiveType(new IntType(0));
+        literal.setSemanticType(temp);
         return tt;
     }
 
@@ -272,10 +288,10 @@ public class TypeTableConstructor implements Visitor {
                 formal.accept(this);
             }
         }
-        tt.methodType(paramTypes, returnType);
+        Type temp = tt.methodType(paramTypes, returnType);
         for (Statement statement : method.getStatements()) { 
             statement.accept(this);
         }
-        return tt;
+        return temp;
     }
 }
