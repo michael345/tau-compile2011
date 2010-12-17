@@ -5,15 +5,13 @@ public class SemanticSymbol {
     private Kind kind;
     private String id;
     private boolean isForwardRef;
-    private boolean isStatic;
     
     public SemanticSymbol(Type type, Kind kind, String id,
-            boolean isForwardRef, boolean isStatic) {
+            boolean isForwardRef) {
         this.type = type;
         this.kind = kind;
         this.id = id;
         this.isForwardRef = isForwardRef;
-        this.isStatic = isStatic;
     }
 
     public Type getType() {
@@ -37,7 +35,7 @@ public class SemanticSymbol {
     }
 
     public boolean isMethod() { 
-        return (kind.getKind() == Kind.METHOD);
+        return (kind.getKind() == Kind.VIRTUALMETHOD || kind.getKind() == Kind.STATICMETHOD);
     }
     public void setId(String id) {
         this.id = id;
@@ -50,15 +48,10 @@ public class SemanticSymbol {
     public void setForwardRef(boolean isForwardRef) {
         this.isForwardRef = isForwardRef;
     }
-
-    public boolean isStatic() {
-        return isStatic;
-    }
-
-    public void setStatic(boolean isStatic) {
-        this.isStatic = isStatic;
-    }
     
+    public String toString() { 
+        return "" + kind + ": " + type + " " + id; 
+    }
     
     
 }

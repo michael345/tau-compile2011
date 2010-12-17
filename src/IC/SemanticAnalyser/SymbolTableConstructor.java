@@ -7,19 +7,19 @@ public class SymbolTableConstructor implements Visitor {
    private String ICFilePath;
    private SymbolTable st;
    private TypeTable tt;
-   private int depth = 0; // depth of indentation
 
  
-   public SymbolTableConstructor(String ICFilePath) {
+   public SymbolTableConstructor(String ICFilePath, TypeTable tt) {
        this.ICFilePath = ICFilePath;
        this.st = new SymbolTable("global");
+       this.tt = tt;
    }
    
    public Object visit(Program program) {
        //output.append("Abstract Syntax Tree: " + ICFilePath + "\n");
        SemanticSymbol temp; 
        for (ICClass icClass : program.getClasses()) {
-           temp = new SemanticSymbol(tt.getClassType(icClass.getName()),new Kind(Kind.CLASS),icClass.getName(),false,false);
+           temp = new SemanticSymbol(tt.getClassType(icClass.getName()),new Kind(Kind.CLASS),icClass.getName(),false);
            if (st.insert(icClass.getName(),temp)) { 
                
            }
@@ -27,6 +27,7 @@ public class SymbolTableConstructor implements Visitor {
                
            }
        }
+       
        
        for (ICClass icClass : program.getClasses()) {
            icClass.accept(this);
