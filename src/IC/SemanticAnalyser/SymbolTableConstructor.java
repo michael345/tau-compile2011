@@ -6,8 +6,9 @@ public class SymbolTableConstructor implements Visitor {
 
    private String ICFilePath;
    private SymbolTable st;
-   private TypeTable tt;
    private int blockIndex = 0;
+   private TypeTable tt;
+   
 
 
  
@@ -41,6 +42,7 @@ public class SymbolTableConstructor implements Visitor {
 	   SymbolTable classTable = new SymbolTable(icClass.getName());
        for (Field field : icClass.getFields())
     	   classTable.insert(field.getName(), new SemanticSymbol(field.getSemanticType(), new Kind(Kind.FIELD), field.getName(), false));
+
        for (Method method : icClass.getMethods()) {
            if (method instanceof VirtualMethod) { 
                classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.VIRTUALMETHOD),method.getName(),false));
@@ -49,7 +51,8 @@ public class SymbolTableConstructor implements Visitor {
                classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.STATICMETHOD),method.getName(),false));
        }
        
-       for (Method method : icClass.getMethods()) {
+     
+           for (Method method : icClass.getMethods()){
     	   classTable.addChild((SymbolTable)method.accept(this));
        }
        icClass.setEnclosingScope(classTable);
@@ -65,7 +68,6 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(Field field) {
-       //non-scoped
        return tt;
    }
 
@@ -74,34 +76,15 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(Formal formal) {
-       //non-scoped
        return tt;   
    }
 
    public Object visit(VirtualMethod method) {
+
+	   return handleMethod(method);
+
 	  
-	   SymbolTable methodTable = new SymbolTable(method.getName());
-	   SymbolTable symbolTable;//child to be
-       if (method.getFormals().size() > 0) {
-           for (Formal formal : method.getFormals()) { 
-               methodTable.insert(formal.getName(), new SemanticSymbol(formal.getSemanticType(), new Kind(Kind.FORMAL), formal.getName(), false));
-           }
-       }
-	   for (Statement statement : method.getStatements()) { 
-           if (statement instanceof LocalVariable) {
-        	   LocalVariable lv = (LocalVariable)statement;
-        	   methodTable.insert(lv.getName(), new SemanticSymbol(statement.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
-           }
-           else {
-        	   symbolTable = (SymbolTable)statement.accept(this);
-        	   if (symbolTable != null){
-        		   methodTable.addChild((SymbolTable)statement.accept(this));
-        	   }
-           }
-       }
-	   
-	  
-       return methodTable;
+
    }
 
    public Object visit(StaticMethod method) {
@@ -124,21 +107,22 @@ public class SymbolTableConstructor implements Visitor {
        return tt;
    }
 
-   public Object visit(If ifStatement) {        //non-scoped
-      
-       ifStatement.getCondition().accept(this);
-       ifStatement.getOperation().accept(this);
+   public Object visit(If ifStatement) {        
+      SymbolTable ifSymbolTable = new SymbolTable("if");
+      ifSymbolTable.addChild((SymbolTable)ifStatement.getOperation().accept(this));
 
        if (ifStatement.hasElse()) { 
-           ifStatement.getElseOperation().accept(this);
+    	   ifSymbolTable.addChild((SymbolTable)ifStatement.getElseOperation().accept(this));
        }
-      return tt;
+       ifStatement.setEnclosingScope(ifSymbolTable);
+      return ifSymbolTable;
    }
 
    public Object visit(While whileStatement) {
-       whileStatement.getCondition().accept(this);//non-scoped
-       whileStatement.getOperation().accept(this);
-       return tt;
+      SymbolTable whileSymbolTable = new SymbolTable("while");
+      whileSymbolTable.addChild((SymbolTable)whileStatement.getOperation().accept(this));
+      whileStatement.setEnclosingScope(whileSymbolTable); 
+      return whileSymbolTable;
    }
 
    public Object visit(Break breakStatement) {       //non-scoped
@@ -259,21 +243,26 @@ public class SymbolTableConstructor implements Visitor {
    }
    
    private Object handleMethod(Method method) {
-     //  Type returnType = ASTTypeToType(method.getType()); // TODO: maybe add returntype to tt right now
-      // addAllSubArraysToTypeTable(method.getType());
-       Type[] paramTypes = null;
+	   SymbolTable methodTable = new SymbolTable(method.getName());
+	   SymbolTable symbolTable;//child to be
        if (method.getFormals().size() > 0) {
-           paramTypes = new Type[method.getFormals().size()];
-           int i = 0;
            for (Formal formal : method.getFormals()) { 
-        //       paramTypes[i++] = ASTTypeToType(formal.getType());
-               formal.accept(this);
+               methodTable.insert(formal.getName(), new SemanticSymbol(formal.getSemanticType(), new Kind(Kind.FORMAL), formal.getName(), false));
            }
        }
-      // tt.methodType(paramTypes, returnType);
-       for (Statement statement : method.getStatements()) { 
-           statement.accept(this);
+	   for (Statement statement : method.getStatements()) { 
+           if(statement instanceof LocalVariable){
+        	   LocalVariable lv = (LocalVariable)statement;
+        	   methodTable.insert(lv.getName(), new SemanticSymbol(statement.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
+           }
+           else {
+        	   symbolTable = (SymbolTable)statement.accept(this);
+        	   if (symbolTable != null){
+        		   methodTable.addChild((SymbolTable)statement.accept(this));
+        	   }
+           }
        }
-       return tt;
-   }
+       method.setEnclosingScope(methodTable);	  
+       return methodTable;
+}
 }
