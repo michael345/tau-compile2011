@@ -56,8 +56,10 @@ public class SymbolTable {
         if (children.contains(child))  {
             ;// TODO: maybe a problem? 
         }
-        else 
+        else {
+            child.setParentSymbolTable(this);
             children.add(child);
+        }
     }
     
     public Map<String, SemanticSymbol> getEntries() {

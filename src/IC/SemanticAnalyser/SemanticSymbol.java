@@ -1,13 +1,13 @@
 package IC.SemanticAnalyser;
 
 public class SemanticSymbol {
-    private SemanticType type;
-    private SemanticKind kind;
+    private Type type;
+    private Kind kind;
     private String id;
     private boolean isForwardRef;
     private boolean isStatic;
     
-    public SemanticSymbol(SemanticType type, SemanticKind kind, String id,
+    public SemanticSymbol(Type type, Kind kind, String id,
             boolean isForwardRef, boolean isStatic) {
         this.type = type;
         this.kind = kind;
@@ -16,19 +16,19 @@ public class SemanticSymbol {
         this.isStatic = isStatic;
     }
 
-    public SemanticType getType() {
+    public Type getType() {
         return type;
     }
 
-    public void setType(SemanticType type) {
+    public void setType(Type type) {
         this.type = type;
     }
 
-    public SemanticKind getKind() {
+    public Kind getKind() {
         return kind;
     }
 
-    public void setKind(SemanticKind kind) {
+    public void setKind(Kind kind) {
         this.kind = kind;
     }
 
@@ -37,7 +37,7 @@ public class SemanticSymbol {
     }
 
     public boolean isMethod() { 
-        return (kind.getKind() == SemanticKind.METHOD);
+        return (kind.getKind() == Kind.METHOD);
     }
     public void setId(String id) {
         this.id = id;
@@ -58,8 +58,6 @@ public class SemanticSymbol {
     public void setStatic(boolean isStatic) {
         this.isStatic = isStatic;
     }
-    
-    
     
     
     
