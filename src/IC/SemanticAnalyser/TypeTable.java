@@ -47,7 +47,7 @@ public class TypeTable {
     
     public Type primitiveType(VoidType t) { 
         if (voidType == null) { 
-            voidType = new IntType(idIndex++);
+            voidType = new VoidType(idIndex++);
             uniquePrimitiveTypes.add(voidType);
         }
         return t;
@@ -123,16 +123,22 @@ public class TypeTable {
     }
    
     public ArrayType arrayType(Type elemType) {
-        if (uniqueArrayTypes.containsKey(elemType)) { // array type object already created – return it
-            return uniqueArrayTypes.get(elemType);
+        String str = elemType.toString();
+        for (Type ty : uniqueArrayTypes.keySet()) { 
+            if (ty.toString().compareTo(str) == 0) { 
+                return uniqueArrayTypes.get(ty); 
+            }
         }
-        else {  // object doesn’t exist – create and return it        
+//        if (uniqueArrayTypes.containsKey(elemType)) { // array type object already created – return it
+//            return uniqueArrayTypes.get(elemType);
+//        }
+//        else {  // object doesn’t exist – create and return it        
             ArrayType arrt = new ArrayType(elemType,idIndex);
             uniqueArrayTypes.put(elemType,arrt);
             idIndex++;
             return arrt;
             }
-        }
+//        }
 
 
     public void printTable() {
