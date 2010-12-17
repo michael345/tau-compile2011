@@ -40,7 +40,11 @@ public abstract class ASTNode {
 		this.line = line;
 	}
 	
-	public SymbolTable getEnclosingScope() {
+	public void setEnclosingScope(SymbolTable enclosingScope) {
+        this.enclosingScope = enclosingScope;
+    }
+
+    public SymbolTable getEnclosingScope() {
 		return enclosingScope;
 	}
 
