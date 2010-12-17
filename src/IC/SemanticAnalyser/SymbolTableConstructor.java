@@ -7,6 +7,7 @@ public class SymbolTableConstructor implements Visitor {
    private String ICFilePath;
    private SymbolTable st;
    private TypeTable tt;
+   private int depth = 0; // depth of indentation
 
  
    public SymbolTableConstructor(String ICFilePath, TypeTable tt) {
@@ -17,65 +18,50 @@ public class SymbolTableConstructor implements Visitor {
    
    public Object visit(Program program) {
        //output.append("Abstract Syntax Tree: " + ICFilePath + "\n");
-       
        SemanticSymbol temp; 
-       
        for (ICClass icClass : program.getClasses()) {
-           temp = new SemanticSymbol(tt.getClassType(icClass.getName()),new Kind(Kind.CLASS),icClass.getName(),false);
-           icClass.setEnclosingScope(st);
+           temp = new SemanticSymbol(program.getSemanticType(), new Kind(Kind.CLASS), icClass.getName(), false);
            if (st.insert(icClass.getName(),temp)) { 
-               ;// good;
+               
            }
            else { 
-               // TODO: more than one class with same name, probably throw error
+               
            }
+          
        }
        
        for (ICClass icClass : program.getClasses()) {
-           st.addChild((SymbolTable) icClass.accept(this));
+          st.addChild((SymbolTable)icClass.accept(this));
        }
        program.setEnclosingScope(st);
-       return st;
+       return st;  
    }
 
    public Object visit(ICClass icClass) {
-       SymbolTable curSt = new SymbolTable(icClass.getName());
-       SemanticSymbol temp;
-       for (Field field : icClass.getFields()) {
-           temp = new SemanticSymbol(field.getSemanticType(),new Kind(Kind.FIELD),field.getName(),false);
-           curSt.insert(field.getName(),temp); //TODO: Requires checking, did this while being talked to
+	   SymbolTable classTable = new SymbolTable(icClass.getName());
+       for (Field field : icClass.getFields())
+    	   classTable.insert(field.getName(), new SemanticSymbol(field.getSemanticType(), new Kind(Kind.FIELD), field.getName(), false));
+       for (Method method : icClass.getMethods())
+           classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.VIRTUALMETHOD),method.getName(),false));
+       for (Method method : icClass.getMethods()){
+    	   classTable.addChild((SymbolTable)method.accept(this));
        }
-       for (Method method : icClass.getMethods()) {
-           if (method instanceof VirtualMethod) {
-               temp = new SemanticSymbol(method.getSemanticType(),new Kind(Kind.VIRTUALMETHOD),method.getName(),false);         
-           }
-           else { 
-               temp = new SemanticSymbol(method.getSemanticType(),new Kind(Kind.STATICMETHOD),method.getName(),false);
-           }
-           curSt.insert(method.getName(), temp); //TODO: if returned false - do something 
-        }
-       
-       for (Method method : icClass.getMethods()) {
-          st.addChild((SymbolTable) method.accept(this));
-       }
-       return tt;
+       icClass.setEnclosingScope(classTable);
+       return classTable;
    }
-   
-   //TODO: we did up to here
+
    public Object visit(PrimitiveType type) {
-       //Type temp = stringToType(type.getName());
-       //tt.primitiveType(temp);
-       return tt; // maybe the type we created?
+       //non-scoped
+       return tt; 
    }
 
    public Object visit(UserType type) {
-       // right now we ignore it, cause it will be added upon definition of class "type"
+       //non-scoped
        return tt;
    }
 
    public Object visit(Field field) {
-       IC.AST.Type type = field.getType();
-       //addAllSubArraysToTypeTable(type);
+       //non-scoped
        return tt;
    }
 
@@ -84,13 +70,34 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(Formal formal) {
-       IC.AST.Type type = formal.getType();
-       //addAllSubArraysToTypeTable(type);
+       //non-scoped
        return tt;   
    }
 
    public Object visit(VirtualMethod method) {
-       return handleMethod(method);
+	  
+	   SymbolTable methodTable = new SymbolTable(method.getName());
+	   SymbolTable symbolTable;//child to be
+       Type[] paramTypes = null;
+       if (method.getFormals().size() > 0) {
+           for (Formal formal : method.getFormals()) { 
+               methodTable.insert(formal.getName(), new SemanticSymbol(formal.getSemanticType(), new Kind(Kind.FORMAL), formal.getName(), false));
+           }
+       }
+	   for (Statement statement : method.getStatements()) { 
+           if(statement instanceof LocalVariable){
+        	   LocalVariable lv = (LocalVariable)statement;
+        	   methodTable.insert(lv.getName(), new SemanticSymbol(statement.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
+           }
+           else {
+        	   symbolTable = (SymbolTable)statement.accept(this);
+        	   if (symbolTable != null){
+        		   methodTable.addChild((SymbolTable)statement.accept(this));
+        	   }
+           }
+       }
+	  
+       return methodTable;
    }
 
    public Object visit(StaticMethod method) {
@@ -101,20 +108,22 @@ public class SymbolTableConstructor implements Visitor {
   
 
    public Object visit(Assignment assignment) {
-       return tt;
+       //non-scoped
+	   return tt;
    }
 
    public Object visit(CallStatement callStatement) {
-       return tt;
+       //non-scoped
+	   return tt;
    }
 
-   public Object visit(Return returnStatement) {
+   public Object visit(Return returnStatement) {       //non-scoped
        if (returnStatement.hasValue())
            returnStatement.getValue().accept(this);
        return tt;
    }
 
-   public Object visit(If ifStatement) {
+   public Object visit(If ifStatement) {        //non-scoped
       
        ifStatement.getCondition().accept(this);
        ifStatement.getOperation().accept(this);
@@ -126,16 +135,16 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(While whileStatement) {
-       whileStatement.getCondition().accept(this);
+       whileStatement.getCondition().accept(this);//non-scoped
        whileStatement.getOperation().accept(this);
        return tt;
    }
 
-   public Object visit(Break breakStatement) {
+   public Object visit(Break breakStatement) {       //non-scoped
        return tt;
    }
 
-   public Object visit(Continue continueStatement) {
+   public Object visit(Continue continueStatement) {       //non-scoped
        return tt;
    }
 
