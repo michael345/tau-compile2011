@@ -7,13 +7,13 @@ public class SymbolTableConstructor implements Visitor {
    private String ICFilePath;
    private SymbolTable st;
    private TypeTable tt;
-   private int depth = 0; // depth of indentation
+   private int blockIndex = 0;
+
 
  
-   public SymbolTableConstructor(String ICFilePath, TypeTable tt) {
+   public SymbolTableConstructor(String ICFilePath) {
        this.ICFilePath = ICFilePath;
        this.st = new SymbolTable("global");
-       this.tt = tt;
    }
    
    public Object visit(Program program) {
@@ -41,9 +41,15 @@ public class SymbolTableConstructor implements Visitor {
 	   SymbolTable classTable = new SymbolTable(icClass.getName());
        for (Field field : icClass.getFields())
     	   classTable.insert(field.getName(), new SemanticSymbol(field.getSemanticType(), new Kind(Kind.FIELD), field.getName(), false));
-       for (Method method : icClass.getMethods())
-           classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.VIRTUALMETHOD),method.getName(),false));
-       for (Method method : icClass.getMethods()){
+       for (Method method : icClass.getMethods()) {
+           if (method instanceof VirtualMethod) { 
+               classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.VIRTUALMETHOD),method.getName(),false));
+           }
+           else 
+               classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.STATICMETHOD),method.getName(),false));
+       }
+       
+       for (Method method : icClass.getMethods()) {
     	   classTable.addChild((SymbolTable)method.accept(this));
        }
        icClass.setEnclosingScope(classTable);
@@ -51,12 +57,10 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(PrimitiveType type) {
-       //non-scoped
        return tt; 
    }
 
    public Object visit(UserType type) {
-       //non-scoped
        return tt;
    }
 
@@ -78,14 +82,13 @@ public class SymbolTableConstructor implements Visitor {
 	  
 	   SymbolTable methodTable = new SymbolTable(method.getName());
 	   SymbolTable symbolTable;//child to be
-       Type[] paramTypes = null;
        if (method.getFormals().size() > 0) {
            for (Formal formal : method.getFormals()) { 
                methodTable.insert(formal.getName(), new SemanticSymbol(formal.getSemanticType(), new Kind(Kind.FORMAL), formal.getName(), false));
            }
        }
 	   for (Statement statement : method.getStatements()) { 
-           if(statement instanceof LocalVariable){
+           if (statement instanceof LocalVariable) {
         	   LocalVariable lv = (LocalVariable)statement;
         	   methodTable.insert(lv.getName(), new SemanticSymbol(statement.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
            }
@@ -96,6 +99,7 @@ public class SymbolTableConstructor implements Visitor {
         	   }
            }
        }
+	   
 	  
        return methodTable;
    }
@@ -103,9 +107,6 @@ public class SymbolTableConstructor implements Visitor {
    public Object visit(StaticMethod method) {
        return handleMethod(method);
    }
-
-
-  
 
    public Object visit(Assignment assignment) {
        //non-scoped
@@ -150,9 +151,27 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(StatementsBlock statementsBlock) {
      
-       for (Statement statement : statementsBlock.getStatements())
-           statement.accept(this);
-       return tt;
+       SymbolTable blockTable = new SymbolTable("block"+ blockIndex);
+       SymbolTable symbolTable;
+       
+       for (Statement statement : statementsBlock.getStatements()) { 
+           if (statement instanceof LocalVariable) {
+               LocalVariable lv = (LocalVariable)statement;
+              
+               blockTable.insert(lv.getName(), new SemanticSymbol(statement.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
+               statement.setEnclosingScope(blockTable);
+           }
+           else {
+               symbolTable = (SymbolTable)statement.accept(this);
+               if (symbolTable != null){
+                   blockTable.addChild((SymbolTable)statement.accept(this));
+               }
+           }
+       }
+       
+       statementsBlock.setEnclosingScope(blockTable);
+       return blockTable;
+       
    }
 
    public Object visit(LocalVariable localVariable) {
