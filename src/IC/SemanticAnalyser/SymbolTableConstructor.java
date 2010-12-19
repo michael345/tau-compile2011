@@ -1,5 +1,8 @@
 package IC.SemanticAnalyser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import IC.AST.*;
 
 public class SymbolTableConstructor implements Visitor {
@@ -7,6 +10,7 @@ public class SymbolTableConstructor implements Visitor {
    private String ICFilePath;
    private SymbolTable st;
    private int blockIndex = 0;
+   private List<SymbolTable> tempFix;
    
    
 
@@ -15,6 +19,8 @@ public class SymbolTableConstructor implements Visitor {
    public SymbolTableConstructor(String ICFilePath) {
        this.ICFilePath = ICFilePath;
        this.st = new GlobalSymbolTable(ICFilePath);
+       tempFix = new ArrayList<SymbolTable>();
+       
    }
    
    public Object visit(Program program) {
@@ -46,6 +52,8 @@ public class SymbolTableConstructor implements Visitor {
            
         }
        
+       
+       fix(st);
        program.setEnclosingScope(st);
        return st;  
    }
@@ -147,7 +155,7 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(StatementsBlock statementsBlock) {
      
-       SymbolTable blockTable = new SymbolTable("block"+ blockIndex);
+       SymbolTable blockTable = new BlockSymbolTable("block");
        SymbolTable symbolTable;
        
        for (Statement statement : statementsBlock.getStatements()) { 
@@ -258,4 +266,31 @@ public class SymbolTableConstructor implements Visitor {
        method.setEnclosingScope(methodTable);	  
        return methodTable;
 }
+   
+   private void fix(SymbolTable st){
+	   if ((st.getId().equals("while")) || (st.getId().equals("if"))){
+		   for (SymbolTable s : st.getChildren()) {
+			   if (s!=null){
+			   tempFix.add(s);
+			   }   
+		}  
+	   }
+	   else{
+	   for (SymbolTable s : st.getChildren()) {
+			   fix(s);
+	   		}	
+	   
+	   for (SymbolTable s : tempFix) {
+			st.removeChild(s.getParentSymbolTable().getId());
+			st.addChild(s);
+		   }
+	   tempFix.clear();
+	   for (SymbolTable s : st.getChildren()) {
+		   fix(s);
+   		}
+	   }
+	  
+
+   }
+   
 }
