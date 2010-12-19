@@ -14,7 +14,7 @@ public class SymbolTableConstructor implements Visitor {
  
    public SymbolTableConstructor(String ICFilePath) {
        this.ICFilePath = ICFilePath;
-       this.st = new SymbolTable("global");
+       this.st = new GlobalSymbolTable(ICFilePath);
    }
    
    public Object visit(Program program) {
@@ -32,14 +32,26 @@ public class SymbolTableConstructor implements Visitor {
        }
        
        for (ICClass icClass : program.getClasses()) {
-          st.addChild((SymbolTable)icClass.accept(this));
+          st.addChild((ClassSymbolTable)icClass.accept(this));
        }
+       
+       for (ICClass icClass : program.getClasses()) {
+           if (icClass.hasSuperClass()) {
+               SymbolTable son = st.removeChild(icClass.getName());
+               String dad = icClass.getSuperClassName();
+               SymbolTable dadTable = st.symbolTableLookup(dad);
+               dadTable.addChild(son);
+               
+           }
+           
+        }
+       
        program.setEnclosingScope(st);
        return st;  
    }
 
    public Object visit(ICClass icClass) {
-	   SymbolTable classTable = new SymbolTable(icClass.getName());
+	   SymbolTable classTable = new ClassSymbolTable(icClass.getName());
        for (Field field : icClass.getFields())
     	   classTable.insert(field.getName(), new SemanticSymbol(field.getSemanticType(), new Kind(Kind.FIELD), field.getName(), false));
 
@@ -53,7 +65,7 @@ public class SymbolTableConstructor implements Visitor {
        
      
            for (Method method : icClass.getMethods()){
-    	   classTable.addChild((SymbolTable)method.accept(this));
+    	   classTable.addChild((MethodSymbolTable)method.accept(this));
        }
        icClass.setEnclosingScope(classTable);
        return classTable;
@@ -224,7 +236,7 @@ public class SymbolTableConstructor implements Visitor {
    }
    
    private Object handleMethod(Method method) {
-	   SymbolTable methodTable = new SymbolTable(method.getName());
+	   SymbolTable methodTable = new MethodSymbolTable(method.getName());
 	   SymbolTable symbolTable;//child to be
        if (method.getFormals().size() > 0) {
            for (Formal formal : method.getFormals()) { 
