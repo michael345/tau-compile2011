@@ -50,6 +50,10 @@ public class SemanticSymbol {
     }
     
     public String toString() { 
+        if (type == null) { 
+            return "" + kind + ": " + id; 
+
+        }
         return "" + kind + ": " + type + " " + id; 
     }
     

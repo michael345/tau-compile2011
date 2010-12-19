@@ -24,6 +24,16 @@ public class SymbolTable {
         return null;
     }
     
+    public SymbolTable symbolTableLookup(String id) { // returns child Symbol Table with id = id
+        for (SymbolTable child : children) { 
+            if (0 == id.compareTo(child.getId())) { 
+                return child;
+            }
+        }
+        return null;
+    }
+    
+    
     public SemanticSymbol lookup(String key) { // without forward referencing
         SymbolTable temp;
         for (temp = this; temp != null; temp = temp.getParentSymbolTable()) {
@@ -66,6 +76,15 @@ public class SymbolTable {
         }
     }
     
+    public SymbolTable removeChild(String child) {  //removes and returns (pop child)
+        for (SymbolTable member : children) { 
+            if (0 == child.compareTo(member.getId())) { 
+                children.remove(member);
+                return member; 
+            }
+        }
+        return null;
+    }
     public Map<String, SemanticSymbol> getEntries() {
         return entries;
     }
@@ -84,6 +103,28 @@ public class SymbolTable {
     public void setParentSymbolTable(SymbolTable parentSymbolTable) {
         this.parentSymbolTable = parentSymbolTable;
     }
+    
+    
+    public void printSymbolTable() { 
+        
+    }
+    
+    
+    public void printChildren () { 
+        int i;
+        if (getChildren().isEmpty()) { 
+            
+        }
+        else {
+            System.out.print("Children tables: ");
+            for (i = 0; i < getChildren().size()-1; i++) { 
+                System.out.print(getChildren().get(i).getId() + ", ");
+            }
+            System.out.println(getChildren().get(i).getId());
+        } 
+        System.out.println();
+    }
+    
     
     
 }
