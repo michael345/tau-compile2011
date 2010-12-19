@@ -7,7 +7,7 @@ public class SymbolTableConstructor implements Visitor {
    private String ICFilePath;
    private SymbolTable st;
    private int blockIndex = 0;
-   private TypeTable tt;
+   
    
 
 
@@ -60,15 +60,15 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(PrimitiveType type) {
-       return tt; 
+       return null; 
    }
 
    public Object visit(UserType type) {
-       return tt;
+       return null;
    }
 
    public Object visit(Field field) {
-       return tt;
+       return null;
    }
 
    public Object visit(LibraryMethod method) {
@@ -76,7 +76,7 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(Formal formal) {
-       return tt;   
+       return null;   
    }
 
    public Object visit(VirtualMethod method) {
@@ -93,18 +93,18 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(Assignment assignment) {
        //non-scoped
-	   return tt;
+	   return null;
    }
 
    public Object visit(CallStatement callStatement) {
        //non-scoped
-	   return tt;
+	   return null;
    }
 
    public Object visit(Return returnStatement) {       //non-scoped
        if (returnStatement.hasValue())
            returnStatement.getValue().accept(this);
-       return tt;
+       return null;
    }
 
    public Object visit(If ifStatement) {        
@@ -126,11 +126,11 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(Break breakStatement) {       //non-scoped
-       return tt;
+       return null;
    }
 
    public Object visit(Continue continueStatement) {       //non-scoped
-       return tt;
+       return null;
    }
 
    public Object visit(StatementsBlock statementsBlock) {
@@ -159,87 +159,68 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(LocalVariable localVariable) {
-       //addAllSubArraysToTypeTable(localVariable.getType());
-       return tt;
+       //addAllSubArraysToTypeTable(localVariable.genullype());
+       return null;
    }
 
    public Object visit(VariableLocation location) {
       if (location.getLocation() != null) 
           location.getLocation().accept(this);
-      return tt;
+      return null;
    }
 
    public Object visit(ArrayLocation location) {
-       return tt;
+       return null;
    }
 
    public Object visit(StaticCall call) {
-       return tt;
+       return null;
    }
 
    public Object visit(VirtualCall call) {
-       return tt;
+       return null;
    }
 
    public Object visit(This thisExpression) {
-       return tt;
+       return null;
    }
 
    public Object visit(NewClass newClass) {
-       return tt; // TODO: probably handled when class was declared
+       return null; // TODO: probably handled when class was declared
    }
 
    public Object visit(NewArray newArray) {
-       //addAllSubArraysToTypeTable( newArray.getType());
-       return tt;
+       //addAllSubArraysToTypeTable( newArray.genullype());
+       return null;
    }
 
    public Object visit(Length length) {
-       return tt;
+       return null;
    }
 
-   public Object visit(MathBinaryOp binaryOp) {
-       tt.primitiveType(new IntType(0));
-       binaryOp.getFirstOperand().accept(this);
-       binaryOp.getSecondOperand().accept(this);        
-       return tt;
+   public Object visit(MathBinaryOp binaryOp) {       
+       return null;
    }
 
    public Object visit(LogicalBinaryOp binaryOp) {
-       tt.primitiveType(new BoolType(0));
-       binaryOp.getFirstOperand().accept(this);
-       binaryOp.getSecondOperand().accept(this); 
-       return tt;
+       return null;
    }
 
    public Object visit(MathUnaryOp unaryOp) {
-       tt.primitiveType(new IntType(0));
-       unaryOp.getOperand().accept(this);
-       return tt;
+       return null;
    }
 
    public Object visit(LogicalUnaryOp unaryOp) {
-       tt.primitiveType(new BoolType(0));
-       unaryOp.getOperand().accept(this);
-       return tt;
+       return null;
    }
 
    public Object visit(Literal literal) {
-       String bah = literal.getType().getDescription();
-       if (bah.compareTo("Literal") == 0) 
-           tt.primitiveType(new NullType(0));
-       else if (bah.compareTo("Boolean literal") == 0) 
-           tt.primitiveType(new BoolType(0));
-       else if (bah.compareTo("String literal") == 0) 
-           tt.primitiveType(new StringType(0));
-       else if (bah.compareTo("Integer literal") == 0) 
-           tt.primitiveType(new IntType(0));
-       return tt;
+       return null;
    }
 
    public Object visit(ExpressionBlock expressionBlock) {
        expressionBlock.getExpression().accept(this);
-       return tt;
+       return null;
    }
    
    private Object handleMethod(Method method) {

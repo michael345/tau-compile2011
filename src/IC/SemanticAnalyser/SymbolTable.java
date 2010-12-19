@@ -1,5 +1,6 @@
 package IC.SemanticAnalyser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ public class SymbolTable {
     public SymbolTable(String id) {
         this.id = id;
         entries = new HashMap<String,SemanticSymbol>();
+        children = new ArrayList<SymbolTable>();
       }
     
     public SemanticSymbol localLookup(String key) { 
@@ -53,12 +55,14 @@ public class SymbolTable {
     
     
     public void addChild(SymbolTable child) { 
-        if (children.contains(child))  {
-            ;// TODO: maybe a problem? 
-        }
-        else {
-            child.setParentSymbolTable(this);
-            children.add(child);
+        if (child!=null){
+	    	if (children.contains(child))  {
+	            ;// TODO: maybe a problem? 
+	        }
+	        else {
+	            child.setParentSymbolTable(this);
+	            children.add(child);
+	        }
         }
     }
     
