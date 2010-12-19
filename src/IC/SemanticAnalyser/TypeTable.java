@@ -10,78 +10,63 @@ import java.util.Set;
 import IC.AST.ICClass;
 
 public class TypeTable {
-    private int idIndex; // moved from TypeTableConstructor
-    private Map<Type,ArrayType> uniqueArrayTypes;
-    private Map<String,ClassType> uniqueClassTypes;
-    private Set<MethodType> uniqueMethodTypes;
-    private List<Type> uniquePrimitiveTypes;
-    private Map<String,Integer> nameToID;
+    private static int idIndex = 1; // moved from TypeTableConstructor
+    private static Map<Type,ArrayType> uniqueArrayTypes = new HashMap<Type,ArrayType>();
+    private static Map<String,ClassType> uniqueClassTypes = new HashMap<String,ClassType>();
+    private static Set<MethodType> uniqueMethodTypes = new HashSet<MethodType>();
+    private static List<Type> uniquePrimitiveTypes = new ArrayList<Type>();
+    private static Map<String,Integer> nameToID = new HashMap<String,Integer>();
     
-    public Type boolType;
-    public Type intType; 
-    public Type voidType; 
-    public Type stringType;
-    public Type nullType;
+    public static Type boolType;  
+    public static Type intType;
+    public static Type voidType;
+    public static Type stringType;
+    public static Type nullType;   
     
-    
-    public TypeTable() { 
-        uniqueArrayTypes = new HashMap<Type,ArrayType>();
-        uniqueClassTypes = new HashMap<String,ClassType>();
-        uniqueMethodTypes = new HashSet<MethodType>();
-        uniquePrimitiveTypes = new ArrayList<Type>();
-        nameToID = new HashMap<String,Integer>();
-        idIndex = 1;
-     }
-    
-    
-    public Type primitiveType(Type t) { 
+    public static Type primitiveType(Type t) { 
         return t;
     }
-    public Type primitiveType(IntType t) { 
-        if (intType == null) { 
+    public static Type primitiveType(IntType t) { 
+        if (!uniquePrimitiveTypes.contains(intType)) {
             intType = new IntType(idIndex++);
             uniquePrimitiveTypes.add(intType);
-        }
-        return t;
+        }    
+        return intType;
     }
     
-    public Type primitiveType(VoidType t) { 
-        if (voidType == null) { 
+    public static Type primitiveType(VoidType t) { 
+        if (!uniquePrimitiveTypes.contains(voidType)) {
             voidType = new VoidType(idIndex++);
             uniquePrimitiveTypes.add(voidType);
-        }
-        return t;
+        }    
+        return voidType;
     }
     
-    public Type primitiveType(NullType t) { 
-        if (nullType == null) { 
+    public static Type primitiveType(NullType t) { 
+        if (!uniquePrimitiveTypes.contains(nullType)) {
             nullType = new NullType(idIndex++);
             uniquePrimitiveTypes.add(nullType);
-        }
-        return t;
+        }    
+        return nullType;
     }
     
-    public Type primitiveType(StringType t) { 
-        if (stringType == null) { 
+    public static  Type primitiveType(StringType t) { 
+        if (!uniquePrimitiveTypes.contains(stringType)) {
             stringType = new StringType(idIndex++);
             uniquePrimitiveTypes.add(stringType);
-        }
+        }    
         return stringType;
     }
     
-    public Type primitiveType(BoolType t) { 
-        if (boolType == null) { 
+    public static  Type primitiveType(BoolType t) { 
+        if (!uniquePrimitiveTypes.contains(boolType)) {
             boolType = new BoolType(idIndex++);
             uniquePrimitiveTypes.add(boolType);
-        }
+        }    
         return boolType;
     }
     
-    
-            
-   
-    
-    public MethodType methodType(Type[] paramTypes, Type returnType) { 
+    public static MethodType methodType(Type[] paramTypes, Type returnType) { 
         MethodType temp = new MethodType(paramTypes,returnType,idIndex);
         String str = temp.toString();
         for (MethodType mt : uniqueMethodTypes) { 
@@ -94,7 +79,7 @@ public class TypeTable {
         return temp;
     }
     
-    public ClassType classType(ICClass classAST) {
+    public static ClassType classType(ICClass classAST) {
         if (uniqueClassTypes.containsKey(classAST.getName())) { 
             return uniqueClassTypes.get(classAST.getName());
         }
@@ -108,21 +93,21 @@ public class TypeTable {
         
     }
     
-    public ClassType getClassType(String className) { 
+    public static ClassType getClassType(String className) { 
         if (uniqueClassTypes.containsKey(className)) { 
             return uniqueClassTypes.get(className);
         }
         else return null;
     }
     
-    public int getIDByName(String name) { 
+    public static int getIDByName(String name) { 
         if (nameToID.containsKey(name)) { 
             return nameToID.get(name);
         }
         else return -1;
     }
    
-    public ArrayType arrayType(Type elemType) {
+    public static ArrayType arrayType(Type elemType) {
         String str = elemType.toString();
         for (Type ty : uniqueArrayTypes.keySet()) { 
             if (ty.toString().compareTo(str) == 0) { 
@@ -141,7 +126,7 @@ public class TypeTable {
 //        }
 
 
-    public void printTable() {
+    public static void printTable() {
        for (Type prim : uniquePrimitiveTypes) {
            System.out.println(prim.getID() + ": Primitive type: " + prim.toString());
        }
@@ -163,7 +148,7 @@ public class TypeTable {
         
     }
     
-    public boolean isLegalHeirarchy() { 
+    public static boolean isLegalHeirarchy() { 
         ClassType temp;
         for (ClassType c : uniqueClassTypes.values()) { 
             temp = uniqueClassTypes.get(c.getICClass().getSuperClassName());
