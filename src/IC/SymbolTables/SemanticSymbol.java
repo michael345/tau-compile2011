@@ -1,4 +1,7 @@
-package IC.SemanticAnalyser;
+package IC.SymbolTables;
+
+import IC.TYPE.Kind;
+import IC.TYPE.Type;
 
 public class SemanticSymbol {
     private Type type;
@@ -54,7 +57,13 @@ public class SemanticSymbol {
             return "" + kind + ": " + id; 
 
         }
-        return "" + kind + ": " + type + " " + id; 
+        if (isMethod()) { 
+            return "" + kind + " : " + id  + " " + type;
+        }
+        else {
+            return "" + kind + ": " + type + " " + id; 
+        }
+        
     }
     
     

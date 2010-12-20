@@ -1,6 +1,6 @@
 package IC.AST;
 
-import IC.SemanticAnalyser.SymbolTable;
+import IC.SymbolTables.SymbolTable;
 
 /**
  * Abstract AST node base class.
@@ -11,7 +11,7 @@ public abstract class ASTNode {
 
 	private int line;
 	private SymbolTable enclosingScope;
-	private IC.SemanticAnalyser.Type semanticType;
+	private IC.TYPE.Type semanticType;
 
 	/**
 	 * Double dispatch method, to allow a visitor to visit a specific subclass.
@@ -49,11 +49,11 @@ public abstract class ASTNode {
 		return enclosingScope;
 	}
 
-    public IC.SemanticAnalyser.Type getSemanticType() {
+    public IC.TYPE.Type getSemanticType() {
         return semanticType;
     }
 
-    public void setSemanticType(IC.SemanticAnalyser.Type semanticType) {
+    public void setSemanticType(IC.TYPE.Type semanticType) {
         this.semanticType = semanticType;
     }
     

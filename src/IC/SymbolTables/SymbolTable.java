@@ -1,4 +1,4 @@
-package IC.SemanticAnalyser;
+package IC.SymbolTables;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,12 +24,22 @@ public class SymbolTable {
         return null;
     }
     
-    public SymbolTable symbolTableLookup(String id) { // returns child Symbol Table with id = id
+    public SymbolTable symbolTableLookup(String symTableID) { // returns child Symbol Table with id symTableID
         for (SymbolTable child : children) { 
-            if (0 == id.compareTo(child.getId())) { 
+            if (0 == symTableID.compareTo(child.getId())) { 
                 return child;
             }
         }
+        // if we're here we looked for a symbol table that is not direct child of global.
+        // this part makes it possible to find deep son. e.g. if A < B < C want to find B
+        SymbolTable temp;
+        for (SymbolTable child : children) { 
+            if ((temp = child.symbolTableLookup(symTableID)) != null) { 
+                return temp;
+            }   
+        }
+        
+        
         return null;
     }
     

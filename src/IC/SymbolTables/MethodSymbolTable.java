@@ -1,4 +1,4 @@
-package IC.SemanticAnalyser;
+package IC.SymbolTables;
 
 public class MethodSymbolTable extends SymbolTable {
 

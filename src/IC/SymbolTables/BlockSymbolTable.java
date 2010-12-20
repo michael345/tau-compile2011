@@ -1,12 +1,13 @@
-package IC.SemanticAnalyser;
+package IC.SymbolTables;
 
-public class GlobalSymbolTable extends SymbolTable {
-    public GlobalSymbolTable(String id) {
+public class BlockSymbolTable extends SymbolTable {
+
+    public BlockSymbolTable(String id) {
         super(id);
     }
     
     public void printSymbolTable() { 
-        System.out.println("Global Symbol Table: " + getId());
+        System.out.println("Statement Block Symbol Table ( located in " + this.getParentSymbolTable().getId() + " )");
         for (SemanticSymbol sym : getEntries().values()) { 
             System.out.println("\t" + sym.toString());
         }
@@ -14,8 +15,10 @@ public class GlobalSymbolTable extends SymbolTable {
         
         for (SymbolTable child : getChildren()) { 
             child.printSymbolTable();
+            
         }
         System.out.println();
     }
-
 }
+
+
