@@ -10,35 +10,27 @@ public class SymbolTableConstructor implements Visitor {
 
    private String ICFilePath;
    private SymbolTable st;
-   private int blockIndex = 0;
-   private List<SymbolTable> tempFix;
+   private SymbolTable currentScope;
    
-   
-
-
  
    public SymbolTableConstructor(String ICFilePath) {
        this.ICFilePath = ICFilePath;
        this.st = new GlobalSymbolTable(ICFilePath);
-       tempFix = new ArrayList<SymbolTable>();
        
    }
    
    public Object visit(Program program) {
-       //output.append("Abstract Syntax Tree: " + ICFilePath + "\n");
        SemanticSymbol temp; 
        for (ICClass icClass : program.getClasses()) {
            temp = new SemanticSymbol(program.getSemanticType(), new Kind(Kind.CLASS), icClass.getName(), false);
-           if (st.insert(icClass.getName(),temp)) { 
-               
+           if (!st.insert(icClass.getName(),temp)) {  //Symbol already in symbol table
+               System.out.println("Error: Illegal redefinition; element " + icClass.getName() + " in line #" + icClass.getLine());
+               System.exit(-1);
            }
-           else { 
-               
-           }
-          
        }
        
        for (ICClass icClass : program.getClasses()) {
+          currentScope = st;
           st.addChild((ClassSymbolTable)icClass.accept(this));
        }
        
@@ -47,48 +39,61 @@ public class SymbolTableConstructor implements Visitor {
                SymbolTable son = st.removeChild(icClass.getName());
                String dad = icClass.getSuperClassName();
                SymbolTable dadTable = st.symbolTableLookup(dad);
-               dadTable.addChild(son);
-               
+               dadTable.addChild(son); 
            }
-           
         }
-       
-       
-       fix(st);
        program.setEnclosingScope(st);
        return st;  
    }
 
    public Object visit(ICClass icClass) {
 	   SymbolTable classTable = new ClassSymbolTable(icClass.getName());
+	   currentScope = classTable;
        for (Field field : icClass.getFields())
-    	   classTable.insert(field.getName(), new SemanticSymbol(field.getSemanticType(), new Kind(Kind.FIELD), field.getName(), false));
+    	   if (!classTable.insert(field.getName(), new SemanticSymbol(field.getSemanticType(), new Kind(Kind.FIELD), field.getName(), false))) { 
+    	       System.out.println("Error: Illegal redefinition; element " + field.getName() + " in line #" + field.getLine());
+               System.exit(-1);
+    	   }
 
        for (Method method : icClass.getMethods()) {
            if (method instanceof VirtualMethod) { 
-               classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.VIRTUALMETHOD),method.getName(),false));
+               boolean a = classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.VIRTUALMETHOD),method.getName(),false));
+               if (!a) { 
+                   System.out.println("Error: Illegal redefinition; element " + method.getName() + " in line #" + method.getLine());
+                   System.exit(-1);
+               }
            }
-           else 
-               classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.STATICMETHOD),method.getName(),false));
+           else {
+               boolean a = classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.STATICMETHOD),method.getName(),false));
+               if (!a) { 
+                   System.out.println("Error: Illegal redefinition; element " + method.getName() + " in line #" + method.getLine());
+                   System.exit(-1);
+               }
+           }
        }
        
      
-           for (Method method : icClass.getMethods()){
+       for (Method method : icClass.getMethods()) {
+           currentScope = classTable;
     	   classTable.addChild((MethodSymbolTable)method.accept(this));
        }
+       
        icClass.setEnclosingScope(classTable);
        return classTable;
    }
 
    public Object visit(PrimitiveType type) {
+       type.setEnclosingScope(currentScope);
        return null; 
    }
 
    public Object visit(UserType type) {
+       type.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(Field field) {
+       field.setEnclosingScope(currentScope);
        return null;
    }
 
@@ -97,15 +102,12 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(Formal formal) {
+       formal.setEnclosingScope(currentScope);
        return null;   
    }
 
    public Object visit(VirtualMethod method) {
-
 	   return handleMethod(method);
-
-	  
-
    }
 
    public Object visit(StaticMethod method) {
@@ -113,57 +115,70 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(Assignment assignment) {
-       //non-scoped
+       assignment.setEnclosingScope(currentScope);
+       assignment.getAssignment().accept(this);
+       assignment.getVariable().accept(this);
 	   return null;
    }
 
    public Object visit(CallStatement callStatement) {
-       //non-scoped
+       callStatement.setEnclosingScope(currentScope);
 	   return null;
    }
 
    public Object visit(Return returnStatement) {       //non-scoped
        if (returnStatement.hasValue())
            returnStatement.getValue().accept(this);
+       returnStatement.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(If ifStatement) {        
-      SymbolTable ifSymbolTable = new SymbolTable("if");
+      SymbolTable ifSymbolTable = new BlockSymbolTable("if");
+      currentScope = ifSymbolTable;
       ifSymbolTable.addChild((SymbolTable)ifStatement.getOperation().accept(this));
 
        if (ifStatement.hasElse()) { 
-    	   ifSymbolTable.addChild((SymbolTable)ifStatement.getElseOperation().accept(this));
+    	   currentScope = ifSymbolTable;
+           ifSymbolTable.addChild((SymbolTable)ifStatement.getElseOperation().accept(this));
        }
-       ifStatement.setEnclosingScope(ifSymbolTable);
+       ifStatement.setEnclosingScope(ifSymbolTable); //TODO: maybe currentScope
       return ifSymbolTable;
    }
 
    public Object visit(While whileStatement) {
       SymbolTable whileSymbolTable = new SymbolTable("while");
+      whileSymbolTable.setLoop(true);
+      currentScope = whileSymbolTable;
       whileSymbolTable.addChild((SymbolTable)whileStatement.getOperation().accept(this));
-      whileStatement.setEnclosingScope(whileSymbolTable); 
+      whileStatement.setEnclosingScope(whileSymbolTable); //TODO: maybe currentScope
       return whileSymbolTable;
    }
 
-   public Object visit(Break breakStatement) {       //non-scoped
+   public Object visit(Break breakStatement) {       
+       breakStatement.setEnclosingScope(currentScope);
        return null;
    }
 
-   public Object visit(Continue continueStatement) {       //non-scoped
+   public Object visit(Continue continueStatement) {      
+       continueStatement.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(StatementsBlock statementsBlock) {
-     
        SymbolTable blockTable = new BlockSymbolTable("block"); // TODO: want this ID to be statement block in "sfunc"
        SymbolTable symbolTable;
        
        for (Statement statement : statementsBlock.getStatements()) { 
+           currentScope = blockTable; // or symbolTable;
            if (statement instanceof LocalVariable) {
                LocalVariable lv = (LocalVariable)statement;
               
-               blockTable.insert(lv.getName(), new SemanticSymbol(statement.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
+               boolean insertSuccessful = blockTable.insert(lv.getName(), new SemanticSymbol(statement.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
+               if (!insertSuccessful) { 
+                   System.out.println("Error: Illegal redefinition; element " + lv.getName() + " in line #" + lv.getLine());
+                   System.exit(-1);
+               }
                statement.setEnclosingScope(blockTable);
            }
            else {
@@ -175,123 +190,124 @@ public class SymbolTableConstructor implements Visitor {
        }
        
        statementsBlock.setEnclosingScope(blockTable);
+       currentScope = blockTable;
        return blockTable;
        
    }
 
    public Object visit(LocalVariable localVariable) {
-       //addAllSubArraysToTypeTable(localVariable.genullype());
+       localVariable.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(VariableLocation location) {
-      if (location.getLocation() != null) 
-          location.getLocation().accept(this);
-      return null;
+       location.setEnclosingScope(currentScope);
+       if (location.getLocation() != null) 
+           location.getLocation().accept(this);
+       return null;
    }
 
    public Object visit(ArrayLocation location) {
+       location.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(StaticCall call) {
+       call.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(VirtualCall call) {
+       call.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(This thisExpression) {
+       thisExpression.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(NewClass newClass) {
-       return null; // TODO: probably handled when class was declared
+       newClass.setEnclosingScope(currentScope);
+       return null; 
    }
 
    public Object visit(NewArray newArray) {
-       //addAllSubArraysToTypeTable( newArray.genullype());
+       newArray.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(Length length) {
+       length.setEnclosingScope(currentScope);
        return null;
    }
 
-   public Object visit(MathBinaryOp binaryOp) {       
+   public Object visit(MathBinaryOp binaryOp) {
+       binaryOp.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(LogicalBinaryOp binaryOp) {
+       binaryOp.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(MathUnaryOp unaryOp) {
+       unaryOp.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(LogicalUnaryOp unaryOp) {
+       unaryOp.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(Literal literal) {
+       literal.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(ExpressionBlock expressionBlock) {
        expressionBlock.getExpression().accept(this);
+       expressionBlock.setEnclosingScope(currentScope);
        return null;
    }
    
    private Object handleMethod(Method method) {
 	   SymbolTable methodTable = new MethodSymbolTable(method.getName());
 	   SymbolTable symbolTable;//child to be
+	   currentScope = methodTable;
        if (method.getFormals().size() > 0) {
            for (Formal formal : method.getFormals()) { 
-               methodTable.insert(formal.getName(), new SemanticSymbol(formal.getSemanticType(), new Kind(Kind.FORMAL), formal.getName(), false));
+               boolean insertSuccessfully = methodTable.insert(formal.getName(), new SemanticSymbol(formal.getSemanticType(), new Kind(Kind.FORMAL), formal.getName(), false));
+               if (!insertSuccessfully) { 
+                   System.out.println("Error: Illegal redefinition; element " + formal.getName() + " in line #" + formal.getLine());
+                   System.exit(-1);
+               }
            }
        }
 	   for (Statement statement : method.getStatements()) { 
            if(statement instanceof LocalVariable){
         	   LocalVariable lv = (LocalVariable)statement;
-        	   methodTable.insert(lv.getName(), new SemanticSymbol(statement.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
+        	   boolean insertSuccessfully = methodTable.insert(lv.getName(), new SemanticSymbol(statement.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
+        	   if (!insertSuccessfully) { 
+                   System.out.println("Error: Illegal redefinition; element " + lv.getName() + " in line #" + lv.getLine());
+                   System.exit(-1);
+               }
            }
            else {
         	   symbolTable = (SymbolTable)statement.accept(this);
         	   if (symbolTable != null){
         		   methodTable.addChild((SymbolTable)statement.accept(this));
         	   }
+        	   currentScope = methodTable;
            }
        }
-       method.setEnclosingScope(methodTable);	  
+       method.setEnclosingScope(methodTable);	
+       currentScope = methodTable;
        return methodTable;
 }
    
-   private void fix(SymbolTable st){
-	   if ((st.getId().equals("while")) || (st.getId().equals("if"))){
-		   for (SymbolTable s : st.getChildren()) {
-			   if (s!=null){
-			   tempFix.add(s);
-			   }   
-		}  
-	   }
-	   else{
-	   for (SymbolTable s : st.getChildren()) {
-			   fix(s);
-	   		}	
-	   
-	   for (SymbolTable s : tempFix) {
-			st.removeChild(s.getParentSymbolTable().getId());
-			st.addChild(s);
-		   }
-	   tempFix.clear();
-	   for (SymbolTable s : st.getChildren()) {
-		   fix(s);
-   		}
-	   }
-	  
-
-   }
+   
    
 }

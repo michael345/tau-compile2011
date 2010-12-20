@@ -10,13 +10,23 @@ public class SymbolTable {
     private String id;
     private SymbolTable parentSymbolTable;
     private List<SymbolTable> children;
+    private boolean isLoop;
    
     public SymbolTable(String id) {
         this.id = id;
         entries = new HashMap<String,SemanticSymbol>();
         children = new ArrayList<SymbolTable>();
+        isLoop = false;
       }
     
+    public boolean isLoop() {
+        return isLoop;
+    }
+
+    public void setLoop(boolean isLoop) {
+        this.isLoop = isLoop;
+    }
+
     public SemanticSymbol localLookup(String key) { 
         if (entries.containsKey(key)) { 
             return entries.get(key);

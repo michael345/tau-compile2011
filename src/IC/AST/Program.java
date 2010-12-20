@@ -29,5 +29,9 @@ public class Program extends ASTNode {
 	public List<ICClass> getClasses() {
 		return classes;
 	}
+	
+	public void addClass(ICClass icClass) { 
+	    classes.add(icClass);
+	}
 
 }
