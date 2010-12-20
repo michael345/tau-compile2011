@@ -4,15 +4,19 @@ import java.io.FileReader;
 import java.util.LinkedList;
 
 import java_cup.runtime.Symbol;
+import IC.AST.ASTNode;
 import IC.AST.Field;
 import IC.AST.ICClass;
 import IC.AST.Method;
-import IC.AST.PrettyPrinter;
 import IC.AST.Program;
 import IC.Parser.Lexer;
+import IC.Parser.LexicalError;
 import IC.Parser.LibraryParser;
 import IC.Parser.Parser;
 import IC.Parser.SyntaxError;
+import IC.SemanticChecks.BreakContinueChecker;
+import IC.SemanticChecks.SingleMainCheck;
+import IC.SemanticChecks.ThisChecker;
 import IC.SymbolTables.SymbolTable;
 import IC.SymbolTables.SymbolTableConstructor;
 import IC.TYPE.ArrayType;
@@ -26,10 +30,20 @@ import IC.TYPE.VoidType;
 
 public class Compiler {
         
-        public static boolean isPrint(String[] args) {
+        public static boolean isPrintAst(String[] args) {
             for (int i = 0; i < args.length; i++) { 
 
                 if (args[i].compareTo("-print-ast") == 0) { 
+
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        public static boolean isDumpSymTable(String[] args) { 
+            for (int i = 0; i < args.length; i++) { 
+                if (args[i].compareTo("-dump-symtab") == 0) { 
 
                     return true;
                 }
@@ -99,15 +113,18 @@ public class Compiler {
         
         
         
+       
+        
         public static void main(String[] args) {
             //testTypeTable();
-            if (args.length == 0 || args.length > 3) { 
-                System.out.println("Input error - expected: java IC.Compiler <file.ic> [ -L</path/to/libic.sig> ] [ -print-ast ]");
+            //input checking
+            if (args.length == 0 || args.length > 4) { 
+                System.out.println("Input error - expected: java IC.Compiler <file.ic> [options]");
             }
             
             FileReader icTextFile = null;
             FileReader libSigTextFile = null;
-            boolean isPrint = isPrint(args);
+            boolean isPrint = isPrintAst(args);
             boolean parseLibrary = shouldParseLibrary(args);
             String signaturePath = "";
             if (parseLibrary) {
@@ -120,6 +137,11 @@ public class Compiler {
                 Parser icParser = new Parser(icLexer);
                 icParser.printTokens = false;
                 Symbol parseSymbol = icParser.parse();
+                Program icProg = (Program) parseSymbol.value;
+                if (!parseSuccessful(args[0], parseSymbol)) {
+                    System.exit(-1);
+                }
+                
                 if (parseLibrary) { 
                     libSigTextFile = new FileReader(signaturePath);
                     Lexer libSigLexer = new Lexer(libSigTextFile);
@@ -127,30 +149,48 @@ public class Compiler {
                     libSigParser.printTokens = false;
                     Symbol libParseSymbol = libSigParser.parse(); 
                     if (!parseSuccessful(signaturePath, libParseSymbol)) {
-                    	return;
+                        System.exit(-1);
                     }
-                    Program lib = (Program) libParseSymbol.value;
-                    TypeTableConstructor ttc = new TypeTableConstructor(signaturePath);
-                    ttc.visit(lib);
-                    SymbolTableConstructor stc = new SymbolTableConstructor(signaturePath);
-                    SymbolTable st = (SymbolTable) stc.visit(lib);
-                    TypeTable.printTable();
+                    
+                    Program libProg = (Program) libParseSymbol.value; //the lib program
+                    ICClass libraryClass = libProg.getClasses().get(0); //get the library class
+                    icProg.addClass(libraryClass);
+                    
                 }
-                if (!parseSuccessful(args[0], parseSymbol)) {
-                	return;
-                }
-                Program prog = (Program) parseSymbol.value;
+                
+                //AST TREE IS GOOD includes library if needed
                 TypeTableConstructor ttc = new TypeTableConstructor(args[0]);
-                ttc.visit(prog);
+                ttc.visit(icProg); //build type table
+                if (!TypeTable.isLegalHeirarchy()) {
+                    System.out.println("Semantic Error: Illegal class heirarchy.");
+                     System.exit(-1);
+                }
                 SymbolTableConstructor stc = new SymbolTableConstructor(args[0]);
-                SymbolTable st = (SymbolTable) stc.visit(prog);
-                st.printSymbolTable();
-                //TypeTable.printTable();
-                System.out.println("Type heirarchy legality: " + TypeTable.isLegalHeirarchy());
+                SymbolTable st = (SymbolTable) stc.visit(icProg);
+                
+                //semantic checks start here
+                
+                //break continue check
+                
+                semanticChecks(icProg);
+                    
                 
                 
+                
+                if (isDumpSymTable(args)) {
+                    st.printSymbolTable();
+                    TypeTable.printTable();
+                    System.out.println("Type heirarchy legality: " + TypeTable.isLegalHeirarchy()); //TODO: remove this before handing in
+
+                }
+
                 icTextFile.close();
             }catch (SyntaxError se) { 
+                se.printStackTrace();
+                System.exit(-1);
+            }
+            catch (LexicalError se) { 
+                se.printStackTrace();
                 System.exit(-1);
             }  
             
@@ -161,13 +201,48 @@ public class Compiler {
             }
         }
 
+        private static void semanticChecks(Program icProg) {
+            bcCheck(icProg);
+            thisCheck(icProg);
+            if (!mainCheck(icProg)) { 
+                System.out.println("semantic error - must contain exactly one static method main: {string[] -> void} ");
+                System.exit(-1);
+            }
+            
+           
+            
+        }
+
+        private static boolean mainCheck(Program icProg) { 
+            return SingleMainCheck.check(icProg.getEnclosingScope());
+        }
+        private static void bcCheck(Program icProg) {
+            BreakContinueChecker bcCheck = new BreakContinueChecker();
+            Object temp = bcCheck.visit(icProg);
+            ASTNode atemp;
+            if (temp != null) { 
+                atemp = (ASTNode) temp;
+                System.out.println("semantic error at line " + atemp.getLine() + ": break/continue out of loop scope.");
+                System.exit(-1);
+            }
+        }
+        private static void thisCheck(Program icProg) {
+            ThisChecker tCheck = new ThisChecker();
+            Object temp = tCheck.visit(icProg);
+            ASTNode atemp;
+            if (temp != null) { 
+                atemp = (ASTNode) temp;
+                System.out.println("semantic error at line " + atemp.getLine() + ": 'this' cannot appear in a static scope.");
+                System.exit(-1);
+            }
+        }
 		private static boolean parseSuccessful(String path, Symbol parseSymbol) {
 			if (parseSymbol == null) {
 				System.out.println("Error parsing " + path + ".");
 				return false;
 			}
 			else {
-				System.out.println("Parsed " + path + " successfully.");
+				System.out.println("Parsed " + path + " successfully!");
 				return true;
 			}
 		}
