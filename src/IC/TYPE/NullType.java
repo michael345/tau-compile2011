@@ -1,4 +1,4 @@
-package IC.SemanticAnalyser;
+package IC.TYPE;
 
 public class NullType extends Type{
 

@@ -13,14 +13,16 @@ import IC.Parser.Lexer;
 import IC.Parser.LibraryParser;
 import IC.Parser.Parser;
 import IC.Parser.SyntaxError;
-import IC.SemanticAnalyser.ArrayType;
-import IC.SemanticAnalyser.ClassType;
-import IC.SemanticAnalyser.IntType;
-import IC.SemanticAnalyser.MethodType;
-import IC.SemanticAnalyser.Type;
-import IC.SemanticAnalyser.TypeTable;
-import IC.SemanticAnalyser.TypeTableConstructor;
-import IC.SemanticAnalyser.VoidType;
+import IC.SymbolTables.SymbolTable;
+import IC.SymbolTables.SymbolTableConstructor;
+import IC.TYPE.ArrayType;
+import IC.TYPE.ClassType;
+import IC.TYPE.IntType;
+import IC.TYPE.MethodType;
+import IC.TYPE.Type;
+import IC.TYPE.TypeTable;
+import IC.TYPE.TypeTableConstructor;
+import IC.TYPE.VoidType;
 
 public class Compiler {
         
@@ -86,12 +88,12 @@ public class Compiler {
             System.out.println(arrayType1.toString());
             System.out.println(methodType1);
             
-            TypeTable table = new TypeTable();
-            table.primitiveType(intType);
-            table.classType(new ICClass(5,"A",new LinkedList<Field>(),new LinkedList<Method>()));
+            //TypeTable table = new TypeTable();
+            TypeTable.primitiveType(intType);
+            TypeTable.classType(new ICClass(5,"A",new LinkedList<Field>(),new LinkedList<Method>()));
             ICClass b = new ICClass(6, "B", "A", new LinkedList<Field>(),new LinkedList<Method>());
-            table.classType(b);
-            table.printTable();
+            TypeTable.classType(b);
+            TypeTable.printTable();
             
         } 
         
@@ -129,17 +131,22 @@ public class Compiler {
                     }
                     Program lib = (Program) libParseSymbol.value;
                     TypeTableConstructor ttc = new TypeTableConstructor(signaturePath);
-                    TypeTable tt = (TypeTable)ttc.visit(lib);
-                    tt.printTable();
+                    ttc.visit(lib);
+                    SymbolTableConstructor stc = new SymbolTableConstructor(signaturePath);
+                    SymbolTable st = (SymbolTable) stc.visit(lib);
+                    TypeTable.printTable();
                 }
                 if (!parseSuccessful(args[0], parseSymbol)) {
                 	return;
                 }
-                Program lib = (Program) parseSymbol.value;
-                TypeTableConstructor ttc = new TypeTableConstructor(signaturePath);
-                TypeTable tt = (TypeTable)ttc.visit(lib);
-                tt.printTable();
-                System.out.println(tt.isLegalHeirarchy());
+                Program prog = (Program) parseSymbol.value;
+                TypeTableConstructor ttc = new TypeTableConstructor(args[0]);
+                ttc.visit(prog);
+                SymbolTableConstructor stc = new SymbolTableConstructor(args[0]);
+                SymbolTable st = (SymbolTable) stc.visit(prog);
+                st.printSymbolTable();
+                //TypeTable.printTable();
+                System.out.println("Type heirarchy legality: " + TypeTable.isLegalHeirarchy());
                 
                 
                 icTextFile.close();
@@ -149,6 +156,7 @@ public class Compiler {
             
             
             catch (Exception e) {
+               e.printStackTrace();
                System.exit(-1);
             }
         }

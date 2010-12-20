@@ -1,4 +1,4 @@
-package IC.SemanticAnalyser;
+package IC.TYPE;
 
 import IC.AST.ICClass;
 

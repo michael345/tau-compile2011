@@ -1,4 +1,4 @@
-package IC.SemanticAnalyser;
+package IC.TYPE;
 
 import IC.AST.*;
 
@@ -110,7 +110,7 @@ public class TypeTableConstructor implements Visitor {
     }
 
     public Object visit(LibraryMethod method) {
-        method.setSemanticType((IC.SemanticAnalyser.Type) handleMethod(method));
+        method.setSemanticType((IC.TYPE.Type) handleMethod(method));
         return null;
     }
 
@@ -121,12 +121,12 @@ public class TypeTableConstructor implements Visitor {
     }
 
     public Object visit(VirtualMethod method) {
-        method.setSemanticType((IC.SemanticAnalyser.Type) handleMethod(method));
+        method.setSemanticType((IC.TYPE.Type) handleMethod(method));
         return null;
     }
 
     public Object visit(StaticMethod method) {
-        method.setSemanticType((IC.SemanticAnalyser.Type) handleMethod(method));
+        method.setSemanticType((IC.TYPE.Type) handleMethod(method));
         return null;
     }
 
@@ -256,7 +256,7 @@ public class TypeTableConstructor implements Visitor {
 
     public Object visit(Literal literal) {
         String bah = literal.getType().getDescription();
-        IC.SemanticAnalyser.Type temp = null;
+        IC.TYPE.Type temp = null;
         if (bah.compareTo("Literal") == 0) 
             temp = TypeTable.primitiveType(new NullType(0));
         else if (bah.compareTo("Boolean literal") == 0) 

@@ -1,9 +1,10 @@
-package IC.SemanticAnalyser;
+package IC.SymbolTables;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import IC.AST.*;
+import IC.TYPE.Kind;
 
 public class SymbolTableConstructor implements Visitor {
 
@@ -155,7 +156,7 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(StatementsBlock statementsBlock) {
      
-       SymbolTable blockTable = new BlockSymbolTable("block");
+       SymbolTable blockTable = new BlockSymbolTable("block"); // TODO: want this ID to be statement block in "sfunc"
        SymbolTable symbolTable;
        
        for (Statement statement : statementsBlock.getStatements()) { 

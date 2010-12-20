@@ -1,4 +1,4 @@
-package IC.SemanticAnalyser;
+package IC.TYPE;
 
 public class MethodType extends Type {
     private Type[] paramTypes;
