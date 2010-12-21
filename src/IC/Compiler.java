@@ -129,6 +129,7 @@ public class Compiler {
             String signaturePath = "";
             if (parseLibrary) {
                 signaturePath = getSignature(args);
+                
             }
             
             try {           
@@ -148,12 +149,14 @@ public class Compiler {
                     LibraryParser libSigParser = new LibraryParser(libSigLexer);
                     libSigParser.printTokens = false;
                     Symbol libParseSymbol = libSigParser.parse(); 
+                    Program libProg = (Program) libParseSymbol.value; //the lib program
+                    ICClass libraryClass = libProg.getClasses().get(0); //get the library class
+                    LibNameIsLibrary(libraryClass);
                     if (!parseSuccessful(signaturePath, libParseSymbol)) {
                         System.exit(-1);
                     }
                     
-                    Program libProg = (Program) libParseSymbol.value; //the lib program
-                    ICClass libraryClass = libProg.getClasses().get(0); //get the library class
+                   
                     icProg.addClass(libraryClass);
                     
                 }
@@ -174,9 +177,7 @@ public class Compiler {
                 
                 semanticChecks(icProg);
                     
-                
-                
-                
+     
                 if (isDumpSymTable(args)) {
                     st.printSymbolTable();
                     TypeTable.printTable();
@@ -201,7 +202,15 @@ public class Compiler {
             }
         }
 
-        private static void semanticChecks(Program icProg) {
+        private static void LibNameIsLibrary(ICClass libraryClass) {
+			if (libraryClass.getName().compareTo("Library")!=0){
+				System.out.println("semantic error - name of library class must be 'Library' ");
+				System.exit(-1);
+			}
+			
+		}
+
+		private static void semanticChecks(Program icProg) {
             bcCheck(icProg);
             thisCheck(icProg);
             if (!mainCheck(icProg)) { 
