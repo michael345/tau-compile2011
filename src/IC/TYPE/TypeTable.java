@@ -113,17 +113,13 @@ public class TypeTable {
             if (ty.toString().compareTo(str) == 0) { 
                 return uniqueArrayTypes.get(ty); 
             }
-        }
-//        if (uniqueArrayTypes.containsKey(elemType)) { // array type object already created – return it
-//            return uniqueArrayTypes.get(elemType);
-//        }
-//        else {  // object doesn’t exist – create and return it        
-            ArrayType arrt = new ArrayType(elemType,idIndex);
-            uniqueArrayTypes.put(elemType,arrt);
-            idIndex++;
-            return arrt;
-            }
-//        }
+        }   
+        ArrayType arrt = new ArrayType(elemType,idIndex);
+        uniqueArrayTypes.put(elemType,arrt);
+        idIndex++;
+        return arrt;
+    }
+
 
 
     public static void printTable() {
@@ -146,6 +142,27 @@ public class TypeTable {
            System.out.println(mtype.getID() + ": Method type: " + mtype.toString());
        }
         
+    }
+    /** 
+     * Check if subtype is a subtype of type, according to ic specification
+     * **/
+    public static boolean isSupTypeOf(Type subtype, Type type) { 
+        if (subtype == nullType) return true;
+        else if (subtype == type) return true;
+        else if (!(subtype instanceof ClassType) || !(type instanceof ClassType)) return false; // TODO: not sure about this;
+        else {
+            ClassType subClassType = (ClassType) subtype;
+            ClassType classType = (ClassType) type;
+            ClassType temp = subClassType;
+
+            while (temp != null) {
+                if (temp.getICClass().getSemanticType() == classType) { //TODO: MUST check this
+                    return true;
+                }
+                temp = uniqueClassTypes.get(subClassType.getICClass().getSuperClassName());
+            }
+            return false;
+        }
     }
     
     public static boolean isLegalHeirarchy() { 

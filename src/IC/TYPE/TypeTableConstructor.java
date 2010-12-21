@@ -224,7 +224,7 @@ public class TypeTableConstructor implements Visitor {
     }
 
     public Object visit(Length length) {
-        // TODO: maybe set length.setSemanticType to TypeInt ?
+        length.setSemanticType(TypeTable.primitiveType(new IntType(0)));// TODO: maybe set length.setSemanticType to TypeInt ?
         return null;
     }
 
