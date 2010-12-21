@@ -108,7 +108,10 @@ public class ThisChecker implements Visitor {
         Location loc = assignment.getVariable();
         Object temp = null;
         if (loc instanceof VariableLocation) { 
-             temp = ((VariableLocation) loc).getLocation().accept(this);
+            Location l = (Location)((VariableLocation)loc).getLocation();
+        	if (l!=null){ 
+        		temp = l.accept(this);
+        	}
              if (temp != null) { 
                  return temp;
              }
