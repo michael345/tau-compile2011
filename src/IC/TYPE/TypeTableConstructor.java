@@ -1,5 +1,6 @@
 package IC.TYPE;
 
+import IC.BinaryOps;
 import IC.AST.*;
 
 public class TypeTableConstructor implements Visitor {
@@ -135,13 +136,13 @@ public class TypeTableConstructor implements Visitor {
 
     public Object visit(Assignment assignment) {
         assignment.getAssignment().accept(this);
+        assignment.getVariable().accept(this);
         assignment.setSemanticType(assignment.getAssignment().getSemanticType()); 
-        //TODO: does this work?
         return null;
     }
 
     public Object visit(CallStatement callStatement) {
-        // TODO: set callStatement.setSemanticType() to be the return value of the call?
+        callStatement.getCall().accept(this);
         return null;
     }
 
@@ -184,27 +185,37 @@ public class TypeTableConstructor implements Visitor {
 
     public Object visit(LocalVariable localVariable) {
         localVariable.setSemanticType(addAllSubArraysToTypeTable(localVariable.getType()));
+        if (localVariable.hasInitValue()) {
+            localVariable.getInitValue().accept(this);
+        }
         return null;
     }
 
     public Object visit(VariableLocation location) {
-        if (location.getLocation() != null) 
+        if (location.getLocation() != null) {
            location.getLocation().accept(this);
+           
+        }
        return null;
     }
 
     public Object visit(ArrayLocation location) {
-        //TODO set location.setSemanticType to something
+        location.getIndex().accept(this);
+        location.getArray().accept(this);
         return null;
     }
 
     public Object visit(StaticCall call) {
-      //TODO: set call.setSemanticType to something
+        for (Expression param : call.getArguments()) { 
+            param.accept(this);
+        }
         return null;
     }
 
     public Object visit(VirtualCall call) {
-        //TODO: set call.setSemanticType to something
+        for (Expression param : call.getArguments()) { 
+            param.accept(this);
+        }
         return null;
     }
 
@@ -214,43 +225,88 @@ public class TypeTableConstructor implements Visitor {
     }
 
     public Object visit(NewClass newClass) {
-        newClass.setSemanticType(TypeTable.getClassType(newClass.getName())); //TODO: might be errornous :o
-        return null; // TODO: probably handled when class was declared
+        newClass.setSemanticType(TypeTable.getClassType(newClass.getName())); 
+        return null; 
     }
 
     public Object visit(NewArray newArray) {
-        newArray.setSemanticType(addAllSubArraysToTypeTable(newArray.getType()));
+        Type t = addAllSubArraysToTypeTable(newArray.getType());
+        int dim = newArray.getType().getDimension(); //TODO: WTF!? dim == 0?!
+        Type temp = t;
+        for (int i = 0; i < dim; i++) {
+            temp = TypeTable.arrayType(temp);
+        }
+        newArray.setSemanticType(temp);
         return null;
     }
 
     public Object visit(Length length) {
+        length.getArray().accept(this);
         length.setSemanticType(TypeTable.primitiveType(new IntType(0)));// TODO: maybe set length.setSemanticType to TypeInt ?
         return null;
     }
 
     public Object visit(MathBinaryOp binaryOp) {
-        binaryOp.setSemanticType(TypeTable.primitiveType(new IntType(0)));
+        
+        BinaryOps operator = binaryOp.getOperator();
+        Expression first = binaryOp.getFirstOperand();
+        Expression second = binaryOp.getSecondOperand();
         binaryOp.getFirstOperand().accept(this);
-        binaryOp.getSecondOperand().accept(this);        
+        binaryOp.getSecondOperand().accept(this); 
+        
+        if (isString(first) && isString(second) && operator == BinaryOps.PLUS) {
+            binaryOp.setSemanticType(new StringType(0));
+        }
+        
+        else if (operator == BinaryOps.PLUS || operator == BinaryOps.MINUS || operator == BinaryOps.MULTIPLY || operator == BinaryOps.MOD || operator == BinaryOps.DIVIDE ) {
+            if (isInt(first) && isInt(second)) { 
+                binaryOp.setSemanticType(TypeTable.primitiveType(new IntType(0)));
+            }
+        }      
         return null;
     }
 
     public Object visit(LogicalBinaryOp binaryOp) {
-        binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+        BinaryOps operator = binaryOp.getOperator();
+        Expression first = binaryOp.getFirstOperand();
+        Expression second = binaryOp.getSecondOperand();
         binaryOp.getFirstOperand().accept(this);
         binaryOp.getSecondOperand().accept(this); 
+        
+        if (operator == BinaryOps.LOR || operator == BinaryOps.LAND) { 
+            if (isBool(first) && isBool(second)) { 
+                binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+            }
+        }
+        else if (operator == BinaryOps.GT || operator == BinaryOps.LT || operator == BinaryOps.LTE || operator == BinaryOps.GTE ) {
+            if (isInt(first) && isInt(second)) { 
+                binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+            }
+        }
+        else if (operator == BinaryOps.EQUAL || operator == BinaryOps.NEQUAL) { 
+            if (isSubTypeOf(first,second) || isSubTypeOf(second,first)) { 
+                binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+
+            }
+        }
+        
+
         return null;
     }
 
     public Object visit(MathUnaryOp unaryOp) {
-        unaryOp.setSemanticType(TypeTable.primitiveType(new IntType(0)));
         unaryOp.getOperand().accept(this);
+        if (isInt(unaryOp.getOperand())) { //Assumes UMINUS is the only math unary op
+            unaryOp.setSemanticType(TypeTable.primitiveType(new IntType(0)));
+        }
         return null;
     }
 
     public Object visit(LogicalUnaryOp unaryOp) {
-        unaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
         unaryOp.getOperand().accept(this);
+        if (isBool(unaryOp.getOperand())) {
+            unaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+        }
         return null;
     }
 
@@ -292,4 +348,27 @@ public class TypeTableConstructor implements Visitor {
         }
         return temp;
     }
+    private boolean isInt(ASTNode node) {
+        return (node.getSemanticType() == TypeTable.primitiveType(new IntType(0)));
+    }
+    
+    private boolean isBool(ASTNode node) {
+        return (node.getSemanticType() == TypeTable.primitiveType(new BoolType(0)));
+    }
+    
+    private boolean isNull(ASTNode node) {
+        return (node.getSemanticType() == TypeTable.primitiveType(new NullType(0)));
+    }
+    
+    private boolean isString(ASTNode node) {
+        return (node.getSemanticType() == TypeTable.primitiveType(new StringType(0)));
+    }
+    
+    private boolean isVoid(ASTNode node) {
+        return (node.getSemanticType() == TypeTable.primitiveType(new VoidType(0)));
+    }
+    
+    private boolean isSubTypeOf(ASTNode first, ASTNode second) {
+        return (IC.TYPE.TypeTable.isSubTypeOf(first.getSemanticType(), second.getSemanticType()));
+  }
 }
