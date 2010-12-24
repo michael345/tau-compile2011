@@ -122,7 +122,9 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(CallStatement callStatement) {
+       callStatement.getCall().accept(this);
        callStatement.setEnclosingScope(currentScope);
+       
 	   return null;
    }
 
@@ -197,6 +199,10 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(LocalVariable localVariable) {
        localVariable.setEnclosingScope(currentScope);
+       if (localVariable.hasInitValue()) { 
+           //localVariable.getInitValue().setEnclosingScope(currentScope);
+           localVariable.getInitValue().accept(this);
+       }
        return null;
    }
 
@@ -209,6 +215,8 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(ArrayLocation location) {
        location.setEnclosingScope(currentScope);
+       if (location.getArray() != null) 
+           location.getArray().accept(this);
        return null;
    }
 
@@ -239,6 +247,7 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(Length length) {
        length.setEnclosingScope(currentScope);
+       length.getArray().setEnclosingScope(currentScope);
        return null;
    }
 
@@ -289,6 +298,7 @@ public class SymbolTableConstructor implements Visitor {
 	   for (Statement statement : method.getStatements()) { 
            if(statement instanceof LocalVariable){
         	   LocalVariable lv = (LocalVariable)statement;
+        	   lv.accept(this);
         	   boolean insertSuccessfully = methodTable.insert(lv.getName(), new SemanticSymbol(statement.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
         	   if (!insertSuccessfully) { 
                    System.out.println("Error: Illegal redefinition; element " + lv.getName() + " in line #" + lv.getLine());

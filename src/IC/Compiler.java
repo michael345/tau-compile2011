@@ -17,6 +17,7 @@ import IC.Parser.SyntaxError;
 import IC.SemanticChecks.BreakContinueChecker;
 import IC.SemanticChecks.SingleMainCheck;
 import IC.SemanticChecks.ThisChecker;
+import IC.SemanticChecks.TypeChecker;
 import IC.SymbolTables.SymbolTable;
 import IC.SymbolTables.SymbolTableConstructor;
 import IC.TYPE.ArrayType;
@@ -217,11 +218,25 @@ public class Compiler {
                 System.out.println("semantic error - must contain exactly one static method main: {string[] -> void} ");
                 System.exit(-1);
             }
+            typeCheck(icProg);
             
            
             
         }
 
+		private static void typeCheck(Program icProg) {
+		    TypeChecker tc = new TypeChecker();
+            Object temp = tc.visit(icProg);
+            ASTNode atemp;
+            if (temp != null) { 
+                atemp = (ASTNode) temp;
+                System.out.println("semantic error at line " + atemp.getLine() + ": type mismatch.");
+                System.exit(-1);
+            }
+
+		}
+		    
+		
         private static boolean mainCheck(Program icProg) { 
             return SingleMainCheck.check(icProg.getEnclosingScope());
         }

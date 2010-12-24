@@ -146,10 +146,10 @@ public class TypeTable {
     /** 
      * Check if subtype is a subtype of type, according to ic specification
      * **/
-    public static boolean isSupTypeOf(Type subtype, Type type) { 
+    public static boolean isSubTypeOf(Type subtype, Type type) { 
         if (subtype == nullType) return true;
-        else if (subtype == type) return true;
-        else if (!(subtype instanceof ClassType) || !(type instanceof ClassType)) return false; // TODO: not sure about this;
+        else if (subtype.equals(type)) return true;
+        else if (!(subtype instanceof ClassType) || !(type instanceof ClassType)) return false; 
         else {
             ClassType subClassType = (ClassType) subtype;
             ClassType classType = (ClassType) type;

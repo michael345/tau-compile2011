@@ -6,6 +6,7 @@ import IC.AST.Assignment;
 import IC.AST.Break;
 import IC.AST.CallStatement;
 import IC.AST.Continue;
+import IC.AST.Expression;
 import IC.AST.ExpressionBlock;
 import IC.AST.Field;
 import IC.AST.Formal;
@@ -108,8 +109,8 @@ public class ThisChecker implements Visitor {
         Location loc = assignment.getVariable();
         Object temp = null;
         if (loc instanceof VariableLocation) { 
-            Location l = (Location)((VariableLocation)loc).getLocation();
-        	if (l!=null){ 
+            Expression l = ((VariableLocation)loc).getLocation(); //TODO: wtf..?
+        	if (l != null){ 
         		temp = l.accept(this);
         	}
              if (temp != null) { 

@@ -1,70 +1,103 @@
 package IC.SemanticChecks;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import IC.AST.*;
-import IC.TYPE.*;
+import IC.AST.ASTNode;
+import IC.AST.ArrayLocation;
+import IC.AST.Assignment;
+import IC.AST.Break;
+import IC.AST.Call;
+import IC.AST.CallStatement;
+import IC.AST.Continue;
+import IC.AST.Expression;
+import IC.AST.ExpressionBlock;
+import IC.AST.Field;
+import IC.AST.Formal;
+import IC.AST.ICClass;
+import IC.AST.If;
+import IC.AST.Length;
+import IC.AST.LibraryMethod;
+import IC.AST.Literal;
+import IC.AST.LocalVariable;
+import IC.AST.LogicalBinaryOp;
+import IC.AST.LogicalUnaryOp;
+import IC.AST.MathBinaryOp;
+import IC.AST.MathUnaryOp;
+import IC.AST.Method;
+import IC.AST.NewArray;
+import IC.AST.NewClass;
+import IC.AST.PrimitiveType;
+import IC.AST.Program;
+import IC.AST.Return;
+import IC.AST.Statement;
+import IC.AST.StatementsBlock;
+import IC.AST.StaticCall;
+import IC.AST.StaticMethod;
+import IC.AST.This;
+import IC.AST.UserType;
+import IC.AST.VariableLocation;
+import IC.AST.VirtualCall;
+import IC.AST.VirtualMethod;
+import IC.AST.Visitor;
+import IC.AST.While;
+import IC.SymbolTables.BlockSymbolTable;
+import IC.SymbolTables.SemanticSymbol;
+import IC.SymbolTables.SymbolTable;
+import IC.TYPE.ArrayType;
+import IC.TYPE.BoolType;
+import IC.TYPE.IntType;
+import IC.TYPE.Kind;
+import IC.TYPE.MethodType;
+import IC.TYPE.NullType;
+import IC.TYPE.StringType;
+import IC.TYPE.Type;
+import IC.TYPE.TypeTable;
+import IC.TYPE.VoidType;
 
 
 public class TypeChecker implements Visitor {
 
-   
-   
    public Object visit(Program program) {
+       Object temp;
        for (ICClass icClass : program.getClasses()) {
-          icClass.accept(this));
+          temp = icClass.accept(this);
+          if (temp != null) { 
+              return temp;
+          }
        }
-       
        
        return null;  
    }
 
    public Object visit(ICClass icClass) {
-       
+       Object temp;
        for (Field field : icClass.getFields()) {
-           field.accept(this);
+           temp = field.accept(this);
+           if (temp != null) { 
+               return temp;
+           }
        }
 
        for (Method method : icClass.getMethods()) {
-           if (method instanceof VirtualMethod) { 
-               boolean a = classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.VIRTUALMETHOD),method.getName(),false));
-               if (!a) { 
-                   System.out.println("Error: Illegal redefinition; element " + method.getName() + " in line #" + method.getLine());
-                   System.exit(-1);
-               }
-           }
-           else {
-               boolean a = classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.STATICMETHOD),method.getName(),false));
-               if (!a) { 
-                   System.out.println("Error: Illegal redefinition; element " + method.getName() + " in line #" + method.getLine());
-                   System.exit(-1);
-               }
+           temp = method.accept(this);
+           if (temp != null) { 
+               return temp;
            }
        }
        
-     
-       for (Method method : icClass.getMethods()) {
-           currentScope = classTable;
-           classTable.addChild((MethodSymbolTable)method.accept(this));
-       }
-       
-       icClass.setEnclosingScope(classTable);
-       return classTable;
+       return null;
    }
 
    public Object visit(PrimitiveType type) {
-       type.setEnclosingScope(currentScope);
        return null; 
    }
 
    public Object visit(UserType type) {
-       type.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(Field field) {
-       field.setEnclosingScope(currentScope);
        return null;
    }
 
@@ -73,7 +106,6 @@ public class TypeChecker implements Visitor {
    }
 
    public Object visit(Formal formal) {
-       formal.setEnclosingScope(currentScope);
        return null;   
    }
 
@@ -86,120 +118,192 @@ public class TypeChecker implements Visitor {
    }
 
    public Object visit(Assignment assignment) {
-       assignment.setEnclosingScope(currentScope);
        assignment.getAssignment().accept(this);
        assignment.getVariable().accept(this);
+       if (!isSubTypeOf(assignment.getAssignment(), assignment.getVariable())) { 
+           return assignment;
+       }
        return null;
    }
 
    public Object visit(CallStatement callStatement) {
-       callStatement.setEnclosingScope(currentScope);
-       return null;
+       return callStatement.getCall().accept(this);
    }
 
    public Object visit(Return returnStatement) {       //non-scoped
        if (returnStatement.hasValue())
            returnStatement.getValue().accept(this);
-       returnStatement.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(If ifStatement) {        
-      SymbolTable ifSymbolTable = new BlockSymbolTable("if");
-      currentScope = ifSymbolTable;
-      ifSymbolTable.addChild((SymbolTable)ifStatement.getOperation().accept(this));
-
-       if (ifStatement.hasElse()) { 
-           currentScope = ifSymbolTable;
-           ifSymbolTable.addChild((SymbolTable)ifStatement.getElseOperation().accept(this));
-       }
-       ifStatement.setEnclosingScope(ifSymbolTable); //TODO: maybe currentScope
-      return ifSymbolTable;
+     Object temp;
+     temp = ifStatement.getCondition().accept(this);
+     if (temp != null) return temp;
+         temp = ifStatement.getOperation().accept(this);
+     if (temp != null) return temp;
+     if (ifStatement.hasElse()) { 
+         temp = ifStatement.getElseOperation().accept(this);
+         if (temp != null) return temp;
+     }
+     
+     if (!isBool(ifStatement.getCondition())) { 
+         return ifStatement;
+     }
+     return null;
    }
 
    public Object visit(While whileStatement) {
-      SymbolTable whileSymbolTable = new SymbolTable("while");
-      whileSymbolTable.setLoop(true);
-      currentScope = whileSymbolTable;
-      whileSymbolTable.addChild((SymbolTable)whileStatement.getOperation().accept(this));
-      whileStatement.setEnclosingScope(whileSymbolTable); //TODO: maybe currentScope
-      return whileSymbolTable;
+      return null;
    }
 
    public Object visit(Break breakStatement) {       
-       breakStatement.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(Continue continueStatement) {      
-       continueStatement.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(StatementsBlock statementsBlock) {
-       SymbolTable blockTable = new BlockSymbolTable("block"); // TODO: want this ID to be statement block in "sfunc"
-       SymbolTable symbolTable;
+      
        
-       for (Statement statement : statementsBlock.getStatements()) { 
-           currentScope = blockTable; // or symbolTable;
-           if (statement instanceof LocalVariable) {
-               LocalVariable lv = (LocalVariable)statement;
-              
-               boolean insertSuccessful = blockTable.insert(lv.getName(), new SemanticSymbol(statement.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
-               if (!insertSuccessful) { 
-                   System.out.println("Error: Illegal redefinition; element " + lv.getName() + " in line #" + lv.getLine());
-                   System.exit(-1);
-               }
-               statement.setEnclosingScope(blockTable);
-           }
-           else {
-               symbolTable = (SymbolTable)statement.accept(this);
-               if (symbolTable != null){
-                   blockTable.addChild((SymbolTable)statement.accept(this));
-               }
-           }
-       }
-       
-       statementsBlock.setEnclosingScope(blockTable);
-       currentScope = blockTable;
-       return blockTable;
+       return null;
        
    }
 
    public Object visit(LocalVariable localVariable) {
-       localVariable.setEnclosingScope(currentScope);
+       Object temp;
+       if (localVariable.hasInitValue()) { 
+           temp = localVariable.getInitValue().accept(this);
+           if (temp != null) { 
+               return temp;
+           }
+           
+           if (!isSubTypeOf(localVariable.getInitValue(), localVariable)) { 
+               return localVariable;
+           }
+       }
        return null;
    }
 
    public Object visit(VariableLocation location) {
-       location.setEnclosingScope(currentScope);
-       if (location.getLocation() != null) 
-           location.getLocation().accept(this);
-       return null;
+       if (location.getLocation() == null) { 
+           location.setSemanticType(location.getEnclosingScope().lookup(location.getName()).getType());
+           SemanticSymbol symbol = location.getEnclosingScope().lookup(location.getName());
+           Type t = symbol.getType();
+           location.setSemanticType(t);
+           
+           
+           if (location.getLocation() != null) 
+               location.getLocation().accept(this);
+           return null;
+       }
+       else if (location.getLocation() instanceof VariableLocation ) {
+           VariableLocation vl = (VariableLocation) location.getLocation();
+           location.getLocation().setSemanticType(location.getEnclosingScope().lookup(vl.getName()).getType());
+           Type t = location.getLocation().getSemanticType();
+           String str = t.toString(); //this is the classname, for instance A
+           SymbolTable st = getClassSymbolTable(str, location); 
+           Type realType = st.lookup(location.getName()).getType();
+           location.setSemanticType(realType);
+           return null;
+       }
+       else { //take care of static cases, e.g. A.x instead of beler.x
+           return null;
+       }
+       
    }
 
-   public Object visit(ArrayLocation location) {
-       return null;
+  
+
+
+    private SymbolTable getClassSymbolTable(String str, ASTNode startNode) {
+        SymbolTable temp = startNode.getEnclosingScope();
+        while (temp.getParentSymbolTable() != null) { 
+            temp = temp.getParentSymbolTable();
+        }
+        return temp.symbolTableLookup(str);
+    }
+
+public Object visit(ArrayLocation location) {
+       Expression e1 = location.getIndex();
+       Expression e2 = location.getArray();
+       e2.accept(this);
+       if (isInt(e1)) { 
+           if (e2.getSemanticType() instanceof ArrayType) { 
+               ArrayType e3 = (ArrayType) e2.getSemanticType();
+               location.setSemanticType(e3.getElemType());
+               return null;
+           }
+           else { 
+               return location;
+           }
+       }
+       return location;
    }
 
    public Object visit(StaticCall call) {
-       return null;
+       String funcName = call.getName();
+       String className = call.getClassName();
+       SymbolTable st = getClassSymbolTable(className, call);
+       SemanticSymbol methodSymbol = st.lookup(funcName);
+       return checkFormalsToArgs(call, methodSymbol);
+           
+       
    }
 
    public Object visit(VirtualCall call) {
-       return null;
+       String funcName = call.getName();
+       if (call.getLocation() == null) { // method is in the same class as the call
+           SemanticSymbol methodSymbol = call.getEnclosingScope().lookup(funcName);
+           return checkFormalsToArgs(call, methodSymbol);
+       }
+       else {                           // location = object name 
+           VariableLocation objectName = (VariableLocation) call.getLocation();
+           call.getLocation().setSemanticType(call.getEnclosingScope().lookup(objectName.getName()).getType());
+           Type t = call.getLocation().getSemanticType();
+           String str = t.toString(); //this is the classname, for instance A
+           SymbolTable st = getClassSymbolTable(str, call);
+           SemanticSymbol methodSymbol = st.lookup(funcName);
+           return checkFormalsToArgs(call, methodSymbol);
+           
+       }
    }
+
+   private Object checkFormalsToArgs(Call call, SemanticSymbol methodSymbol) {
+       MethodType methType = (MethodType) methodSymbol.getType();
+       Type[] params = methType.getParamTypes();
+       List<Expression> args = call.getArguments();
+       
+       if (args.size() != params.length) { 
+           return call;
+       }
+       for (int i = 0; i < params.length; i++) { 
+           if (!isSubTypeOf(args.get(i), params[i])) { 
+               return call; // args dont fit formals type-wise
+           }
+       }
+       call.setSemanticType(methType.getReturnType());
+       return null;
+}
 
    public Object visit(This thisExpression) { // TODO:
        return null;
    }
 
-   public Object visit(NewClass newClass) { //TODO: similar to newArray below
+   public Object visit(NewClass newClass) { 
+       IC.TYPE.Type type = newClass.getSemanticType();
+       String className = newClass.getName();
+       if (type != TypeTable.getClassType(className)) { 
+           return newClass;
+       }
        return null; 
    }
 
    public Object visit(NewArray newArray) { // Done I think
-       IC.TYPE.Type type = newArray.getType().getSemanticType();
+       Expression size = newArray.getSize();
+       IC.TYPE.Type type = newArray.getSemanticType(); //should be array of 
        if (isInt(newArray.getSize())) { 
            if (newArray.getSemanticType() != TypeTable.arrayType(type)) { 
                return newArray;
@@ -209,7 +313,13 @@ public class TypeChecker implements Visitor {
    }
 
    public Object visit(Length length) {
+       
        if (length.getArray() != null) {
+           length.getArray().accept(this); 
+           Type t = length.getArray().getSemanticType();
+           if (!(t instanceof ArrayType)) { 
+               return length;
+           }
            if (!isInt(length)) { 
                return length;
            }
@@ -218,78 +328,34 @@ public class TypeChecker implements Visitor {
    }
 
    public Object visit(MathBinaryOp binaryOp) {
-       if (isString(binaryOp.getFirstOperand()) && isString(binaryOp.getSecondOperand())) {
-           if (binaryOp.getOperator().getOperatorString().compareTo("+") == 0 && !isString(binaryOp)) { // string + string = not string
-               return binaryOp; // TODO: maybe just exit here with the info of where shit went wrong; e.g. what error triggered
-           }
+       if (!isString(binaryOp) && !isInt(binaryOp)) {
+           return binaryOp;
        }
-       
-       else if (isInt(binaryOp.getFirstOperand()) && isInt(binaryOp.getSecondOperand())) {
-           if (!isInt(binaryOp)) { 
-               return binaryOp; //TODO: same as above;
-           }
-       }
-       
-       
-       
-       if (binaryOp.getOperator().getOperatorString().compareTo("+") == 0) { //plus is special!
-          
-       }
-       else if () {  //multiply
-           if (binaryOp.getFirstOperand().getSemanticType() == TypeTable.primitiveType(new IntType(0))) &&
-           
-       }
-       else { 
-           
-           
-       }
-       
-       binaryOp.setEnclosingScope(currentScope);
+        
        return null;
    }
 
-   public Object visit(LogicalBinaryOp binaryOp) {
-       if (binaryOp.getOperator().getOperatorString().compareTo("&&") == 0 ||
-           binaryOp.getOperator().getOperatorString().compareTo("||") == 0) { 
-           if (isBool(binaryOp.getFirstOperand()) && isBool(binaryOp.getSecondOperand())) { 
-               if (!isBool(binaryOp)) { 
-                   return binaryOp;
-               }
-           }
-       }
-       else if (binaryOp.getOperator().getOperatorString().compareTo("==") == 0 ||
-                   binaryOp.getOperator().getOperatorString().compareTo("!=") == 0) { 
-           if (isSubTypeOf(binaryOp.getFirstOperand(),binaryOp.getSecondOperand()) || 
-                   isSubTypeOf(binaryOp.getSecondOperand(),binaryOp.getFirstOperand())) { 
-               if (!isBool(binaryOp)) { 
-                   return binaryOp;
-               }
-           }
-       }
-       else {}
-       
+   public Object visit(LogicalBinaryOp binaryOp) {       
+       if (!isBool(binaryOp)) { 
+           return binaryOp;
+       } 
        return null;
    }
 
-   private boolean isSubTypeOf(ASTNode first, ASTNode second) {
-      return (IC.TYPE.TypeTable.isSupTypeOf(first.getSemanticType(), second.getSemanticType()));
-}
 
-public Object visit(MathUnaryOp unaryOp) {
-       if (isInt(unaryOp.getOperand())) {
-           if (!isInt(unaryOp)) {
-               return unaryOp;
-           }
-       }
-       return null;
-   }
+
+    public Object visit(MathUnaryOp unaryOp) {
+        if (!isInt(unaryOp)) { 
+            return unaryOp;
+        }
+        return null;
+    }
 
    public Object visit(LogicalUnaryOp unaryOp) {
-       if (isBool(unaryOp.getOperand())) {
-           if (!isBool(unaryOp)) {
-               return unaryOp;
-           }
+       if (!isBool(unaryOp)) { 
+           return unaryOp;
        }
+      
        return null;
    }
 
@@ -321,43 +387,25 @@ public Object visit(MathUnaryOp unaryOp) {
 
    public Object visit(ExpressionBlock expressionBlock) {
        expressionBlock.getExpression().accept(this);
-       expressionBlock.setEnclosingScope(currentScope);
        return null;
    }
    
    private Object handleMethod(Method method) {
-       SymbolTable methodTable = new MethodSymbolTable(method.getName());
-       SymbolTable symbolTable;//child to be
-       currentScope = methodTable;
-       if (method.getFormals().size() > 0) {
-           for (Formal formal : method.getFormals()) { 
-               boolean insertSuccessfully = methodTable.insert(formal.getName(), new SemanticSymbol(formal.getSemanticType(), new Kind(Kind.FORMAL), formal.getName(), false));
-               if (!insertSuccessfully) { 
-                   System.out.println("Error: Illegal redefinition; element " + formal.getName() + " in line #" + formal.getLine());
-                   System.exit(-1);
-               }
+       Object temp;
+       for (Formal formal : method.getFormals()) { 
+           temp = formal.accept(this);
+           if (temp != null) { 
+               return temp;
            }
+           
        }
        for (Statement statement : method.getStatements()) { 
-           if(statement instanceof LocalVariable){
-               LocalVariable lv = (LocalVariable)statement;
-               boolean insertSuccessfully = methodTable.insert(lv.getName(), new SemanticSymbol(statement.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
-               if (!insertSuccessfully) { 
-                   System.out.println("Error: Illegal redefinition; element " + lv.getName() + " in line #" + lv.getLine());
-                   System.exit(-1);
-               }
-           }
-           else {
-               symbolTable = (SymbolTable)statement.accept(this);
-               if (symbolTable != null){
-                   methodTable.addChild((SymbolTable)statement.accept(this));
-               }
-               currentScope = methodTable;
+           temp = statement.accept(this);
+           if (temp != null) { 
+               return temp;
            }
        }
-       method.setEnclosingScope(methodTable);   
-       currentScope = methodTable;
-       return methodTable;
+       return null;
 }
    
    private boolean isInt(ASTNode node) {
@@ -384,5 +432,16 @@ public Object visit(MathUnaryOp unaryOp) {
        return (node1.getSemanticType() == node2.getSemanticType());
    }
    
+   private boolean isSubTypeOf(Type first, Type second) {
+       return (IC.TYPE.TypeTable.isSubTypeOf(first, second));
+ }
    
+   
+   private boolean isSubTypeOf(ASTNode first, Type second) {
+       return isSubTypeOf(first.getSemanticType(), second);
+    }
+   
+   private boolean isSubTypeOf(ASTNode first, ASTNode second) {
+      return isSubTypeOf(first.getSemanticType(), second.getSemanticType());
+   }
 }
