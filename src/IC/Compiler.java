@@ -15,6 +15,7 @@ import IC.Parser.LibraryParser;
 import IC.Parser.Parser;
 import IC.Parser.SyntaxError;
 import IC.SemanticChecks.BreakContinueChecker;
+import IC.SemanticChecks.ScopeChecker;
 import IC.SemanticChecks.SingleMainCheck;
 import IC.SemanticChecks.ThisChecker;
 import IC.SemanticChecks.TypeChecker;
@@ -212,7 +213,8 @@ public class Compiler {
 		}
 
 		private static void semanticChecks(Program icProg) {
-            bcCheck(icProg);
+            scopeCheck(icProg);
+		    bcCheck(icProg);
             thisCheck(icProg);
             if (!mainCheck(icProg)) { 
                 System.out.println("semantic error - must contain exactly one static method main: {string[] -> void} ");
@@ -224,6 +226,18 @@ public class Compiler {
             
         }
 
+		private static void scopeCheck(Program icProg) {
+            ScopeChecker tc = new ScopeChecker();
+            Object temp = tc.visit(icProg);
+            ASTNode atemp;
+            if (temp != null) { 
+                atemp = (ASTNode) temp;
+                System.out.println("semantic error at line " + atemp.getLine() + ": scope rule error.");
+                System.exit(-1);
+            }
+
+        }
+		
 		private static void typeCheck(Program icProg) {
 		    TypeChecker tc = new TypeChecker();
             Object temp = tc.visit(icProg);
