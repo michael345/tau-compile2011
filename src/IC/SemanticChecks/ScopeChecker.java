@@ -159,14 +159,10 @@ public class ScopeChecker implements Visitor {
    }
 
    public Object visit(If ifStatement) {        
-     Object temp;
-     temp = ifStatement.getCondition().accept(this);
-     if (temp != null) return temp;
-         temp = ifStatement.getOperation().accept(this);
-     if (temp != null) return temp;
+      ifStatement.getCondition().accept(this);
+      ifStatement.getOperation().accept(this);
      if (ifStatement.hasElse()) { 
-         temp = ifStatement.getElseOperation().accept(this);
-         if (temp != null) return temp;
+         ifStatement.getElseOperation().accept(this);
      }
      return null;
    }
@@ -221,7 +217,7 @@ public class ScopeChecker implements Visitor {
            }
            else { 
                location.setSemanticType(check1.getType());
-               return null; 
+               return location; 
            }
        }
        else { 
@@ -244,9 +240,6 @@ public class ScopeChecker implements Visitor {
        return location;
        
    }
-
-  
-
 
     private SymbolTable getClassSymbolTable(String str, ASTNode startNode) {//TODO: Write this
         SymbolTable temp = startNode.getEnclosingScope();
