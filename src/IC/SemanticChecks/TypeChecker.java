@@ -42,6 +42,7 @@ import IC.AST.VirtualMethod;
 import IC.AST.Visitor;
 import IC.AST.While;
 import IC.SymbolTables.BlockSymbolTable;
+import IC.SymbolTables.MethodSymbolTable;
 import IC.SymbolTables.SemanticSymbol;
 import IC.SymbolTables.SymbolTable;
 import IC.TYPE.ArrayType;
@@ -131,10 +132,42 @@ public class TypeChecker implements Visitor {
    }
 
    public Object visit(Return returnStatement) {       //non-scoped
-       if (returnStatement.hasValue())
-           returnStatement.getValue().accept(this);
+       String methodId = getEnclosingMethod(returnStatement).getId();
+       MethodType methodType = (MethodType) getEnclosingMethod(returnStatement).lookup(methodId).getType();
+       Type formalReturnType = methodType.getReturnType();
+       Type actualRetType = null;
+       boolean returned = false;
+       
+       if (returnStatement.hasValue()) {
+           returnStatement.getValue().accept(this); 
+           actualRetType = returnStatement.getValue().getSemanticType();
+           returned = true;
+       }
+       
+       if (formalReturnType.equals(new VoidType(0))) { 
+           if (returned) { 
+               System.out.println("semantic error at line " + returnStatement.getLine() + ": " + methodId + " has a return type of void");
+               System.exit(-1);
+           }
+           else { 
+               // All is well. 
+           }
+       }
+       else { //formal return type is not void
+           if (!returned) { 
+               System.out.println("semantic error at line " + returnStatement.getLine() + ": " + methodId + " has a return type of " + formalReturnType + ". must return that type.");
+               System.exit(-1);
+           }
+           else { 
+               if (!isSubTypeOf(actualRetType, formalReturnType)) { 
+                   System.out.println("semantic error at line " + returnStatement.getLine() + ": " + methodId + " return type mismatch.");
+                   System.exit(-1);
+               }
+           }
+       }
        return null;
    }
+
 
    public Object visit(If ifStatement) {        
      Object temp;
@@ -154,6 +187,11 @@ public class TypeChecker implements Visitor {
    }
 
    public Object visit(While whileStatement) {
+      whileStatement.getCondition().accept(this);
+      whileStatement.getOperation().accept(this);
+      if (!isBool(whileStatement.getCondition())) { 
+          return whileStatement;
+      }
       return null;
    }
 
@@ -166,7 +204,13 @@ public class TypeChecker implements Visitor {
    }
 
    public Object visit(StatementsBlock statementsBlock) {
-      
+       Object temp;
+       for (Statement statement : statementsBlock.getStatements()) { 
+           temp = statement.accept(this);
+           if (temp != null) { 
+               return temp;
+           }
+       }
        
        return null;
        
@@ -214,7 +258,7 @@ public class TypeChecker implements Visitor {
        }
        
    }
-
+   
   
 
 
@@ -256,7 +300,7 @@ public Object visit(ArrayLocation location) {
    public Object visit(VirtualCall call) {
        String funcName = call.getName();
        if (call.getLocation() == null) { // method is in the same class as the call
-           SemanticSymbol methodSymbol = call.getEnclosingScope().lookup(funcName);
+           SemanticSymbol methodSymbol = call.getEnclosingScope().lookup(funcName); 
            return checkFormalsToArgs(call, methodSymbol);
        }
        else {                           // location = object name 
@@ -267,7 +311,6 @@ public Object visit(ArrayLocation location) {
            SymbolTable st = getClassSymbolTable(str, call);
            SemanticSymbol methodSymbol = st.lookup(funcName);
            return checkFormalsToArgs(call, methodSymbol);
-           
        }
    }
 
@@ -336,6 +379,8 @@ public Object visit(ArrayLocation location) {
    }
 
    public Object visit(LogicalBinaryOp binaryOp) {       
+       binaryOp.getFirstOperand().accept(this);
+       binaryOp.getSecondOperand().accept(this);
        if (!isBool(binaryOp)) { 
            return binaryOp;
        } 
@@ -387,6 +432,7 @@ public Object visit(ArrayLocation location) {
 
    public Object visit(ExpressionBlock expressionBlock) {
        expressionBlock.getExpression().accept(this);
+       expressionBlock.setSemanticType(expressionBlock.getExpression().getSemanticType());
        return null;
    }
    
@@ -443,5 +489,17 @@ public Object visit(ArrayLocation location) {
    
    private boolean isSubTypeOf(ASTNode first, ASTNode second) {
       return isSubTypeOf(first.getSemanticType(), second.getSemanticType());
+   }
+   
+   //assumes node is indeed in somewhere in method scope
+   private SymbolTable getEnclosingMethod(ASTNode node) {
+       SymbolTable temp = node.getEnclosingScope();
+       while (temp != null) { 
+           if (temp instanceof MethodSymbolTable) { 
+               return temp;
+           }
+           temp = temp.getParentSymbolTable();
+       }
+       return null;
    }
 }
