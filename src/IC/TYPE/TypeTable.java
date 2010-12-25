@@ -148,6 +148,7 @@ public class TypeTable {
      * **/
     public static boolean isSubTypeOf(Type subtype, Type type) { 
         if (subtype == nullType) return true;
+        else if (type == nullType) return false;
         else if (subtype.equals(type)) return true;
         else if (!(subtype instanceof ClassType) || !(type instanceof ClassType)) return false; 
         else {
