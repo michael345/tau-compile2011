@@ -226,6 +226,7 @@ public class SymbolTableConstructor implements Visitor {
        location.setEnclosingScope(currentScope);
        if (location.getArray() != null) 
            location.getArray().accept(this);
+           location.getIndex().accept(this);
        return null;
    }
 
