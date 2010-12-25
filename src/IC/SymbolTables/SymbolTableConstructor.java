@@ -129,7 +129,7 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(Return returnStatement) {     
-       if (returnStatement.hasValue())
+       if (returnStatement.hasValue()) 
            returnStatement.getValue().accept(this);
        returnStatement.setEnclosingScope(currentScope);
        return null;
@@ -257,6 +257,7 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(NewArray newArray) {
+       newArray.getSize().accept(this); //TODO: Amit added this after finding it had no enclosing scope, no idea if its good
        newArray.setEnclosingScope(currentScope);
        return null;
    }

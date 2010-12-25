@@ -180,7 +180,7 @@ public class TypeChecker implements Visitor {
          if (temp != null) return temp;
      }
      
-     if (!isBool(ifStatement.getCondition())) { 
+     if (!Type.isBool(ifStatement.getCondition())) { 
          return ifStatement;
      }
      return null;
@@ -189,7 +189,7 @@ public class TypeChecker implements Visitor {
    public Object visit(While whileStatement) {
       whileStatement.getCondition().accept(this);
       whileStatement.getOperation().accept(this);
-      if (!isBool(whileStatement.getCondition())) { 
+      if (!Type.isBool(whileStatement.getCondition())) { 
           return whileStatement;
       }
       return null;
@@ -273,8 +273,9 @@ public class TypeChecker implements Visitor {
 public Object visit(ArrayLocation location) {
        Expression e1 = location.getIndex();
        Expression e2 = location.getArray();
+       e1.accept(this);
        e2.accept(this);
-       if (isInt(e1)) { 
+       if (Type.isInt(e1)) { 
            if (e2.getSemanticType() instanceof ArrayType) { 
                ArrayType e3 = (ArrayType) e2.getSemanticType();
                location.setSemanticType(e3.getElemType());
@@ -344,10 +345,11 @@ public Object visit(ArrayLocation location) {
        return null; 
    }
 
-   public Object visit(NewArray newArray) { // Done I think
+   public Object visit(NewArray newArray) { // Done I think       
        Expression size = newArray.getSize();
+       size.accept(this);
        IC.TYPE.Type type = newArray.getSemanticType(); //should be array of 
-       if (isInt(newArray.getSize())) { 
+       if (Type.isInt(size)) { 
            if (newArray.getSemanticType() != TypeTable.arrayType(type)) { 
                return newArray;
            }
@@ -363,7 +365,7 @@ public Object visit(ArrayLocation location) {
            if (!(t instanceof ArrayType)) { 
                return length;
            }
-           if (!isInt(length)) { 
+           if (!Type.isInt(length)) { 
                return length;
            }
        }
@@ -371,7 +373,9 @@ public Object visit(ArrayLocation location) {
    }
 
    public Object visit(MathBinaryOp binaryOp) {
-       if (!isString(binaryOp) && !isInt(binaryOp)) {
+       binaryOp.getFirstOperand().accept(this);
+       binaryOp.getSecondOperand().accept(this);
+       if (!Type.isString(binaryOp) && !Type.isInt(binaryOp)) {
            return binaryOp;
        }
         
@@ -381,7 +385,7 @@ public Object visit(ArrayLocation location) {
    public Object visit(LogicalBinaryOp binaryOp) {       
        binaryOp.getFirstOperand().accept(this);
        binaryOp.getSecondOperand().accept(this);
-       if (!isBool(binaryOp)) { 
+       if (!Type.isBool(binaryOp)) { 
            return binaryOp;
        } 
        return null;
@@ -390,14 +394,14 @@ public Object visit(ArrayLocation location) {
 
 
     public Object visit(MathUnaryOp unaryOp) {
-        if (!isInt(unaryOp)) { 
+        if (!Type.isInt(unaryOp)) { 
             return unaryOp;
         }
         return null;
     }
 
    public Object visit(LogicalUnaryOp unaryOp) {
-       if (!isBool(unaryOp)) { 
+       if (!Type.isBool(unaryOp)) { 
            return unaryOp;
        }
       
@@ -407,22 +411,22 @@ public Object visit(ArrayLocation location) {
    public Object visit(Literal literal) {
        String bah = literal.getType().getDescription();
        if (bah.compareTo("Literal") == 0)  { 
-            if (!isNull(literal)) {
+            if (!Type.isNull(literal)) {
                 return literal; // problem, types dont match
             }
        }
        else if (bah.compareTo("Boolean literal") == 0) {
-           if (!isBool(literal)) {
+           if (!Type.isBool(literal)) {
                return literal;
            }
        }
        else if (bah.compareTo("String literal") == 0) {
-           if (!isString(literal)) {
+           if (!Type.isString(literal)) {
                return literal;
            }
        }
        else if (bah.compareTo("Integer literal") == 0) {
-           if (!isInt(literal)) {
+           if (!Type.isInt(literal)) {
                return literal;
            }      
        }
@@ -454,25 +458,6 @@ public Object visit(ArrayLocation location) {
        return null;
 }
    
-   private boolean isInt(ASTNode node) {
-       return (node.getSemanticType() == TypeTable.primitiveType(new IntType(0)));
-   }
-   
-   private boolean isBool(ASTNode node) {
-       return (node.getSemanticType() == TypeTable.primitiveType(new BoolType(0)));
-   }
-   
-   private boolean isNull(ASTNode node) {
-       return (node.getSemanticType() == TypeTable.primitiveType(new NullType(0)));
-   }
-   
-   private boolean isString(ASTNode node) {
-       return (node.getSemanticType() == TypeTable.primitiveType(new StringType(0)));
-   }
-   
-   private boolean isVoid(ASTNode node) {
-       return (node.getSemanticType() == TypeTable.primitiveType(new VoidType(0)));
-   }
    
    private boolean hasSameType(ASTNode node1, ASTNode node2) { 
        return (node1.getSemanticType() == node2.getSemanticType());
