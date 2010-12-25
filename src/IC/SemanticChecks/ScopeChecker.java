@@ -176,9 +176,7 @@ public class ScopeChecker implements Visitor {
       if (temp != null) return temp;
       temp = whileStatement.getOperation().accept(this);
       if (temp != null) return temp;
-      if (!isBool(whileStatement.getCondition())) { 
-          return whileStatement;
-      }
+      
       return null;
    }
 
@@ -440,7 +438,7 @@ public Object visit(ArrayLocation location) {
 }
    
    private boolean isInt(ASTNode node) {
-       return (node.getSemanticType().equals(TypeTable.primitiveType(new IntType(0))));
+       return (node.getSemanticType() == TypeTable.primitiveType(new IntType(0)));
    }
    
    private boolean isBool(ASTNode node) {
