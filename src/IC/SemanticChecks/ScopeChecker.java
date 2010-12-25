@@ -58,7 +58,7 @@ import IC.TYPE.VoidType;
 
 public class ScopeChecker implements Visitor { 
 
-   public Object visit(Program program) { //TODO: Write this
+   public Object visit(Program program) { 
        Object temp;
        for (ICClass icClass : program.getClasses()) {
           temp = icClass.accept(this);
@@ -70,7 +70,7 @@ public class ScopeChecker implements Visitor {
        return null;  
    }
 
-   public Object visit(ICClass icClass) {//TODO: Write this
+   public Object visit(ICClass icClass) {
 	   if(icClass.hasSuperClass()){ //checks for redefinition between two classes when one extends the other
 	       for (Field field : icClass.getFields()) {
 	           String fieldName = field.getName();
@@ -95,7 +95,7 @@ public class ScopeChecker implements Visitor {
            }
        }
 
-       for (Method method : icClass.getMethods()) { //TODO: Write this
+       for (Method method : icClass.getMethods()) { 
            temp = method.accept(this);
            if (temp != null) { 
                return temp;
@@ -105,48 +105,53 @@ public class ScopeChecker implements Visitor {
        return null;
    }
 
-   public Object visit(PrimitiveType type) { //TODO: Write this
+   public Object visit(PrimitiveType type) { 
        return null; 
    }
 
-   public Object visit(UserType type) { //TODO: Write this
+   public Object visit(UserType type) { 
        return null;
    }
  
-   public Object visit(Field field) { //TODO: Write this
+   public Object visit(Field field) { 
        return null;
    }
 
-   public Object visit(LibraryMethod method) { //TODO: Write this
-       return handleMethod(method);
+   public Object visit(LibraryMethod method) { 
+       return null;
    }
 
-   public Object visit(Formal formal) { //TODO: Write this
+   public Object visit(Formal formal) {
        return null;   
    }
 
-   public Object visit(VirtualMethod method) { //TODO: Write this
+   public Object visit(VirtualMethod method) { 
        return handleMethod(method);
    }
 
-   public Object visit(StaticMethod method) { //TODO: Write this
+   public Object visit(StaticMethod method) { 
        return handleMethod(method);
    }
 
-   public Object visit(Assignment assignment) {  //TODO: Write this
-       assignment.getAssignment().accept(this);
-       assignment.getVariable().accept(this);
-       if (!isSubTypeOf(assignment.getAssignment(), assignment.getVariable())) { 
-           return assignment;
+   public Object visit(Assignment assignment) { 
+	   Object temp;
+	   temp = assignment.getAssignment().accept(this);
+	   if (temp != null) { 
+           return temp;
        }
+       temp = assignment.getVariable().accept(this);
+       if (temp != null) { 
+           return temp;
+       }
+       
        return null;
    }
 
-   public Object visit(CallStatement callStatement) { //TODO: Write this
-       return callStatement.getCall().accept(this);
+   public Object visit(CallStatement callStatement) { 
+	   return callStatement.getCall().accept(this);
    }
 
-   public Object visit(Return returnStatement) {      //TODO: Write this
+   public Object visit(Return returnStatement) {      
        if (returnStatement.hasValue())
            returnStatement.getValue().accept(this);
        return null;
@@ -162,9 +167,6 @@ public class ScopeChecker implements Visitor {
          temp = ifStatement.getElseOperation().accept(this);
          if (temp != null) return temp;
      }
-     
-     
-     
      return null;
    }
 
@@ -204,10 +206,6 @@ public class ScopeChecker implements Visitor {
            temp = localVariable.getInitValue().accept(this);
            if (temp != null) { 
                return temp;
-           }
-           
-           if (!isSubTypeOf(localVariable.getInitValue(), localVariable)) { //TODO: Write this
-               return localVariable;
            }
        }
        return null;
@@ -259,49 +257,65 @@ public class ScopeChecker implements Visitor {
         return temp.symbolTableLookup(str);
     }
 
-public Object visit(ArrayLocation location) {//TODO: Write this
+public Object visit(ArrayLocation location) {
        Expression e1 = location.getIndex();
        Expression e2 = location.getArray();
-       e2.accept(this);
-       if (isInt(e1)) { 
-           if (e2.getSemanticType() instanceof ArrayType) { 
-               ArrayType e3 = (ArrayType) e2.getSemanticType();
-               location.setSemanticType(e3.getElemType());
-               return null;
-           }
-           else { 
-               return location;
-           }
+       Object temp;
+       temp = e1.accept(this);
+       if (temp != null) { 
+           return temp;
        }
-       return location;
+       temp = e2.accept(this);
+       if (temp != null) { 
+           return temp;
+       }
+       return null;
    }
 
-   public Object visit(StaticCall call) {//TODO: Write this
+   public Object visit(StaticCall call) {
+	   Object temp;
+	   for (Expression e : call.getArguments()) {
+		temp = e.accept(this);
+		if (temp != null) { 
+	           return temp;
+	       }
+	}
+	   
        String funcName = call.getName();
        String className = call.getClassName();
        SymbolTable st = getClassSymbolTable(className, call);
        SemanticSymbol methodSymbol = st.lookup(funcName);
-       return checkFormalsToArgs(call, methodSymbol);
+   	   return null;
            
        
    }
 
-   public Object visit(VirtualCall call) {//TODO: Write this
+   public Object visit(VirtualCall call) {
+	   Object temp;
+	   for (Expression e : call.getArguments()) {
+		temp = e.accept(this);
+		if (temp != null) { 
+	           return temp;
+	       }
+	}
+	   
        String funcName = call.getName();
        if (call.getLocation() == null) { // method is in the same class as the call
            SemanticSymbol methodSymbol = call.getEnclosingScope().lookup(funcName);
-           return checkFormalsToArgs(call, methodSymbol);
+           if (methodSymbol == null) return call;//not found
        }
        else {                           // location = object name 
            VariableLocation objectName = (VariableLocation) call.getLocation();
-           call.getLocation().setSemanticType(call.getEnclosingScope().lookup(objectName.getName()).getType());
+           SemanticSymbol symbol = call.getEnclosingScope().lookup(objectName.getName());
+           if (symbol == null) return call;//not found
+           call.getLocation().setSemanticType(symbol.getType());
            Type t = call.getLocation().getSemanticType();
            String str = t.toString(); //this is the classname, for instance A
            SymbolTable st = getClassSymbolTable(str, call);
            SemanticSymbol methodSymbol = st.lookup(funcName);
-           return checkFormalsToArgs(call, methodSymbol);
            
        }
+       return null;
    }
 
    private Object checkFormalsToArgs(Call call, SemanticSymbol methodSymbol) {//TODO: Write this
@@ -321,7 +335,7 @@ public Object visit(ArrayLocation location) {//TODO: Write this
        return null;
 }
 
-   public Object visit(This thisExpression) { //TODO: Write this
+   public Object visit(This thisExpression) { 
        return null;
    }
 
@@ -345,22 +359,16 @@ public Object visit(ArrayLocation location) {//TODO: Write this
        return null;
    }
 
-   public Object visit(Length length) {//TODO: Write this
-       
+   public Object visit(Length length) {
+       Object temp;
        if (length.getArray() != null) {
-           length.getArray().accept(this); 
-           Type t = length.getArray().getSemanticType();
-           if (!(t instanceof ArrayType)) { 
-               return length;
-           }
-           if (!isInt(length)) { 
-               return length;
-           }
+           temp = length.getArray().accept(this); 
+           if(temp!=null) return length; 
        }
        return null;
    }
 
-   public Object visit(MathBinaryOp binaryOp) {//TODO: Write this
+   public Object visit(MathBinaryOp binaryOp) {
 	  Object temp;
 	  temp = binaryOp.getFirstOperand().accept(this);
 	  if(temp != null){
@@ -375,7 +383,7 @@ public Object visit(ArrayLocation location) {//TODO: Write this
        return null;
    }
 
-   public Object visit(LogicalBinaryOp binaryOp) {       //TODO: Write this
+   public Object visit(LogicalBinaryOp binaryOp) {       
 	      Object temp;
 		  temp = binaryOp.getFirstOperand().accept(this);
 		  if(temp != null){
@@ -390,14 +398,14 @@ public Object visit(ArrayLocation location) {//TODO: Write this
 
 
 
-    public Object visit(MathUnaryOp unaryOp) {//TODO: Write this
+    public Object visit(MathUnaryOp unaryOp) {
         if (!isInt(unaryOp)) { 
             return unaryOp;
         }
         return null;
     }
 
-   public Object visit(LogicalUnaryOp unaryOp) {//TODO: Write this
+   public Object visit(LogicalUnaryOp unaryOp) {
        if (!isBool(unaryOp)) { 
            return unaryOp;
        }
@@ -405,38 +413,15 @@ public Object visit(ArrayLocation location) {//TODO: Write this
        return null;
    }
 
-   public Object visit(Literal literal) {//TODO: Write this
-       String bah = literal.getType().getDescription();
-       if (bah.compareTo("Literal") == 0)  { 
-            if (!isNull(literal)) {
-                return literal; // problem, types dont match
-            }
-       }
-       else if (bah.compareTo("Boolean literal") == 0) {
-           if (!isBool(literal)) {
-               return literal;
-           }
-       }
-       else if (bah.compareTo("String literal") == 0) {
-           if (!isString(literal)) {
-               return literal;
-           }
-       }
-       else if (bah.compareTo("Integer literal") == 0) {
-           if (!isInt(literal)) {
-               return literal;
-           }      
-       }
-       // Literal is correctly typed
+   public Object visit(Literal literal) {
        return null;
    }
 
-   public Object visit(ExpressionBlock expressionBlock) {//TODO: Write this
-       expressionBlock.getExpression().accept(this);
-       return null;
+   public Object visit(ExpressionBlock expressionBlock) {
+       return expressionBlock.getExpression().accept(this);
    }
    
-   private Object handleMethod(Method method) {//TODO: Write this
+   private Object handleMethod(Method method) {
        Object temp;
        for (Formal formal : method.getFormals()) { 
            temp = formal.accept(this);
