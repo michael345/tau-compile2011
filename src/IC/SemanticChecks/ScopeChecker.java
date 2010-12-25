@@ -2,6 +2,7 @@ package IC.SemanticChecks;
 import java.util.Collection;
 import java.util.List;
 
+import IC.BinaryOps;
 import IC.AST.ASTNode;
 import IC.AST.ArrayLocation;
 import IC.AST.Assignment;
@@ -169,12 +170,9 @@ public class ScopeChecker implements Visitor {
    }
 
    public Object visit(While whileStatement) {
-      Object temp;
-      temp = whileStatement.getCondition().accept(this);
-      if (temp != null) return temp;
-      temp = whileStatement.getOperation().accept(this);
-      if (temp != null) return temp;
       
+      whileStatement.getCondition().accept(this);
+      whileStatement.getOperation().accept(this);
       return null;
    }
 
@@ -362,30 +360,48 @@ public Object visit(ArrayLocation location) {
    }
 
    public Object visit(MathBinaryOp binaryOp) {
-	  Object temp;
-	  temp = binaryOp.getFirstOperand().accept(this);
-	  if(temp != null){
-		  return binaryOp;
-	  }
-	  temp = binaryOp.getSecondOperand().accept(this);
-	  if(temp != null){
-		  return binaryOp;
-	  }
+       BinaryOps operator = binaryOp.getOperator();
+       Expression first = binaryOp.getFirstOperand();
+       Expression second = binaryOp.getSecondOperand();
+       first.accept(this);
+       second.accept(this); 
        
-        
+       if (isString(first) && isString(second) && operator == BinaryOps.PLUS) {
+           binaryOp.setSemanticType(TypeTable.primitiveType(new StringType(0)));
+       }
+       
+       else if (operator == BinaryOps.PLUS || operator == BinaryOps.MINUS || operator == BinaryOps.MULTIPLY || operator == BinaryOps.MOD || operator == BinaryOps.DIVIDE ) {
+           if (isInt(first) && isInt(second)) { 
+               binaryOp.setSemanticType(TypeTable.primitiveType(new IntType(0)));
+           }
+       }      
        return null;
    }
 
    public Object visit(LogicalBinaryOp binaryOp) {       
-	      Object temp;
-		  temp = binaryOp.getFirstOperand().accept(this);
-		  if(temp != null){
-			  return binaryOp;
-		  }
-		  temp = binaryOp.getSecondOperand().accept(this);
-		  if(temp != null){
-			  return binaryOp;
-		  }
+       BinaryOps operator = binaryOp.getOperator();
+       Expression first = binaryOp.getFirstOperand();
+       Expression second = binaryOp.getSecondOperand();
+       binaryOp.getFirstOperand().accept(this);
+       binaryOp.getSecondOperand().accept(this); 
+       
+       if (operator == BinaryOps.LOR || operator == BinaryOps.LAND) { 
+           if (isBool(first) && isBool(second)) { 
+               binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+           }
+       }
+       else if (operator == BinaryOps.GT || operator == BinaryOps.LT || operator == BinaryOps.LTE || operator == BinaryOps.GTE ) {
+           if (isInt(first) && isInt(second)) { 
+               binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+           }
+       }
+       else if (operator == BinaryOps.EQUAL || operator == BinaryOps.NEQUAL) { 
+           if (isSubTypeOf(first,second) || isSubTypeOf(second,first)) { 
+               binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+
+           }
+       }
+		  
        return null;
    }
 
@@ -399,6 +415,11 @@ public Object visit(ArrayLocation location) {
     }
 
    public Object visit(LogicalUnaryOp unaryOp) {
+       unaryOp.getOperand().accept(this);
+       if (Type.isBool(unaryOp.getOperand())) {
+           unaryOp.setSemanticType(TypeTable.primitiveType(TypeTable.boolType));
+       }
+       
        if (!isBool(unaryOp)) { 
            return unaryOp;
        }
@@ -433,23 +454,23 @@ public Object visit(ArrayLocation location) {
 }
    
    private boolean isInt(ASTNode node) {
-       return (node.getSemanticType() == TypeTable.primitiveType(new IntType(0)));
+       return Type.isInt(node);
    }
    
    private boolean isBool(ASTNode node) {
-       return (node.getSemanticType() == TypeTable.primitiveType(new BoolType(0)));
+       return Type.isBool(node);
    }
    
    private boolean isNull(ASTNode node) {
-       return (node.getSemanticType() == TypeTable.primitiveType(new NullType(0)));
+       return Type.isNull(node);
    }
    
    private boolean isString(ASTNode node) {
-       return (node.getSemanticType() == TypeTable.primitiveType(new StringType(0)));
+       return Type.isString(node);
    }
    
    private boolean isVoid(ASTNode node) {
-       return (node.getSemanticType() == TypeTable.primitiveType(new VoidType(0)));
+       return Type.isVoid(node);
    }
    
    private boolean hasSameType(ASTNode node1, ASTNode node2) { 

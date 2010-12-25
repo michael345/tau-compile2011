@@ -3,6 +3,8 @@ class A {
   int i;
 
   static int sfunc(boolean b) {
+   
+    
     if (b) {
       {
         int k = 5;
@@ -17,8 +19,8 @@ class A {
     }
   }
 
-  void vfunc(A a, int max, int val) {
-    int[] arr = new int[max];
+  void vfunc(A a, int max, int val, int[] arr) {
+    //int[] arr = new int[max];
     int i = 0;
     while (i < max){
         arr[i] = val;
@@ -33,6 +35,7 @@ class B extends A {
     int j;
 
     void vfunc(A a, int max, int val) {
+    
     }
 }
 
