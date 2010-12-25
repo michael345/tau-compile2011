@@ -71,7 +71,23 @@ public class ScopeChecker implements Visitor {
    }
 
    public Object visit(ICClass icClass) {//TODO: Write this
-       Object temp;
+	   if(icClass.hasSuperClass()){ //checks for redefinition between two classes when one extends the other
+	       for (Field field : icClass.getFields()) {
+	           String fieldName = field.getName();
+	           if(icClass.getEnclosingScope().getParentSymbolTable().lookup(fieldName)!=null){
+	        	   return field;
+	           }
+	       }
+	
+	       for (Method method : icClass.getMethods()) {
+		           String methodName = method.getName();
+		           if(icClass.getEnclosingScope().getParentSymbolTable().lookup(methodName)!=null){
+		        	   return method;
+		           }
+		       }
+	       }
+	   
+	   Object temp;
        for (Field field : icClass.getFields()) {
            temp = field.accept(this);
            if (temp != null) { 
@@ -136,7 +152,7 @@ public class ScopeChecker implements Visitor {
        return null;
    }
 
-   public Object visit(If ifStatement) {        //TODO: Write this
+   public Object visit(If ifStatement) {        
      Object temp;
      temp = ifStatement.getCondition().accept(this);
      if (temp != null) return temp;
@@ -147,32 +163,42 @@ public class ScopeChecker implements Visitor {
          if (temp != null) return temp;
      }
      
-     if (!isBool(ifStatement.getCondition())) { 
-         return ifStatement;
-     }
+     
+     
      return null;
    }
 
-   public Object visit(While whileStatement) {//TODO: Write this
+   public Object visit(While whileStatement) {
+      Object temp;
+      temp = whileStatement.getCondition().accept(this);
+      if (temp != null) return temp;
+      temp = whileStatement.getOperation().accept(this);
+      if (temp != null) return temp;
+      if (!isBool(whileStatement.getCondition())) { 
+          return whileStatement;
+      }
       return null;
    }
 
-   public Object visit(Break breakStatement) {       //TODO: Write this
+   public Object visit(Break breakStatement) {      
        return null;
    }
 
-   public Object visit(Continue continueStatement) {      //TODO: Write this
+   public Object visit(Continue continueStatement) {      
        return null;
    }
 
-   public Object visit(StatementsBlock statementsBlock) {//TODO: Write this
-      
+   public Object visit(StatementsBlock statementsBlock) {
+       Object temp;
+	   for (Statement statement : statementsBlock.getStatements()) {
+    	   temp = statement.accept(this);
+    	   if (temp != null) return statement;
+	}
+	   return null;
        
-       return null;
-       
    }
 
-   public Object visit(LocalVariable localVariable) {//TODO: Write this
+   public Object visit(LocalVariable localVariable) {
        Object temp;
        if (localVariable.hasInitValue()) { 
            temp = localVariable.getInitValue().accept(this);
@@ -190,6 +216,7 @@ public class ScopeChecker implements Visitor {
    public Object visit(VariableLocation location) {//TODO: Test this
        
        if (!location.isExternal()) { 
+    	   
            SemanticSymbol check1 = location.getEnclosingScope().lookup(location.getName());
            if (check1 == null) { // Variable used before definition!
                System.out.println("semantic error at line " + location.getLine() + ": variable used before definition");
@@ -197,7 +224,7 @@ public class ScopeChecker implements Visitor {
            }
            else { 
                location.setSemanticType(check1.getType());
-               return location; 
+               return null; 
            }
        }
        else { 
@@ -334,17 +361,30 @@ public Object visit(ArrayLocation location) {//TODO: Write this
    }
 
    public Object visit(MathBinaryOp binaryOp) {//TODO: Write this
-       if (!isString(binaryOp) && !isInt(binaryOp)) {
-           return binaryOp;
-       }
+	  Object temp;
+	  temp = binaryOp.getFirstOperand().accept(this);
+	  if(temp != null){
+		  return binaryOp;
+	  }
+	  temp = binaryOp.getSecondOperand().accept(this);
+	  if(temp != null){
+		  return binaryOp;
+	  }
+       
         
        return null;
    }
 
    public Object visit(LogicalBinaryOp binaryOp) {       //TODO: Write this
-       if (!isBool(binaryOp)) { 
-           return binaryOp;
-       } 
+	      Object temp;
+		  temp = binaryOp.getFirstOperand().accept(this);
+		  if(temp != null){
+			  return binaryOp;
+		  }
+		  temp = binaryOp.getSecondOperand().accept(this);
+		  if(temp != null){
+			  return binaryOp;
+		  }
        return null;
    }
 
@@ -415,7 +455,7 @@ public Object visit(ArrayLocation location) {//TODO: Write this
 }
    
    private boolean isInt(ASTNode node) {
-       return (node.getSemanticType() == TypeTable.primitiveType(new IntType(0)));
+       return (node.getSemanticType().equals(TypeTable.primitiveType(new IntType(0))));
    }
    
    private boolean isBool(ASTNode node) {

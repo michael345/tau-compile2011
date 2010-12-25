@@ -128,7 +128,7 @@ public class SymbolTableConstructor implements Visitor {
 	   return null;
    }
 
-   public Object visit(Return returnStatement) {       //non-scoped
+   public Object visit(Return returnStatement) {     
        if (returnStatement.hasValue())
            returnStatement.getValue().accept(this);
        returnStatement.setEnclosingScope(currentScope);
@@ -137,23 +137,32 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(If ifStatement) {        
       SymbolTable ifSymbolTable = new BlockSymbolTable("if");
+      ifStatement.setEnclosingScope(ifSymbolTable);
+      ifSymbolTable.setParentSymbolTable(currentScope);
       currentScope = ifSymbolTable;
+      ifStatement.getCondition().accept(this);
       ifSymbolTable.addChild((SymbolTable)ifStatement.getOperation().accept(this));
+      currentScope = ifSymbolTable;
 
        if (ifStatement.hasElse()) { 
-    	   currentScope = ifSymbolTable;
            ifSymbolTable.addChild((SymbolTable)ifStatement.getElseOperation().accept(this));
        }
-       ifStatement.setEnclosingScope(ifSymbolTable); //TODO: maybe currentScope
-      return ifSymbolTable;
+       
+       currentScope = ifSymbolTable;
+       return ifSymbolTable;
    }
 
    public Object visit(While whileStatement) {
+	   
       SymbolTable whileSymbolTable = new SymbolTable("while");
-      whileSymbolTable.setLoop(true);
-      currentScope = whileSymbolTable;
-      whileSymbolTable.addChild((SymbolTable)whileStatement.getOperation().accept(this));
       whileStatement.setEnclosingScope(whileSymbolTable); //TODO: maybe currentScope
+      whileSymbolTable.setLoop(true);
+      whileSymbolTable.setParentSymbolTable(currentScope);
+      currentScope = whileSymbolTable;
+      whileStatement.getCondition().accept(this);
+      whileSymbolTable.addChild((SymbolTable)whileStatement.getOperation().accept(this));
+     
+      currentScope = whileSymbolTable;
       return whileSymbolTable;
    }
 
@@ -170,10 +179,13 @@ public class SymbolTableConstructor implements Visitor {
    public Object visit(StatementsBlock statementsBlock) {
        SymbolTable blockTable = new BlockSymbolTable("block"); // TODO: want this ID to be statement block in "sfunc"
        SymbolTable symbolTable;
-       
+       statementsBlock.setEnclosingScope(blockTable);
+       blockTable.setParentSymbolTable(currentScope);
        for (Statement statement : statementsBlock.getStatements()) { 
-           currentScope = blockTable; // or symbolTable;
+           currentScope = blockTable; 
+           
            if (statement instanceof LocalVariable) {
+        	   statement.accept(this);
                LocalVariable lv = (LocalVariable)statement;
               
                boolean insertSuccessful = blockTable.insert(lv.getName(), new SemanticSymbol(statement.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
@@ -181,7 +193,6 @@ public class SymbolTableConstructor implements Visitor {
                    System.out.println("Error: Illegal redefinition; element " + lv.getName() + " in line #" + lv.getLine());
                    System.exit(-1);
                }
-               statement.setEnclosingScope(blockTable);
            }
            else {
                symbolTable = (SymbolTable)statement.accept(this);
@@ -191,7 +202,6 @@ public class SymbolTableConstructor implements Visitor {
            }
        }
        
-       statementsBlock.setEnclosingScope(blockTable);
        currentScope = blockTable;
        return blockTable;
        
@@ -200,7 +210,6 @@ public class SymbolTableConstructor implements Visitor {
    public Object visit(LocalVariable localVariable) {
        localVariable.setEnclosingScope(currentScope);
        if (localVariable.hasInitValue()) { 
-           //localVariable.getInitValue().setEnclosingScope(currentScope);
            localVariable.getInitValue().accept(this);
        }
        return null;
@@ -259,21 +268,27 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(MathBinaryOp binaryOp) {
        binaryOp.setEnclosingScope(currentScope);
+       binaryOp.getFirstOperand().accept(this);
+       binaryOp.getSecondOperand().accept(this);
        return null;
    }
 
    public Object visit(LogicalBinaryOp binaryOp) {
        binaryOp.setEnclosingScope(currentScope);
+       binaryOp.getFirstOperand().accept(this);
+       binaryOp.getSecondOperand().accept(this);
        return null;
    }
 
    public Object visit(MathUnaryOp unaryOp) {
        unaryOp.setEnclosingScope(currentScope);
+       unaryOp.getOperand().accept(this);
        return null;
    }
 
    public Object visit(LogicalUnaryOp unaryOp) {
        unaryOp.setEnclosingScope(currentScope);
+       unaryOp.getOperand().accept(this);
        return null;
    }
 
@@ -290,10 +305,14 @@ public class SymbolTableConstructor implements Visitor {
    
    private Object handleMethod(Method method) {
 	   SymbolTable methodTable = new MethodSymbolTable(method.getName());
+	   method.setEnclosingScope(methodTable);
+	   methodTable.setParentSymbolTable(currentScope);
 	   SymbolTable symbolTable;//child to be
+	   
 	   currentScope = methodTable;
        if (method.getFormals().size() > 0) {
            for (Formal formal : method.getFormals()) { 
+        	   formal.accept(this);
                boolean insertSuccessfully = methodTable.insert(formal.getName(), new SemanticSymbol(formal.getSemanticType(), new Kind(Kind.FORMAL), formal.getName(), false));
                if (!insertSuccessfully) { 
                    System.out.println("Error: Illegal redefinition; element " + formal.getName() + " in line #" + formal.getLine());
@@ -304,6 +323,7 @@ public class SymbolTableConstructor implements Visitor {
 	   for (Statement statement : method.getStatements()) { 
            if(statement instanceof LocalVariable){
         	   LocalVariable lv = (LocalVariable)statement;
+        	  
         	   lv.accept(this);
         	   boolean insertSuccessfully = methodTable.insert(lv.getName(), new SemanticSymbol(statement.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
         	   if (!insertSuccessfully) { 
@@ -314,13 +334,11 @@ public class SymbolTableConstructor implements Visitor {
            else {
         	   symbolTable = (SymbolTable)statement.accept(this);
         	   if (symbolTable != null){
-        		   methodTable.addChild((SymbolTable)statement.accept(this));
+        		   methodTable.addChild(symbolTable);
         	   }
         	   currentScope = methodTable;
            }
        }
-       method.setEnclosingScope(methodTable);	
-       currentScope = methodTable;
        return methodTable;
 }
    
