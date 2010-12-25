@@ -221,11 +221,17 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(StaticCall call) {
+	   for (Expression e : call.getArguments()){
+    	   e.accept(this);
+       }
        call.setEnclosingScope(currentScope);
        return null;
    }
 
    public Object visit(VirtualCall call) {
+	   for (Expression e : call.getArguments()){
+    	   e.accept(this);
+       }
        call.setEnclosingScope(currentScope);
        return null;
    }
