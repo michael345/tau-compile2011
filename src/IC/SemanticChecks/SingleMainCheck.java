@@ -2,6 +2,7 @@ package IC.SemanticChecks;
 
 import IC.AST.ICClass;
 import IC.AST.Method;
+import IC.SymbolTables.ClassSymbolTable;
 import IC.SymbolTables.SemanticSymbol;
 import IC.SymbolTables.SymbolTable;
 import IC.TYPE.Type;
@@ -23,14 +24,19 @@ public class SingleMainCheck {
     }
 
     private static int handleClass(SymbolTable classTable) {
-           SemanticSymbol sym = classTable.lookup("main");
-           if (sym == null) { 
-               return 0;
+    	   int sum = 0;
+           SemanticSymbol sym = classTable.localLookup("main");
+           if (sym != null) { 
+               if (sym.toString().compareTo("Static method : main {string[] -> void}") == 0) {
+               sum++;
+               }
            }
-           if (sym.toString().compareTo("Static method : main {string[] -> void}") == 0) {
-               return 1;
+           for (SymbolTable child : classTable.getChildren()) {
+        	   if(child instanceof ClassSymbolTable){
+        		   sum += handleClass(child);
+        	   }
            }
-           return 0;
+           return sum;
         
     }
 
