@@ -81,7 +81,8 @@ public class ScopeChecker implements Visitor {
 	
 	       for (Method method : icClass.getMethods()) {
 		           String methodName = method.getName();
-		           if(icClass.getEnclosingScope().getParentSymbolTable().lookup(methodName)!=null){
+		           SemanticSymbol classFromUpper = icClass.getEnclosingScope().getParentSymbolTable().lookup(methodName);
+		           if(classFromUpper!=null){
 		        	   return method;
 		           }
 		       }
