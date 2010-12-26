@@ -89,6 +89,7 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(UserType type) {
        type.setEnclosingScope(currentScope);
+       
        return null;
    }
 
@@ -212,6 +213,7 @@ public class SymbolTableConstructor implements Visitor {
        if (localVariable.hasInitValue()) { 
            localVariable.getInitValue().accept(this);
        }
+       localVariable.getType().accept(this);
        return null;
    }
 
