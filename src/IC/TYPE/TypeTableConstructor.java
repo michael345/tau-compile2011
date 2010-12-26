@@ -234,6 +234,7 @@ public class TypeTableConstructor implements Visitor {
     }
 
     public Object visit(NewArray newArray) {
+        newArray.getSize().accept(this);
         Type t = addAllSubArraysToTypeTable(newArray.getType());
         int dim = newArray.getType().getDimension(); 
         Type temp = TypeTable.arrayType(t);

@@ -292,7 +292,7 @@ public Object visit(ArrayLocation location) {
        String funcName = call.getName();
        String className = call.getClassName();
        SymbolTable st = getClassSymbolTable(className, call);
-       SemanticSymbol methodSymbol = st.staticLookup(className,funcName);
+       SemanticSymbol methodSymbol = st.staticLookup(className,funcName,call);
        return checkFormalsToArgs(call, methodSymbol);
            
        
@@ -348,11 +348,11 @@ public Object visit(ArrayLocation location) {
    public Object visit(NewArray newArray) { // Done I think       
        Expression size = newArray.getSize();
        size.accept(this);
-       int dim = newArray.getType().getDimension();
+    //   int dim = newArray.getType().getDimension();
        Type arrayType = Type.getArrayType(newArray); 
        
-       IC.TYPE.Type type = newArray.getSemanticType(); //should be array of 
-       if (Type.isInt(size)) { 
+      // IC.TYPE.Type type = newArray.getSemanticType(); //should be array of 
+       if (Type.isInt(newArray.getSize())) { 
            if (newArray.getSemanticType() != arrayType) { 
                return newArray;
            }
