@@ -65,4 +65,5 @@ public abstract class Type {
         return (node.getSemanticType() instanceof VoidType);
     }
     
+    
 }

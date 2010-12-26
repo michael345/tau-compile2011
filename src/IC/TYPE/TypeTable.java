@@ -179,5 +179,13 @@ public class TypeTable {
         return true;
         
     }
+    public static Type returnElemType(Type semanticType) {
+        if (semanticType instanceof ArrayType) { 
+            return ((ArrayType) semanticType).getElemType();
+        }
+        else {
+            return null;
+        }
+   }
 }
 

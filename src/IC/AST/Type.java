@@ -1,5 +1,6 @@
 package IC.AST;
 
+
 /**
  * Abstract base class for data type AST nodes.
  * 
@@ -32,4 +33,6 @@ public abstract class Type extends ASTNode {
 	public void incrementDimension() {
 		++dimension;
 	}
+
+    
 }

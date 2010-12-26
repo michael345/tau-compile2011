@@ -1,0 +1,30 @@
+class A {
+
+	int x;
+	
+	void foo() {
+		string x;
+		x = "1"; 			// here 'x' refers to the local variable 'x'
+		this.x = 3; 		// here 'x' refers to the field 'x'
+		
+		Library.print(x);
+		Library.printi(this.x);		
+	}
+
+	static void main(string[] args){ 
+	 
+	 }
+}
+
+
+class B {
+	
+	void foo() {
+		int x;
+		{
+			boolean x;
+			x = true; // 'x' refers to the variable defined in the inner scope.
+		}
+	}
+	
+}

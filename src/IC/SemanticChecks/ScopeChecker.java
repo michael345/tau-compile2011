@@ -234,18 +234,12 @@ public class ScopeChecker implements Visitor {
         return temp.symbolTableLookup(str);
     }
 
-public Object visit(ArrayLocation location) {
+public Object visit(ArrayLocation location) {   
        Expression e1 = location.getIndex();
        Expression e2 = location.getArray();
        Object temp;
-       temp = e1.accept(this);
-       if (temp != null) { 
-           return temp;
-       }
-       temp = e2.accept(this);
-       if (temp != null) { 
-           return temp;
-       }
+       e1.accept(this);
+       e2.accept(this);
        return null;
    }
 

@@ -11,7 +11,7 @@ class A {
     }
     else {
       A x = new A();
-      int[] array1 = new int[x];
+      int[] array1 = new int[5];
       x.i = 9;
       x.str = "hello";
       return 0;
@@ -20,7 +20,8 @@ class A {
 
   void vfunc(A a, int max, int val) {
     int[] arr = new int[max];
-    int i = 0;
+    this.i = 0;
+    int i = 4;
     while (i < max){
         arr[i] = val;
         i = i + 1;
