@@ -357,6 +357,10 @@ public Object visit(ArrayLocation location) {
                return newArray;
            }
        }
+       else { 
+           System.out.println("semantic error at line " + newArray.getLine() + ": array size must be of int type.");
+           System.exit(-1);
+       }
        return null;
    }
 

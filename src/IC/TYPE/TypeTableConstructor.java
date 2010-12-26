@@ -27,6 +27,10 @@ public class TypeTableConstructor implements Visitor {
     private Type addAllSubArraysToTypeTable(IC.AST.Type type) { 
         int dim = type.getDimension();
         Type temp = stringToType(type.getName());
+        if (temp == null) { 
+            System.out.println("Semantic error on line " + type.getLine() + ": " + type.getName() + " unresolved type.");
+            System.exit(-1);
+        }
         // adding the basic element of the array (if array at all)
         if (type.getName().compareTo("int") == 0) { 
             TypeTable.primitiveType(new IntType(0));
@@ -231,7 +235,7 @@ public class TypeTableConstructor implements Visitor {
 
     public Object visit(NewArray newArray) {
         Type t = addAllSubArraysToTypeTable(newArray.getType());
-        int dim = newArray.getType().getDimension(); //TODO: WTF!? dim == 0?!
+        int dim = newArray.getType().getDimension(); 
         Type temp = TypeTable.arrayType(t);
 
         for (int i = 0; i < dim-1; i++) {

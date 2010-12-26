@@ -11,6 +11,7 @@ class A {
     }
     else {
       A x = new A();
+      int[] array1 = new int[x];
       x.i = 9;
       x.str = "hello";
       return 0;
