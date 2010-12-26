@@ -62,10 +62,7 @@ public class ScopeChecker implements Visitor {
    public Object visit(Program program) { 
        Object temp;
        for (ICClass icClass : program.getClasses()) {
-          temp = icClass.accept(this);
-          if (temp != null) { 
-              return temp;
-          }
+          icClass.accept(this);
        }
        
        return null;  
@@ -76,7 +73,8 @@ public class ScopeChecker implements Visitor {
 	       for (Field field : icClass.getFields()) {
 	           String fieldName = field.getName();
 	           if(icClass.getEnclosingScope().getParentSymbolTable().lookup(fieldName)!=null){
-	        	   return field;
+	        	   System.out.println("semantic error at line " + field.getLine() + " : field " + field.getName() +" is redefined in extending class");
+	        	   System.exit(-1);
 	           }
 	       }
 	
@@ -84,25 +82,19 @@ public class ScopeChecker implements Visitor {
 		           String methodName = method.getName();
 		           SemanticSymbol idFromUpper = icClass.getEnclosingScope().getParentSymbolTable().lookup(methodName);
 		           if(idFromUpper!=null && (idFromUpper.getKind().getKind() == new Kind(Kind.FIELD).getKind())){
-		        	   System.out.println("redefinition between two classes when one extends the other");
-		        	   return method;
+		        	   System.out.println("semantic error at line " + method.getLine() + " : method " + method.getName() +" is redefined in extending class");
+		        	   System.exit(-1);
+		        	   
 		           }
 		       }
 	       }
 	   
-	   Object temp;
        for (Field field : icClass.getFields()) {
-           temp = field.accept(this);
-           if (temp != null) { 
-               return temp;
-           }
+           field.accept(this);
        }
 
        for (Method method : icClass.getMethods()) { 
-           temp = method.accept(this);
-           if (temp != null) { 
-               return temp;
-           }
+           method.accept(this);
        }
        
        return null;
@@ -113,6 +105,12 @@ public class ScopeChecker implements Visitor {
    }
 
    public Object visit(UserType type) { 
+	   String className = type.getName();
+	   SymbolTable st = getClassSymbolTable(className, type);
+       if (st == null){
+    	   System.out.println("semantic error at line " + type.getLine() + " : Class " + className +" is undefined");
+    	   System.exit(-1);
+       }
        return null;
    }
  
@@ -137,15 +135,8 @@ public class ScopeChecker implements Visitor {
    }
 
    public Object visit(Assignment assignment) { 
-	   Object temp;
-	   temp = assignment.getAssignment().accept(this);
-	   if (temp != null) { 
-           return temp;
-       }
-       temp = assignment.getVariable().accept(this);
-       if (temp != null) { 
-           return temp;
-       }
+	   assignment.getAssignment().accept(this);
+       assignment.getVariable().accept(this);
        
        return null;
    }
@@ -185,23 +176,17 @@ public class ScopeChecker implements Visitor {
    }
 
    public Object visit(StatementsBlock statementsBlock) {
-       Object temp;
 	   for (Statement statement : statementsBlock.getStatements()) {
-    	   temp = statement.accept(this);
-    	   if (temp != null) return statement;
+    	   statement.accept(this);
 	}
-	   return null;
-       
+	   return null; 
    }
 
    public Object visit(LocalVariable localVariable) {
-       Object temp;
        if (localVariable.hasInitValue()) { 
-           temp = localVariable.getInitValue().accept(this);
-           if (temp != null) { 
-               return temp;
-           }
+           localVariable.getInitValue().accept(this);
        }
+       localVariable.getType().accept(this);
        return null;
    }
 
@@ -211,7 +196,7 @@ public class ScopeChecker implements Visitor {
     	   
            SemanticSymbol check1 = location.getEnclosingScope().lookup(location.getName());
            if (check1 == null) { // Variable used before definition!
-               System.out.println("semantic error at line " + location.getLine() + ": variable used before definition");
+               System.out.println("semantic error at line " + location.getLine() + ": variable '" + location.getName() + "' used before definition");
                System.exit(-1);
            }
            else { 
@@ -264,30 +249,30 @@ public Object visit(ArrayLocation location) {
    }
 
    public Object visit(StaticCall call) {
-	   Object temp;
 	   for (Expression e : call.getArguments()) {
-		temp = e.accept(this);
-		if (temp != null) { 
-	           return temp;
-	       }
+		e.accept(this);
 	}
 	   
        String funcName = call.getName();
        String className = call.getClassName();
        SymbolTable st = getClassSymbolTable(className, call);
-       SemanticSymbol methodSymbol = st.lookup(funcName);
+       if(st == null){
+    	   System.out.println("semantic error at line " + call.getLine() + " : Class " + className +" is undefined");
+    	   System.exit(-1);
+       }
+       SemanticSymbol funcFromClass = st.localLookup(funcName);
+       if (funcFromClass == null){
+    	   System.out.println("semantic error at line " + call.getLine() + " : Method " + funcName +" is undefined");
+    	   System.exit(-1);
+       }
    	   return null;
            
        
    }
 
    public Object visit(VirtualCall call) {
-	   Object temp;
 	   for (Expression e : call.getArguments()) {
-		temp = e.accept(this);
-		if (temp != null) { 
-	           return temp;
-	       }
+		e.accept(this);
 	}
 	   
        String funcName = call.getName();
@@ -303,7 +288,15 @@ public Object visit(ArrayLocation location) {
            Type t = call.getLocation().getSemanticType();
            String str = t.toString(); //this is the classname, for instance A
            SymbolTable st = getClassSymbolTable(str, call);
-           SemanticSymbol methodSymbol = st.lookup(funcName);
+           if(st == null){
+        	   System.out.println("semantic error at line " + call.getLine() + " : method " + call.getName() +" is used before definition");
+        	   System.exit(-1);
+           }
+           SemanticSymbol funcFromClass = st.localLookup(funcName);
+           if (funcFromClass == null){
+        	   System.out.println("semantic error at line " + call.getLine() + " : Method " + funcName +" is undefined");
+        	   System.exit(-1);
+           }
            
        }
        return null;
@@ -330,12 +323,14 @@ public Object visit(ArrayLocation location) {
        return null;
    }
 
-   public Object visit(NewClass newClass) { //TODO: Write this
+   public Object visit(NewClass newClass) { 
        IC.TYPE.Type type = newClass.getSemanticType();
        String className = newClass.getName();
-       if (type != TypeTable.getClassType(className)) { 
-           return newClass;
-       }
+       SymbolTable st = getClassSymbolTable(className, newClass);
+       if (st == null) {
+        	   System.out.println("semantic error at line " + newClass.getLine() + " : Class " + className +" is undefined");
+        	   System.exit(-1);
+           }       
        return null; 
    }
 
@@ -351,10 +346,8 @@ public Object visit(ArrayLocation location) {
    }
 
    public Object visit(Length length) {
-       Object temp;
        if (length.getArray() != null) {
-           temp = length.getArray().accept(this); 
-           if(temp!=null) return length; 
+           length.getArray().accept(this); 
        }
        return null;
    }
@@ -408,22 +401,12 @@ public Object visit(ArrayLocation location) {
 
 
     public Object visit(MathUnaryOp unaryOp) {
-        if (!isInt(unaryOp)) { 
-            return unaryOp;
-        }
+       unaryOp.getOperand().accept(this);
         return null;
     }
 
    public Object visit(LogicalUnaryOp unaryOp) {
        unaryOp.getOperand().accept(this);
-       if (Type.isBool(unaryOp.getOperand())) {
-           unaryOp.setSemanticType(TypeTable.primitiveType(TypeTable.boolType));
-       }
-       
-       if (!isBool(unaryOp)) { 
-           return unaryOp;
-       }
-      
        return null;
    }
 
@@ -436,19 +419,11 @@ public Object visit(ArrayLocation location) {
    }
    
    private Object handleMethod(Method method) {
-       Object temp;
        for (Formal formal : method.getFormals()) { 
-           temp = formal.accept(this);
-           if (temp != null) { 
-               return temp;
-           }
-           
+           formal.accept(this);
        }
        for (Statement statement : method.getStatements()) { 
-           temp = statement.accept(this);
-           if (temp != null) { 
-               return temp;
-           }
+           statement.accept(this);
        }
        return null;
 }
