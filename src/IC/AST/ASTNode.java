@@ -54,7 +54,10 @@ public abstract class ASTNode {
     }
 
     public void setSemanticType(IC.TYPE.Type semanticType) {
-        this.semanticType = semanticType;
+        if (this.semanticType == null) { 
+            this.semanticType = semanticType;
+        }
+        
     }
     
 }

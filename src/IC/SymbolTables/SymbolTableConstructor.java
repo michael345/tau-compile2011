@@ -219,6 +219,14 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(VariableLocation location) {
        location.setEnclosingScope(currentScope);
+       SemanticSymbol temp;
+       if ((temp = currentScope.lookup(location.getName())) == null) { 
+           System.out.println("Semantic error at line " + location.getLine() + ": var " + location.getName() + " used before definition.");
+           System.exit(-1); 
+       }
+       else { 
+           location.setSemanticType(temp.getType());
+       }
        if (location.getLocation() != null) 
            location.getLocation().accept(this);
        return null;

@@ -47,6 +47,8 @@ public class SymbolTable {
     }
     
     
+    
+    
     public SemanticSymbol staticLookup(String startingClass, String key) { 
         SymbolTable start = symbolTableLookup(startingClass);
         if (start == null ) { 
