@@ -1,0 +1,22 @@
+class A {
+	
+	static void main(string[] args) { 
+	
+	}
+	
+	int a;
+	
+	void b(int c) {
+		this.a = 5;
+	
+		boolean d = B.a(this);
+	}
+}
+	
+	class B
+	{
+		static boolean a(A obj) {
+			return true;
+		}
+	}
+

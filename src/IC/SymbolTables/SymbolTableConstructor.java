@@ -1,10 +1,12 @@
 package IC.SymbolTables;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import IC.AST.*;
 import IC.TYPE.Kind;
+import IC.TYPE.Type;
 import IC.TYPE.TypeTable;
 
 public class SymbolTableConstructor implements Visitor {
@@ -12,11 +14,16 @@ public class SymbolTableConstructor implements Visitor {
    private String ICFilePath;
    private SymbolTable st;
    private SymbolTable currentScope;
+   private boolean forwardRef;
+   
+   private List<ASTNode> forwardRefs;
    
  
    public SymbolTableConstructor(String ICFilePath) {
        this.ICFilePath = ICFilePath;
        this.st = new GlobalSymbolTable(ICFilePath);
+       this.forwardRefs = new LinkedList<ASTNode>();
+       this.forwardRef = false;
        
    }
    
@@ -44,11 +51,16 @@ public class SymbolTableConstructor implements Visitor {
            }
         }
        program.setEnclosingScope(st);
+       forwardRef = true;
+       for (ASTNode node : forwardRefs) { 
+           node.accept(this);
+       }
        return st;  
    }
 
    public Object visit(ICClass icClass) {
 	   SymbolTable classTable = new ClassSymbolTable(icClass.getName());
+	   icClass.setEnclosingScope(classTable);
 	   currentScope = classTable;
 	   SemanticSymbol thisSym = new SemanticSymbol(TypeTable.getClassType(icClass.getName()), new Kind(Kind.FIELD),"this",false);
 	   if (!classTable.insert("this",thisSym)) { 
@@ -85,7 +97,7 @@ public class SymbolTableConstructor implements Visitor {
     	   classTable.addChild((MethodSymbolTable)method.accept(this));
        }
        
-       icClass.setEnclosingScope(classTable);
+    
        return classTable;
    }
 
@@ -224,15 +236,56 @@ public class SymbolTableConstructor implements Visitor {
        return null;
    }
 
+   private SymbolTable getClassSymbolTable(String str, ASTNode startNode) {
+       SymbolTable temp = startNode.getEnclosingScope();
+       while (temp.getParentSymbolTable() != null) { 
+           temp = temp.getParentSymbolTable();
+       }
+       return temp.symbolTableLookup(str);
+   }
+   
    public Object visit(VariableLocation location) {
        location.setEnclosingScope(currentScope);
        SemanticSymbol temp;
-       if ((temp = currentScope.lookup(location.getName())) == null) { 
-           System.out.println("Semantic error at line " + location.getLine() + ": var " + location.getName() + " used before definition.");
-           System.exit(-1); 
+       if (location.isExternal()) {
+           if (location.getLocation() instanceof This) { 
+               location.getLocation().accept(this);
+               String str = location.getLocation().getSemanticType().toString(); //this is the classname, for instance A
+               SymbolTable st = getClassSymbolTable(str, location); 
+               if (st == null)  {
+                   if (forwardRef == true) { 
+                       System.out.println("semantic error at line " + location.getLine() + ": unresolved identifier.");
+                       System.exit(-1);
+                   }
+                   else { 
+                       forwardRefs.add(location);
+                   }
+                   
+                   return null;
+               }
+               else {
+                   Type realType = st.lookup(location.getName()).getType();
+                   location.setSemanticType(realType);
+               }
+           }
+           else {
+               VariableLocation vl = (VariableLocation) location.getLocation();
+               location.getLocation().setSemanticType(location.getEnclosingScope().lookup(vl.getName()).getType());
+               Type t = location.getLocation().getSemanticType();
+               String str = t.toString(); //this is the classname, for instance A
+               SymbolTable st = getClassSymbolTable(str, location); 
+               Type realType = st.lookup(location.getName()).getType();
+               location.setSemanticType(realType);
+           }
        }
-       else { 
-           location.setSemanticType(temp.getType());
+       else {
+           if ((temp = currentScope.lookup(location.getName())) == null) { 
+               System.out.println("Semantic error at line " + location.getLine() + ": var " + location.getName() + " used before definition.");
+               System.exit(-1); 
+           }
+           else { 
+               location.setSemanticType(temp.getType());
+           }
        }
        if (location.getLocation() != null) 
            location.getLocation().accept(this);
@@ -241,9 +294,13 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(ArrayLocation location) {
        location.setEnclosingScope(currentScope);
-       if (location.getArray() != null) 
+       if (location.getArray() != null) {
            location.getArray().accept(this);
-           location.getIndex().accept(this);
+       }
+       location.getIndex().accept(this);
+       
+       location.setSemanticType(TypeTable.returnElemType(location.getArray().getSemanticType()));
+           
        return null;
    }
 
@@ -264,8 +321,10 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(This thisExpression) {
-       thisExpression.setEnclosingScope(currentScope);
-       thisExpression.setSemanticType(currentScope.lookup("this").getType());
+       if (!forwardRef) {
+           thisExpression.setEnclosingScope(currentScope);
+           thisExpression.setSemanticType(currentScope.lookup("this").getType());
+       }
        return null;
    }
 
