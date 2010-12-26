@@ -189,7 +189,7 @@ public class Compiler {
 
                 icTextFile.close();
             }catch (SyntaxError se) { 
-                se.printStackTrace();
+                se.printErrorMsg();
                 System.exit(-1);
             }
             catch (LexicalError se) { 
@@ -213,7 +213,8 @@ public class Compiler {
 		}
 
 		private static void semanticChecks(Program icProg) {
-            scopeCheck(icProg);
+           
+		    scopeCheck(icProg);
 		    bcCheck(icProg);
             thisCheck(icProg);
             if (!mainCheck(icProg)) { 

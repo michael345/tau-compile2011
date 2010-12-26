@@ -182,7 +182,8 @@ public class ScopeChecker implements Visitor {
 	   return null; 
    }
 
-   public Object visit(LocalVariable localVariable) {
+   public Object visit(LocalVariable localVariable) {          
+       
        if (localVariable.hasInitValue()) { 
            localVariable.getInitValue().accept(this);
        }
@@ -250,8 +251,8 @@ public Object visit(ArrayLocation location) {
 
    public Object visit(StaticCall call) {
 	   for (Expression e : call.getArguments()) {
-		e.accept(this);
-	}
+	       e.accept(this);
+	   }
 	   
        String funcName = call.getName();
        String className = call.getClassName();
@@ -260,7 +261,7 @@ public Object visit(ArrayLocation location) {
     	   System.out.println("semantic error at line " + call.getLine() + " : Class " + className +" is undefined");
     	   System.exit(-1);
        }
-       SemanticSymbol funcFromClass = st.localLookup(funcName);
+       SemanticSymbol funcFromClass = st.staticLookup(className,funcName);
        if (funcFromClass == null){
     	   System.out.println("semantic error at line " + call.getLine() + " : Method " + funcName +" is undefined");
     	   System.exit(-1);

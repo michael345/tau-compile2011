@@ -292,7 +292,7 @@ public Object visit(ArrayLocation location) {
        String funcName = call.getName();
        String className = call.getClassName();
        SymbolTable st = getClassSymbolTable(className, call);
-       SemanticSymbol methodSymbol = st.lookup(funcName);
+       SemanticSymbol methodSymbol = st.staticLookup(className,funcName);
        return checkFormalsToArgs(call, methodSymbol);
            
        
