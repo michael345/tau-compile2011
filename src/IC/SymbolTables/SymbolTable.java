@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import IC.AST.ASTNode;
 import IC.TYPE.Kind;
 
 public class SymbolTable {
@@ -46,23 +47,29 @@ public class SymbolTable {
         return null;
     }
     
+    private SymbolTable getClassSymbolTable(String str, ASTNode startNode) {
+        SymbolTable temp = startNode.getEnclosingScope();
+        while (temp.getParentSymbolTable() != null) { 
+            temp = temp.getParentSymbolTable();
+        }
+        return temp.symbolTableLookup(str);
+    }
     
-    
-    
-    public SemanticSymbol staticLookup(String startingClass, String key) { 
-        SymbolTable start = symbolTableLookup(startingClass);
+    public SemanticSymbol staticLookup(String startingClass, String staticFuncName, ASTNode node ) { 
+        SymbolTable start = getClassSymbolTable(startingClass, node);
         if (start == null ) { 
             return null;// class not found 
         }
         
         for (; start != null; start = start.getParentSymbolTable()) {
-            if (start.staticLocalLookup(key) != null) {
-                return start.staticLocalLookup(key);
+            if (start.staticLocalLookup(staticFuncName) != null) {
+                return start.staticLocalLookup(staticFuncName);
             }
         }
         return null;
         
     }
+    
     
     public SymbolTable symbolTableLookup(String symTableID) { // returns child Symbol Table with id symTableID
         for (SymbolTable child : children) { 

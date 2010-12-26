@@ -226,7 +226,7 @@ public class ScopeChecker implements Visitor {
        
    }
 
-    private SymbolTable getClassSymbolTable(String str, ASTNode startNode) {//TODO: Write this
+    private SymbolTable getClassSymbolTable(String str, ASTNode startNode) {
         SymbolTable temp = startNode.getEnclosingScope();
         while (temp.getParentSymbolTable() != null) { 
             temp = temp.getParentSymbolTable();
@@ -261,7 +261,7 @@ public Object visit(ArrayLocation location) {
     	   System.out.println("semantic error at line " + call.getLine() + " : Class " + className +" is undefined");
     	   System.exit(-1);
        }
-       SemanticSymbol funcFromClass = st.staticLookup(className,funcName);
+       SemanticSymbol funcFromClass = st.staticLookup(className,funcName,call);
        if (funcFromClass == null){
     	   System.out.println("semantic error at line " + call.getLine() + " : Method " + funcName +" is undefined");
     	   System.exit(-1);
