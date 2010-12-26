@@ -153,7 +153,7 @@ public class Compiler {
                     Symbol libParseSymbol = libSigParser.parse(); 
                     Program libProg = (Program) libParseSymbol.value; //the lib program
                     ICClass libraryClass = libProg.getClasses().get(0); //get the library class
-                    LibNameIsLibrary(libraryClass);
+                    libNameIsLibrary(libraryClass);
                     if (!parseSuccessful(signaturePath, libParseSymbol)) {
                         System.exit(-1);
                     }
@@ -204,8 +204,8 @@ public class Compiler {
             }
         }
 
-        private static void LibNameIsLibrary(ICClass libraryClass) {
-			if (libraryClass.getName().compareTo("Library")!=0){
+        private static void libNameIsLibrary(ICClass libraryClass) {
+			if (libraryClass.getName().compareTo("Library") != 0){
 				System.out.println("semantic error - name of library class must be 'Library' ");
 				System.exit(-1);
 			}

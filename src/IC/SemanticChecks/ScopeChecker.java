@@ -336,6 +336,8 @@ public Object visit(ArrayLocation location) {
 
    public Object visit(NewArray newArray) {//TODO: Write this
        Expression size = newArray.getSize();
+       size.accept(this);
+       IC.AST.Type debugType = newArray.getType();
        IC.TYPE.Type type = newArray.getSemanticType(); //should be array of 
        if (isInt(newArray.getSize())) { 
            if (newArray.getSemanticType() != TypeTable.arrayType(type)) { 

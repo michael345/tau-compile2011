@@ -51,7 +51,7 @@ public class TypeTableConstructor implements Visitor {
         return temp;
     }
     
-    private Type stringToType(String type) { // TODO: make sure index doesnt get fucked
+    private Type stringToType(String type) { 
         if (type.compareTo("int") == 0) { 
             return new IntType(0);
         }
@@ -232,8 +232,9 @@ public class TypeTableConstructor implements Visitor {
     public Object visit(NewArray newArray) {
         Type t = addAllSubArraysToTypeTable(newArray.getType());
         int dim = newArray.getType().getDimension(); //TODO: WTF!? dim == 0?!
-        Type temp = t;
-        for (int i = 0; i < dim; i++) {
+        Type temp = TypeTable.arrayType(t);
+
+        for (int i = 0; i < dim-1; i++) {
             temp = TypeTable.arrayType(temp);
         }
         newArray.setSemanticType(temp);

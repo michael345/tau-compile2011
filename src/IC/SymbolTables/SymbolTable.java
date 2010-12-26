@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import IC.TYPE.Kind;
+
 public class SymbolTable {
     private Map<String,SemanticSymbol> entries;
     private String id;
@@ -34,6 +36,32 @@ public class SymbolTable {
         return null;
     }
     
+    public SemanticSymbol staticLocalLookup(String key) { 
+        if (entries.containsKey(key)) {
+            SemanticSymbol result = entries.get(key);
+            if (result.getKind().getKind() == Kind.STATICMETHOD) { //only possible to return static methods
+                return result;
+            }
+        }
+        return null;
+    }
+    
+    
+    public SemanticSymbol staticLookup(String startingClass, String key) { 
+        SymbolTable start = symbolTableLookup(startingClass);
+        if (start == null ) { 
+            return null;// class not found 
+        }
+        
+        for (; start != null; start = start.getParentSymbolTable()) {
+            if (start.staticLocalLookup(key) != null) {
+                return start.staticLocalLookup(key);
+            }
+        }
+        return null;
+        
+    }
+    
     public SymbolTable symbolTableLookup(String symTableID) { // returns child Symbol Table with id symTableID
         for (SymbolTable child : children) { 
             if (0 == symTableID.compareTo(child.getId())) { 
@@ -61,7 +89,7 @@ public class SymbolTable {
                 return temp.localLookup(key);
             }
         }
-        return null; //TODO: should be lookup error or something
+        return null; 
     }
    
     
