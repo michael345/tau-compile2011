@@ -64,6 +64,7 @@ public abstract class Type {
     public static boolean isVoid(ASTNode node) {
         return (node.getSemanticType() instanceof VoidType);
     }
+	
     
     
 }

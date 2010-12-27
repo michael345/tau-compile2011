@@ -43,6 +43,9 @@ public class MethodType extends Type {
         result += paramTypes[i] + " -> " + returnType + "}";// maybe i+1 
         return result;
     }
+    public Type getRetType() {
+		return returnType;
+	}
     
     
     
