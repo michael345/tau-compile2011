@@ -141,7 +141,6 @@ public class TypeTableConstructor implements Visitor {
     public Object visit(Assignment assignment) {
         assignment.getAssignment().accept(this);
         assignment.getVariable().accept(this);
-        assignment.setSemanticType(assignment.getAssignment().getSemanticType()); 
         return null;
     }
 

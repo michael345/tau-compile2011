@@ -319,11 +319,16 @@ public Object visit(ArrayLocation location) {
        MethodType methType = (MethodType) methodSymbol.getType();
        Type[] params = methType.getParamTypes();
        List<Expression> args = call.getArguments();
+       int paramsLength = 0;
+       if (params != null) { 
+           paramsLength = params.length;
+       }
        
-       if (args.size() != params.length) { 
+       
+       if (args.size() != paramsLength) { 
            return call;
        }
-       for (int i = 0; i < params.length; i++) { 
+       for (int i = 0; i < paramsLength; i++) { 
            if (!isSubTypeOf(args.get(i), params[i])) { 
                return call; // args dont fit formals type-wise
            }

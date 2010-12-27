@@ -245,7 +245,9 @@ public class SymbolTableConstructor implements Visitor {
    }
    
    public Object visit(VariableLocation location) {
-       location.setEnclosingScope(currentScope);
+       if (location.getEnclosingScope() == null) { 
+           location.setEnclosingScope(currentScope);
+       }
        SemanticSymbol temp;
        if (location.isExternal()) {
            if (location.getLocation() instanceof This) { 
@@ -261,7 +263,7 @@ public class SymbolTableConstructor implements Visitor {
                        forwardRefs.add(location);
                    }
                    
-                   return null;
+                   //return null;
                }
                else {
                    Type realType = st.lookup(location.getName()).getType();
@@ -269,26 +271,68 @@ public class SymbolTableConstructor implements Visitor {
                }
            }
            else {
-               VariableLocation vl = (VariableLocation) location.getLocation();
-               location.getLocation().setSemanticType(location.getEnclosingScope().lookup(vl.getName()).getType());
-               Type t = location.getLocation().getSemanticType();
-               String str = t.toString(); //this is the classname, for instance A
-               SymbolTable st = getClassSymbolTable(str, location); 
-               Type realType = st.lookup(location.getName()).getType();
-               location.setSemanticType(realType);
+               if (location.getLocation() instanceof VariableLocation) {
+                   VariableLocation vl = (VariableLocation) location.getLocation();
+                   SemanticSymbol symbolLookup = location.getEnclosingScope().lookup(vl.getName());
+                   if (symbolLookup == null) { 
+                       forwardRefs.add(location);
+                       
+                   }
+                   else {
+                       location.getLocation().setSemanticType(symbolLookup.getType());
+                       Type t = location.getLocation().getSemanticType();
+                       String str = t.toString(); //this is the classname, for instance A
+                       SymbolTable st = getClassSymbolTable(str, location); 
+                       if (st == null) { 
+                           forwardRefs.add(location);
+                       } 
+                       else {
+                           Type realType = st.lookup(location.getName()).getType();
+                           location.setSemanticType(realType);
+                       }
+                   }
+               }
+               else { // location.getLocation instanceof ArrayLocation
+                   location.getLocation().accept(this); 
+                   Type t = location.getLocation().getSemanticType();
+                   String className = t.toString();
+                   SymbolTable st = getClassSymbolTable(className, location);
+                   if (st == null) { 
+                       forwardRefs.add(location);
+                   }
+                   else {
+                       SemanticSymbol checkMe = st.lookup(location.getName());
+                       if (checkMe == null) { 
+                           System.out.println("semantic error at line " + location.getLine() + ": no such field " + location.getName() + " in class " + className + ".");
+                           System.exit(-1);
+                       }
+                       Type realType = checkMe.getType();
+                       location.setSemanticType(realType); 
+                   }
+               }
            }
        }
        else {
-           if ((temp = currentScope.lookup(location.getName())) == null) { 
-               System.out.println("Semantic error at line " + location.getLine() + ": var " + location.getName() + " used before definition.");
-               System.exit(-1); 
+           if ((temp = location.getEnclosingScope().lookup(location.getName())) == null) { 
+               if (forwardRef) {
+                   System.out.println("Semantic error at line " + location.getLine() + ": var " + location.getName() + " used before definition.");
+                   System.exit(-1); 
+               }
+               else { 
+                   forwardRefs.add(location);
+                   //return null;
+                   
+               } 
            }
            else { 
                location.setSemanticType(temp.getType());
            }
        }
-       if (location.getLocation() != null) 
-           location.getLocation().accept(this);
+       
+       if (location.getLocation() != null) {
+              location.getLocation().accept(this);
+       }
+       
        return null;
    }
 
