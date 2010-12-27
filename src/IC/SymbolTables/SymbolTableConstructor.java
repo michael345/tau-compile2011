@@ -274,7 +274,11 @@ public class SymbolTableConstructor implements Visitor {
                if (location.getLocation() instanceof VariableLocation) {
                    VariableLocation vl = (VariableLocation) location.getLocation();
                    SemanticSymbol symbolLookup = location.getEnclosingScope().lookup(vl.getName());
-                   if (symbolLookup == null) { 
+                   if (symbolLookup == null) {
+                       if (forwardRef == true) { 
+                           System.out.println("semantic error at line " + location.getLine() + ": unresolved identifier.");
+                           System.exit(-1);
+                       }
                        forwardRefs.add(location);
                        
                    }
@@ -284,6 +288,10 @@ public class SymbolTableConstructor implements Visitor {
                        String str = t.toString(); //this is the classname, for instance A
                        SymbolTable st = getClassSymbolTable(str, location); 
                        if (st == null) { 
+                           if (forwardRef == true) { 
+                               System.out.println("semantic error at line " + location.getLine() + ": unresolved identifier.");
+                               System.exit(-1);
+                           }
                            forwardRefs.add(location);
                        } 
                        else {
@@ -295,19 +303,36 @@ public class SymbolTableConstructor implements Visitor {
                else { // location.getLocation instanceof ArrayLocation
                    location.getLocation().accept(this); 
                    Type t = location.getLocation().getSemanticType();
-                   String className = t.toString();
-                   SymbolTable st = getClassSymbolTable(className, location);
-                   if (st == null) { 
-                       forwardRefs.add(location);
-                   }
-                   else {
-                       SemanticSymbol checkMe = st.lookup(location.getName());
-                       if (checkMe == null) { 
-                           System.out.println("semantic error at line " + location.getLine() + ": no such field " + location.getName() + " in class " + className + ".");
+                   if (t == null) { 
+                       if (forwardRef) { 
+                           System.out.println("semantic error at line " + location.getLine() + ": unresolved identifier.");
                            System.exit(-1);
                        }
-                       Type realType = checkMe.getType();
-                       location.setSemanticType(realType); 
+                       else {
+                           forwardRefs.add(location);
+                       }
+                   }
+                   else {
+                       String className = t.toString();
+                       SymbolTable st = getClassSymbolTable(className, location);
+                       if (st == null) {
+                           if (forwardRef) { 
+                               System.out.println("semantic error at line " + location.getLine() + ": unresolved identifier.");
+                               System.exit(-1);
+                           }
+                           else { 
+                               forwardRefs.add(location);
+                           }
+                       }
+                       else {
+                           SemanticSymbol checkMe = st.lookup(location.getName());
+                           if (checkMe == null) { 
+                               System.out.println("semantic error at line " + location.getLine() + ": no such field " + location.getName() + " in class " + className + ".");
+                               System.exit(-1);
+                           }
+                           Type realType = checkMe.getType();
+                           location.setSemanticType(realType); 
+                       }
                    }
                }
            }
@@ -381,6 +406,10 @@ public class SymbolTableConstructor implements Visitor {
        }
        SemanticSymbol temp = currentScope.getGlobal().lookup(newClass.getName());
        if (temp == null) { 
+           if (forwardRef == true) { 
+               System.out.println("semantic error at line " + newClass.getLine() + ": unresolved identifier.");
+               System.exit(-1);
+           }
            forwardRefs.add(newClass);
        }
        else {
@@ -439,6 +468,10 @@ public class SymbolTableConstructor implements Visitor {
        expressionBlock.getExpression().accept(this);
        
        if (expressionBlock.getExpression().getSemanticType() == null) { 
+           if (forwardRef == true) { 
+               System.out.println("semantic error at line " + expressionBlock.getLine() + ": unresolved identifier.");
+               System.exit(-1);
+           }
            forwardRefs.add(expressionBlock);
        }
        else {

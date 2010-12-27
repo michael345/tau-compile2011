@@ -1,9 +1,5 @@
 class A {
     D e;
-    
-    D retE() {
-        return new E();
-    }
 }
 
 class B extends A {}
@@ -18,9 +14,10 @@ class E extends D {
 
      static void main(string[] args){}
      
-     void complexAssignment() {
-     	 B[] b = new B[3];
-         D d = (b[1]).retE();
+     void wierdExp() {
+         A[] a = new A[3];
+         
+         D d = (a[2]+3).e;
         
 
      }

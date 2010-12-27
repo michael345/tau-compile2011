@@ -1,5 +1,6 @@
 package IC.SymbolTables;
 
+import IC.TYPE.ClassType;
 import IC.TYPE.Kind;
 import IC.TYPE.Type;
 
@@ -53,11 +54,14 @@ public class SemanticSymbol {
     }
     
     public String toString() { 
-        if (type == null) { 
+        if (type instanceof ClassType) { 
+            return "" + kind + ": " + id; 
+        }
+        else if (type == null) { 
             return "" + kind + ": " + id; 
 
         }
-        if (isMethod()) { 
+        else if (isMethod()) { 
             return "" + kind + " : " + id  + " " + type;
         }
         else {
