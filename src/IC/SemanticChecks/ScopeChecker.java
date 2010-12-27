@@ -387,110 +387,29 @@ public Object visit(ArrayLocation location) {
    }
 
    public Object visit(MathBinaryOp binaryOp) {
-       boolean error = true;
-       BinaryOps operator = binaryOp.getOperator();
        Expression first = binaryOp.getFirstOperand();
        Expression second = binaryOp.getSecondOperand();
        first.accept(this);
-       second.accept(this); 
-       
-       if (operator == BinaryOps.PLUS || operator == BinaryOps.MINUS || operator == BinaryOps.MULTIPLY || operator == BinaryOps.MOD || operator == BinaryOps.DIVIDE ) {
-           if (isInt(first) && isInt(second)) { 
-               binaryOp.setSemanticType(TypeTable.primitiveType(new IntType(0)));
-               error = false;
-           }
-           
-       }   
-       if (isString(first) && isString(second) && operator == BinaryOps.PLUS) {
-           binaryOp.setSemanticType(TypeTable.primitiveType(new StringType(0)));
-           error = false;
-       }
-       if (error){  
-           System.out.println("semantic error at line " + binaryOp.getLine() + ": math binary operator incompatible with these argument types.");
-           System.exit(-1);
-       }
-       
-         
-       
-       
+       second.accept(this);        
        return null;
    }
 
    public Object visit(LogicalBinaryOp binaryOp) {       
-       BinaryOps operator = binaryOp.getOperator();
-       
+  
        binaryOp.getFirstOperand().accept(this);
-       binaryOp.getSecondOperand().accept(this); 
-       Expression first = binaryOp.getFirstOperand();
-       Expression second = binaryOp.getSecondOperand();
-       
-       if (operator == BinaryOps.LOR || operator == BinaryOps.LAND) { 
-           if (isBool(first) && isBool(second)) { 
-               binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
-           }
-           else { 
-               System.out.println("semantic error at line " + binaryOp.getLine() + ": logical binary operator incompatible with these argument types.");
-               System.exit(-1);
-           }
-       }
-       else if (operator == BinaryOps.GT || operator == BinaryOps.LT || operator == BinaryOps.LTE || operator == BinaryOps.GTE ) {
-           if (isInt(first) && isInt(second)) { 
-               binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
-           }
-           else { 
-               System.out.println("semantic error at line " + binaryOp.getLine() + ": logical binary operator incompatible with these argument types.");
-               System.exit(-1);
-           }
-       }
-       else if (operator == BinaryOps.EQUAL || operator == BinaryOps.NEQUAL) { 
-           if (isSubTypeOf(first,second) || isSubTypeOf(second,first)) { 
-               binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
-
-           }
-           else { 
-               System.out.println("semantic error at line " + binaryOp.getLine() + ": logical binary operator incompatible with these argument types.");
-               System.exit(-1);
-           }
-       }
-       
-		  
+       binaryOp.getSecondOperand().accept(this);  
        return null;
    }
 
 
 
     public Object visit(MathUnaryOp unaryOp) {
-       UnaryOps operator = unaryOp.getOperator();
 	   unaryOp.getOperand().accept(this);
-       Expression first = unaryOp.getOperand();
-	   
-       if (operator == UnaryOps.UMINUS) { 
-           if (isInt(first)) { 
-               unaryOp.setSemanticType(TypeTable.primitiveType(new IntType(0)));
-           }
-           else { 
-               System.out.println("semantic error at line " + unaryOp.getLine() + ": math unary operator incompatible with this argument type.");
-               System.exit(-1);
-           }
-           
-       }
        return null;
     }
 
    public Object visit(LogicalUnaryOp unaryOp) {
-	   UnaryOps operator = unaryOp.getOperator();
 	   unaryOp.getOperand().accept(this);
-       Expression first = unaryOp.getOperand();
-	   
-       if (operator == UnaryOps.LNEG) { 
-           if (isBool(first)) { 
-               unaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
-           }
-           else { 
-               System.out.println("semantic error at line " + unaryOp.getLine() + ": logical unary operator incompatible with this argument type.");
-               System.exit(-1);
-           }
-       }
        return null;
    }
 

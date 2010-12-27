@@ -4,8 +4,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import IC.BinaryOps;
+import IC.UnaryOps;
 import IC.AST.*;
+import IC.TYPE.BoolType;
+import IC.TYPE.IntType;
 import IC.TYPE.Kind;
+import IC.TYPE.StringType;
 import IC.TYPE.Type;
 import IC.TYPE.TypeTable;
 
@@ -431,28 +436,156 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(MathBinaryOp binaryOp) {
-       binaryOp.setEnclosingScope(currentScope);
-       binaryOp.getFirstOperand().accept(this);
-       binaryOp.getSecondOperand().accept(this);
+       if (binaryOp.getEnclosingScope() == null) { 
+           binaryOp.setEnclosingScope(currentScope);
+       }
+       boolean error = true;
+       BinaryOps operator = binaryOp.getOperator();
+       Expression first = binaryOp.getFirstOperand();
+       Expression second = binaryOp.getSecondOperand();
+       first.accept(this);
+       second.accept(this); 
+       
+       if (first.getSemanticType() == null || second.getSemanticType() == null) { 
+           if (forwardRef) { 
+               System.out.println("semantic error at line " + binaryOp.getLine() + ": unresolved identifier.");
+
+               System.exit(-1);
+           }
+           forwardRefs.add(binaryOp);
+       }
+       
+       if (operator == BinaryOps.PLUS || operator == BinaryOps.MINUS || operator == BinaryOps.MULTIPLY || operator == BinaryOps.MOD || operator == BinaryOps.DIVIDE ) {
+           if (isInt(first) && isInt(second)) { 
+               binaryOp.setSemanticType(TypeTable.primitiveType(new IntType(0)));
+               error = false;
+           }
+           
+       }   
+       if (isString(first) && isString(second) && operator == BinaryOps.PLUS) {
+           binaryOp.setSemanticType(TypeTable.primitiveType(new StringType(0)));
+           error = false;
+       }
+       if (error){  
+           System.out.println("semantic error at line " + binaryOp.getLine() + ": math binary operator incompatible with these argument types.");
+           System.exit(-1);
+       }
+
        return null;
    }
 
    public Object visit(LogicalBinaryOp binaryOp) {
-       binaryOp.setEnclosingScope(currentScope);
+       if (binaryOp.getEnclosingScope() == null) { 
+           binaryOp.setEnclosingScope(currentScope);
+       }
+       BinaryOps operator = binaryOp.getOperator();
        binaryOp.getFirstOperand().accept(this);
-       binaryOp.getSecondOperand().accept(this);
+       binaryOp.getSecondOperand().accept(this); 
+       Expression first = binaryOp.getFirstOperand();
+       Expression second = binaryOp.getSecondOperand();
+       
+       if (first.getSemanticType() == null || second.getSemanticType() == null) { 
+           if (forwardRef) { 
+               System.out.println("semantic error at line " + binaryOp.getLine() + ": unresolved identifier.");
+
+               System.exit(-1);
+           }
+           forwardRefs.add(binaryOp);
+       }
+       
+       if (operator == BinaryOps.LOR || operator == BinaryOps.LAND) { 
+           if (isBool(first) && isBool(second)) { 
+               binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+           }
+           else { 
+               System.out.println("semantic error at line " + binaryOp.getLine() + ": logical binary operator incompatible with these argument types.");
+               System.exit(-1);
+           }
+       }
+       else if (operator == BinaryOps.GT || operator == BinaryOps.LT || operator == BinaryOps.LTE || operator == BinaryOps.GTE ) {
+           if (isInt(first) && isInt(second)) { 
+               binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+           }
+           else { 
+               System.out.println("semantic error at line " + binaryOp.getLine() + ": logical binary operator incompatible with these argument types.");
+               System.exit(-1);
+           }
+       }
+       else if (operator == BinaryOps.EQUAL || operator == BinaryOps.NEQUAL) { 
+           if (isSubTypeOf(first,second) || isSubTypeOf(second,first)) { 
+               binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+
+           }
+           else { 
+               System.out.println("semantic error at line " + binaryOp.getLine() + ": logical binary operator incompatible with these argument types.");
+               System.exit(-1);
+           }
+       }
+       
+          
        return null;
+       
+
    }
 
    public Object visit(MathUnaryOp unaryOp) {
-       unaryOp.setEnclosingScope(currentScope);
+       if (unaryOp.getEnclosingScope() == null) { 
+           unaryOp.setEnclosingScope(currentScope);
+       }
+       UnaryOps operator = unaryOp.getOperator();
        unaryOp.getOperand().accept(this);
+       Expression first = unaryOp.getOperand();
+       
+       if (first.getSemanticType() == null) { 
+           if (forwardRef) { 
+               System.out.println("semantic error at line " + unaryOp.getLine() + ": unresolved identifier.");
+
+               System.exit(-1);
+           }
+           forwardRefs.add(unaryOp);
+       }
+       
+       if (operator == UnaryOps.UMINUS) { 
+           if (isInt(first)) { 
+               unaryOp.setSemanticType(TypeTable.primitiveType(new IntType(0)));
+           }
+           else { 
+               System.out.println("semantic error at line " + unaryOp.getLine() + ": math unary operator incompatible with this argument type.");
+               System.exit(-1);
+           }
+           
+       }
        return null;
+      
    }
 
    public Object visit(LogicalUnaryOp unaryOp) {
-       unaryOp.setEnclosingScope(currentScope);
+       if (unaryOp.getEnclosingScope() == null) { 
+           unaryOp.setEnclosingScope(currentScope);
+       }
+       
+       UnaryOps operator = unaryOp.getOperator();
        unaryOp.getOperand().accept(this);
+       Expression first = unaryOp.getOperand();
+       
+       if (first.getSemanticType() == null) { 
+           if (forwardRef) { 
+               System.out.println("semantic error at line " + unaryOp.getLine() + ": unresolved identifier.");
+               System.exit(-1);
+           }
+           forwardRefs.add(unaryOp);
+       }
+       
+       
+       if (operator == UnaryOps.LNEG) { 
+           if (isBool(first)) { 
+               unaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+           }
+           else { 
+               System.out.println("semantic error at line " + unaryOp.getLine() + ": logical unary operator incompatible with this argument type.");
+               System.exit(-1);
+           }
+       }
        return null;
    }
 
@@ -518,7 +651,42 @@ public class SymbolTableConstructor implements Visitor {
        }
        return methodTable;
 }
+   private boolean isInt(ASTNode node) {
+       return Type.isInt(node);
+   }
    
+   private boolean isBool(ASTNode node) {
+       return Type.isBool(node);
+   }
+   
+   private boolean isNull(ASTNode node) {
+       return Type.isNull(node);
+   }
+   
+   private boolean isString(ASTNode node) {
+       return Type.isString(node);
+   }
+   
+   private boolean isVoid(ASTNode node) {
+       return Type.isVoid(node);
+   }
+   
+   private boolean hasSameType(ASTNode node1, ASTNode node2) { 
+       return (node1.getSemanticType() == node2.getSemanticType());
+   }
+   
+   private boolean isSubTypeOf(Type first, Type second) {
+       return (IC.TYPE.TypeTable.isSubTypeOf(first, second));
+ }
+   
+   
+   private boolean isSubTypeOf(ASTNode first, Type second) {
+       return isSubTypeOf(first.getSemanticType(), second);
+    }
+   
+   private boolean isSubTypeOf(ASTNode first, ASTNode second) {
+      return isSubTypeOf(first.getSemanticType(), second.getSemanticType());
+   }
    
    
 }
