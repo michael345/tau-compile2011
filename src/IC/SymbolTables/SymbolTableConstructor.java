@@ -453,6 +453,7 @@ public class SymbolTableConstructor implements Visitor {
                System.exit(-1);
            }
            forwardRefs.add(binaryOp);
+           return null;
        }
        
        if (operator == BinaryOps.PLUS || operator == BinaryOps.MINUS || operator == BinaryOps.MULTIPLY || operator == BinaryOps.MOD || operator == BinaryOps.DIVIDE ) {
@@ -491,6 +492,7 @@ public class SymbolTableConstructor implements Visitor {
                System.exit(-1);
            }
            forwardRefs.add(binaryOp);
+           return null;
        }
        
        if (operator == BinaryOps.LOR || operator == BinaryOps.LAND) { 
@@ -543,6 +545,7 @@ public class SymbolTableConstructor implements Visitor {
                System.exit(-1);
            }
            forwardRefs.add(unaryOp);
+           return null;
        }
        
        if (operator == UnaryOps.UMINUS) { 
@@ -574,6 +577,7 @@ public class SymbolTableConstructor implements Visitor {
                System.exit(-1);
            }
            forwardRefs.add(unaryOp);
+           return null;
        }
        
        
