@@ -275,8 +275,11 @@ public Object visit(ArrayLocation location) {
        if (call.getLocation() == null) { // method is in the same class as the call
            SemanticSymbol methodSymbol = call.getEnclosingClass().lookup(funcName);
            MethodType mt = (MethodType)methodSymbol.getType();
-           call.setSemanticType(mt.getRetType());
-           if (methodSymbol == null) return call;//not found
+           call.setSemanticType(mt.getReturnType());
+           if (methodSymbol == null) {
+               System.out.println("semantic error at line " + call.getLine() + ": " + funcName + " not found.");
+               return call;//not found
+           }
        }
        else {                           // location = object name 
            VariableLocation objectName = (VariableLocation) call.getLocation();
@@ -353,21 +356,32 @@ public Object visit(ArrayLocation location) {
    }
 
    public Object visit(MathBinaryOp binaryOp) {
+       boolean error = true;
        BinaryOps operator = binaryOp.getOperator();
        Expression first = binaryOp.getFirstOperand();
        Expression second = binaryOp.getSecondOperand();
        first.accept(this);
        second.accept(this); 
        
-       if (isString(first) && isString(second) && operator == BinaryOps.PLUS) {
-           binaryOp.setSemanticType(TypeTable.primitiveType(new StringType(0)));
-       }
-       
-       else if (operator == BinaryOps.PLUS || operator == BinaryOps.MINUS || operator == BinaryOps.MULTIPLY || operator == BinaryOps.MOD || operator == BinaryOps.DIVIDE ) {
+       if (operator == BinaryOps.PLUS || operator == BinaryOps.MINUS || operator == BinaryOps.MULTIPLY || operator == BinaryOps.MOD || operator == BinaryOps.DIVIDE ) {
            if (isInt(first) && isInt(second)) { 
                binaryOp.setSemanticType(TypeTable.primitiveType(new IntType(0)));
+               error = false;
            }
-       }      
+           
+       }   
+       if (isString(first) && isString(second) && operator == BinaryOps.PLUS) {
+           binaryOp.setSemanticType(TypeTable.primitiveType(new StringType(0)));
+           error = false;
+       }
+       if (error){  
+           System.out.println("semantic error at line " + binaryOp.getLine() + ": math binary operator incompatible with these argument types.");
+           System.exit(-1);
+       }
+       
+         
+       
+       
        return null;
    }
 
@@ -383,10 +397,18 @@ public Object visit(ArrayLocation location) {
            if (isBool(first) && isBool(second)) { 
                binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
            }
+           else { 
+               System.out.println("semantic error at line " + binaryOp.getLine() + ": logical binary operator incompatible with these argument types.");
+               System.exit(-1);
+           }
        }
        else if (operator == BinaryOps.GT || operator == BinaryOps.LT || operator == BinaryOps.LTE || operator == BinaryOps.GTE ) {
            if (isInt(first) && isInt(second)) { 
                binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+           }
+           else { 
+               System.out.println("semantic error at line " + binaryOp.getLine() + ": logical binary operator incompatible with these argument types.");
+               System.exit(-1);
            }
        }
        else if (operator == BinaryOps.EQUAL || operator == BinaryOps.NEQUAL) { 
@@ -394,7 +416,12 @@ public Object visit(ArrayLocation location) {
                binaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
 
            }
+           else { 
+               System.out.println("semantic error at line " + binaryOp.getLine() + ": logical binary operator incompatible with these argument types.");
+               System.exit(-1);
+           }
        }
+       
 		  
        return null;
    }
@@ -407,11 +434,15 @@ public Object visit(ArrayLocation location) {
        Expression first = unaryOp.getOperand();
 	   
        if (operator == UnaryOps.UMINUS) { 
-           if (isBool(first)) { 
-               unaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+           if (isInt(first)) { 
+               unaryOp.setSemanticType(TypeTable.primitiveType(new IntType(0)));
            }
-       
-    }
+           else { 
+               System.out.println("semantic error at line " + unaryOp.getLine() + ": math unary operator incompatible with this argument type.");
+               System.exit(-1);
+           }
+           
+       }
        return null;
     }
 
@@ -423,6 +454,10 @@ public Object visit(ArrayLocation location) {
        if (operator == UnaryOps.LNEG) { 
            if (isBool(first)) { 
                unaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+           }
+           else { 
+               System.out.println("semantic error at line " + unaryOp.getLine() + ": logical unary operator incompatible with this argument type.");
+               System.exit(-1);
            }
        }
        return null;

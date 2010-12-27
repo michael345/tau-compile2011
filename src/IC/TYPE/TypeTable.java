@@ -157,10 +157,10 @@ public class TypeTable {
             ClassType temp = subClassType;
 
             while (temp != null) {
-                if (temp.getICClass().getSemanticType() == classType) { //TODO: MUST check this
+                if (temp.getICClass().getSemanticType() == classType) { 
                     return true;
                 }
-                temp = uniqueClassTypes.get(subClassType.getICClass().getSuperClassName());
+                temp = uniqueClassTypes.get(temp.getICClass().getSuperClassName());
             }
             return false;
         }
