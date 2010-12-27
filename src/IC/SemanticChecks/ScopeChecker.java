@@ -3,6 +3,7 @@ import java.util.Collection;
 import java.util.List;
 
 import IC.BinaryOps;
+import IC.UnaryOps;
 import IC.AST.ASTNode;
 import IC.AST.ArrayLocation;
 import IC.AST.Assignment;
@@ -272,7 +273,9 @@ public Object visit(ArrayLocation location) {
 	   
        String funcName = call.getName();
        if (call.getLocation() == null) { // method is in the same class as the call
-           SemanticSymbol methodSymbol = call.getEnclosingScope().lookup(funcName);
+           SemanticSymbol methodSymbol = call.getEnclosingClass().lookup(funcName);
+           MethodType mt = (MethodType)methodSymbol.getType();
+           call.setSemanticType(mt.getRetType());
            if (methodSymbol == null) return call;//not found
        }
        else {                           // location = object name 
@@ -370,10 +373,11 @@ public Object visit(ArrayLocation location) {
 
    public Object visit(LogicalBinaryOp binaryOp) {       
        BinaryOps operator = binaryOp.getOperator();
-       Expression first = binaryOp.getFirstOperand();
-       Expression second = binaryOp.getSecondOperand();
+       
        binaryOp.getFirstOperand().accept(this);
        binaryOp.getSecondOperand().accept(this); 
+       Expression first = binaryOp.getFirstOperand();
+       Expression second = binaryOp.getSecondOperand();
        
        if (operator == BinaryOps.LOR || operator == BinaryOps.LAND) { 
            if (isBool(first) && isBool(second)) { 
@@ -398,12 +402,29 @@ public Object visit(ArrayLocation location) {
 
 
     public Object visit(MathUnaryOp unaryOp) {
-       unaryOp.getOperand().accept(this);
-        return null;
+       UnaryOps operator = unaryOp.getOperator();
+	   unaryOp.getOperand().accept(this);
+       Expression first = unaryOp.getOperand();
+	   
+       if (operator == UnaryOps.UMINUS) { 
+           if (isBool(first)) { 
+               unaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+           }
+       
+    }
+       return null;
     }
 
    public Object visit(LogicalUnaryOp unaryOp) {
-       unaryOp.getOperand().accept(this);
+	   UnaryOps operator = unaryOp.getOperator();
+	   unaryOp.getOperand().accept(this);
+       Expression first = unaryOp.getOperand();
+	   
+       if (operator == UnaryOps.LNEG) { 
+           if (isBool(first)) { 
+               unaryOp.setSemanticType(TypeTable.primitiveType(new BoolType(0)));
+           }
+       }
        return null;
    }
 
