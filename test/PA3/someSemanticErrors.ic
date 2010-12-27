@@ -10,7 +10,7 @@ class SomeSemanticErrors{
 		if (x < 7){
 			return;
 		} else {
-				return 4;
+				return;
 		}
 	}
 	
@@ -41,7 +41,7 @@ class SomeSemanticErrors{
 	}
 	
 	void test2(){
-		int k = this + 1;
+		//int k = this + 1;
 	}
 	
 	void test3(){
@@ -53,7 +53,7 @@ class SomeSemanticErrors{
 	}
 		
 	void test5(){
-		int[] w = new int[this];
+		int[] w = new int[3];
 	}
 			
 	
