@@ -30,7 +30,7 @@ public class SymbolTableConstructor implements Visitor {
    public Object visit(Program program) {
        SemanticSymbol temp; 
        for (ICClass icClass : program.getClasses()) {
-           temp = new SemanticSymbol(program.getSemanticType(), new Kind(Kind.CLASS), icClass.getName(), false);
+           temp = new SemanticSymbol(TypeTable.classType(icClass), new Kind(Kind.CLASS), icClass.getName(), false);
            if (!st.insert(icClass.getName(),temp)) {  //Symbol already in symbol table
                System.out.println("Error: Illegal redefinition; element " + icClass.getName() + " in line #" + icClass.getLine());
                System.exit(-1);
@@ -360,6 +360,9 @@ public class SymbolTableConstructor implements Visitor {
 	   for (Expression e : call.getArguments()){
     	   e.accept(this);
        }
+	   if (call.isExternal()) {
+	       call.getLocation().accept(this);
+	   }
        call.setEnclosingScope(currentScope);
        return null;
    }
@@ -373,7 +376,16 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(NewClass newClass) {
-       newClass.setEnclosingScope(currentScope);
+       if (newClass.getEnclosingScope() == null) {
+           newClass.setEnclosingScope(currentScope);
+       }
+       SemanticSymbol temp = currentScope.getGlobal().lookup(newClass.getName());
+       if (temp == null) { 
+           forwardRefs.add(newClass);
+       }
+       else {
+           newClass.setSemanticType(temp.getType());
+       }
        return null; 
    }
 
@@ -421,8 +433,17 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(ExpressionBlock expressionBlock) {
+       if (expressionBlock.getEnclosingScope() == null) { 
+           expressionBlock.setEnclosingScope(currentScope);
+       }
        expressionBlock.getExpression().accept(this);
-       expressionBlock.setEnclosingScope(currentScope);
+       
+       if (expressionBlock.getExpression().getSemanticType() == null) { 
+           forwardRefs.add(expressionBlock);
+       }
+       else {
+           expressionBlock.setSemanticType(expressionBlock.getExpression().getSemanticType());
+       }
        return null;
    }
    
