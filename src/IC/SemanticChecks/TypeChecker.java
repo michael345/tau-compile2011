@@ -305,13 +305,19 @@ public Object visit(ArrayLocation location) {
            return checkFormalsToArgs(call, methodSymbol);
        }
        else {                           // location = object name 
-           VariableLocation objectName = (VariableLocation) call.getLocation();
-           call.getLocation().setSemanticType(call.getEnclosingScope().lookup(objectName.getName()).getType());
-           Type t = call.getLocation().getSemanticType();
-           String str = t.toString(); //this is the classname, for instance A
-           SymbolTable st = getClassSymbolTable(str, call);
-           SemanticSymbol methodSymbol = st.lookup(funcName);
-           return checkFormalsToArgs(call, methodSymbol);
+           if (call.getLocation() instanceof VariableLocation) {
+               VariableLocation objectName = (VariableLocation) call.getLocation();
+               call.getLocation().setSemanticType(call.getEnclosingScope().lookup(objectName.getName()).getType());
+               Type t = call.getLocation().getSemanticType();
+               String str = t.toString(); //this is the classname, for instance A
+               SymbolTable st = getClassSymbolTable(str, call);
+               SemanticSymbol methodSymbol = st.lookup(funcName);
+               return checkFormalsToArgs(call, methodSymbol);
+           }
+           else {  //copy this from scopeChecker VirtualCall 
+               return null;
+               
+           }
        }
    }
 

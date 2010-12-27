@@ -102,6 +102,15 @@ public class SymbolTable {
     }
    
     
+    public SymbolTable getGlobal() { 
+        SymbolTable temp = this;
+        while (temp.parentSymbolTable != null) {
+            temp = temp.parentSymbolTable;
+        }
+        return temp;
+        
+    }
+    
     public boolean insert(String key, SemanticSymbol value) { 
         if (localLookup(key) == null) { 
             entries.put(key, value);

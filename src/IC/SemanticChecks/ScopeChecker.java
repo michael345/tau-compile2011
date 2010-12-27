@@ -282,22 +282,53 @@ public Object visit(ArrayLocation location) {
            }
        }
        else {                           // location = object name 
-           VariableLocation objectName = (VariableLocation) call.getLocation();
-           SemanticSymbol symbol = call.getEnclosingScope().lookup(objectName.getName());
-           if (symbol == null) return call;//not found
-           call.getLocation().setSemanticType(symbol.getType());
-           Type t = call.getLocation().getSemanticType();
-           String str = t.toString(); //this is the classname, for instance A
-           SymbolTable st = getClassSymbolTable(str, call);
-           if(st == null){
-        	   System.out.println("semantic error at line " + call.getLine() + " : method " + call.getName() +" is used before definition");
-        	   System.exit(-1);
+           if (call.getLocation() instanceof VariableLocation) { 
+               VariableLocation objectName = (VariableLocation) call.getLocation();
+               SemanticSymbol symbol = call.getEnclosingScope().lookup(objectName.getName());
+               if (symbol == null) return call;//not found
+               call.getLocation().setSemanticType(symbol.getType());
+               Type t = call.getLocation().getSemanticType();
+               String str = t.toString(); //this is the classname, for instance A
+               SymbolTable st = getClassSymbolTable(str, call);
+               if(st == null){
+            	   System.out.println("semantic error at line " + call.getLine() + " : method " + call.getName() +" is used before definition");
+            	   System.exit(-1);
+               }
+               SemanticSymbol funcFromClass = st.localLookup(funcName);
+               if (funcFromClass == null){
+            	   System.out.println("semantic error at line " + call.getLine() + " : Method " + funcName +" is undefined");
+            	   System.exit(-1);
+               }
            }
-           SemanticSymbol funcFromClass = st.localLookup(funcName);
-           if (funcFromClass == null){
-        	   System.out.println("semantic error at line " + call.getLine() + " : Method " + funcName +" is undefined");
-        	   System.exit(-1);
+           else if (call.getLocation() instanceof ArrayLocation) {
+               Type locationType = call.getLocation().getSemanticType();
+               String className = locationType.toString();
+               SymbolTable st = getClassSymbolTable(className, call); // we assume if passed Symboltable contsructor this exists
+               
+               SemanticSymbol answer = st.lookup(funcName);
+               if (answer == null) { 
+                   System.out.println("semantic error at line " + call.getLine() + " : Method " + funcName +" is undefined");
+                   System.exit(-1);
+               }
            }
+           else { // e.g. exprssionblock, new class, etc
+              Type t = call.getLocation().getSemanticType();
+              String className = t.toString();
+              SymbolTable st = getClassSymbolTable(className, call);
+              if(st == null){
+                  System.out.println("semantic error at line " + call.getLine() + " : method " + call.getName() +" is used before definition");
+                  System.exit(-1);
+              }
+              SemanticSymbol funcFromClass = st.lookup(funcName);
+              if (funcFromClass == null){
+                  System.out.println("semantic error at line " + call.getLine() + " : Method " + funcName +" is undefined");
+                  System.exit(-1);
+              }
+              MethodType realType = (MethodType) funcFromClass.getType();
+              Type retType = realType.getReturnType();
+              call.setSemanticType(retType);
+           }
+           
            
        }
        return null;
