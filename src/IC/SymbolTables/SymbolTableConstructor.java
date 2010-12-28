@@ -384,6 +384,35 @@ public class SymbolTableConstructor implements Visitor {
     	   e.accept(this);
        }
        call.setEnclosingScope(currentScope);
+
+       String funcName = call.getName();
+       String className = call.getClassName();
+       SymbolTable st = getClassSymbolTable(className, call);
+       if(st == null){ 
+           if (forwardRef) { 
+        	   System.out.println("semantic error at line " + call.getLine() + " : Class " + className +" is undefined");
+        	   System.exit(-1);
+           }
+           else {
+               forwardRefs.add(call);
+               return null;
+           }
+       }
+    	   
+       SemanticSymbol funcFromClass = st.staticLookup(className,funcName,call);
+       if (funcFromClass == null){ 
+           if (forwardRef) { 
+        	   System.out.println("semantic error at line " + call.getLine() + " : Method " + funcName +" is undefined");
+        	   System.exit(-1);
+           }
+           else {
+               forwardRefs.add(call);
+               return null;
+           }
+    	  
+       }
+       
+       
        return null;
    }
 
@@ -427,6 +456,7 @@ public class SymbolTableConstructor implements Visitor {
        }
        else {                           // location = object name 
            if (call.getLocation() instanceof VariableLocation) { 
+        	   call.getLocation().accept(this);
                VariableLocation objectName = (VariableLocation) call.getLocation();
                SemanticSymbol symbol = call.getEnclosingScope().lookup(objectName.getName());
                if (symbol == null) return call;//not found
@@ -440,6 +470,7 @@ public class SymbolTableConstructor implements Visitor {
                        System.exit(-1);
                    }
                    forwardRefs.add(call);
+                   return null;
                }
                SemanticSymbol funcFromClass = st.localLookup(funcName);
                if (funcFromClass == null){
@@ -448,6 +479,7 @@ public class SymbolTableConstructor implements Visitor {
                        System.exit(-1);
                    }
                    forwardRefs.add(call);
+                   return null;
                }
            }
            else if (call.getLocation() instanceof ArrayLocation) {
@@ -471,7 +503,17 @@ public class SymbolTableConstructor implements Visitor {
                }
            }
            else { // e.g. exprssionblock, new class, etc
+        	  call.getLocation().accept(this);
               Type t = call.getLocation().getSemanticType();
+              if(t == null){
+                  if (forwardRef) {
+                      System.out.println("semantic error at line " + call.getLine() + " : class " + call.getLocation().toString() +" is used before definition");
+                      System.exit(-1);
+                  }
+                  forwardRefs.add(call); 
+                  return null;
+                  
+              }
               String className = t.toString();
               SymbolTable st = getClassSymbolTable(className, call);
               if(st == null){
@@ -535,7 +577,8 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(Length length) {
        length.setEnclosingScope(currentScope);
-       length.getArray().setEnclosingScope(currentScope);
+      // length.getArray().setEnclosingScope(currentScope);
+       length.getArray().accept(this);
        return null;
    }
 
