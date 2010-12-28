@@ -9,7 +9,12 @@ public class ClassSymbolTable extends SymbolTable {
     public void printSymbolTable() { 
         System.out.println("Class Symbol Table: " + getId());
         for (SemanticSymbol sym : getEntries().values()) { 
-            System.out.println("\t" + sym.toString());
+            if (sym.getId().compareTo("this") == 0) { 
+                
+            }
+            else {
+                System.out.println("\t" + sym.toString());
+            }
         }
         printChildren();
         

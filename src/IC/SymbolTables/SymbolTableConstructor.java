@@ -417,14 +417,6 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(VirtualCall call) {
-//	   for (Expression e : call.getArguments()){
-//    	   e.accept(this);
-//       }
-//	   if (call.isExternal()) {
-//	       call.getLocation().accept(this);
-//	   }
-       
-//       return null;
        if (call.getEnclosingScope() == null) { 
            call.setEnclosingScope(currentScope);
        }
