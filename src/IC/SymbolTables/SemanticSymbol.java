@@ -54,7 +54,11 @@ public class SemanticSymbol {
     }
     
     public String toString() { 
+        
         if (type instanceof ClassType) { 
+            if (id.compareTo("this") == 0) { // dont want to print "Field: this $ClassType"
+                return "";
+            }
             return "" + kind + ": " + id; 
         }
         else if (type == null) { 
