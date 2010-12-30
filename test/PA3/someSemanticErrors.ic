@@ -4,7 +4,8 @@ class A {
 	int a;
 	
 	static void main(string[] args) {
-		b.foo();
+		int [] b = new int[5];
+		b[4] = 5;
 	}
 }
 
