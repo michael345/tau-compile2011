@@ -5,11 +5,12 @@ class A {
 	
 	void foo() {
 		
-		a = 3;
+		b.a = 4;
 		
-		string a;
-		a = "3";
-		a = 4;
+		B b = new B();
 	}
-	static void main(string[] args) { }
+}
+
+class B { 
+	int a;
 }

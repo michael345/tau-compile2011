@@ -7,14 +7,14 @@ class A {
       {
         int k = 5;
       }
-      return 1;
+      return "hello";
     }
     else {
       A x = new A();
       int[] array1 = new int[5];
       x.i = 9;
       x.str = "hello";
-      return 0;
+      return "hello";
     }
   }
 

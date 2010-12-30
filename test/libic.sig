@@ -2,7 +2,7 @@ class Library {
  static void println(string s); /* prints string s followed by a newline */
  static void print(string s);   /* prints string s */
  static void printi(int i);     /* prints integer i */
- static void printb(boolean b); /* prints boolean b */
+ //static void printb(boolean b); /* prints boolean b */
 
  static int readi();     /* reads an integer from the input */
  static string readln(); /* reads one line from the input */
