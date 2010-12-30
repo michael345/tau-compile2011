@@ -209,10 +209,10 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(StatementsBlock statementsBlock) {
-       SymbolTable blockTable = new BlockSymbolTable("block" + blockCounter++); // TODO: want this ID to be statement block in "sfunc"
+       SymbolTable blockTable = new BlockSymbolTable("block" + blockCounter++); 
        SymbolTable symbolTable;
        statementsBlock.setEnclosingScope(blockTable);
-     //  currentScope.addChild(blockTable);
+       currentScope.addChild(blockTable); //TODO: added this instead of what's happening in the bottom of the function
        blockTable.setParentSymbolTable(currentScope);
        for (Statement statement : statementsBlock.getStatements()) { 
            currentScope = blockTable; 
@@ -230,7 +230,7 @@ public class SymbolTableConstructor implements Visitor {
            else {
                symbolTable = (SymbolTable)statement.accept(this);
                if (symbolTable != null){
-                   blockTable.addChild((SymbolTable)statement.accept(this));
+                   //blockTable.addChild((SymbolTable)statement.accept(this)); TODO: removed this, seems to be working
                }
            }
        }
