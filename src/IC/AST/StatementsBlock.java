@@ -2,6 +2,8 @@ package IC.AST;
 
 import java.util.List;
 
+import IC.TYPE.VoidType;
+
 /**
  * Statements block AST node.
  * 
@@ -26,6 +28,8 @@ public class StatementsBlock extends Statement {
 	public StatementsBlock(int line, List<Statement> statements) {
 		super(line);
 		this.statements = statements;
+	    setSemanticType(new VoidType(0));
+
 	}
 
 	public List<Statement> getStatements() {

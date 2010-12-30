@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.TYPE.VoidType;
+
 /**
  * Assignment statement AST node.
  * 
@@ -27,6 +29,7 @@ public class Assignment extends Statement {
 		super(variable.getLine());
 		this.variable = variable;
 		this.assignment = assignment;
+		super.setSemanticType(new VoidType(0));
 	}
 
 	public Location getVariable() {

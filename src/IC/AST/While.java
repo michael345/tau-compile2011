@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.TYPE.VoidType;
+
 /**
  * While statement AST node.
  * 
@@ -27,6 +29,8 @@ public class While extends Statement {
 		super(condition.getLine());
 		this.condition = condition;
 		this.operation = operation;
+	    setSemanticType(new VoidType(0));
+
 	}
 	
 	public Expression getCondition() {

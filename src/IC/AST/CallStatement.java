@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.TYPE.VoidType;
+
 /**
  * Method call statement AST node.
  * 
@@ -22,6 +24,7 @@ public class CallStatement extends Statement {
 	public CallStatement(Call call) {
 		super(call.getLine());
 		this.call = call;
+		setSemanticType(new VoidType(0));
 	}
 
 	public Call getCall() {

@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.TYPE.VoidType;
+
 /**
  * Abstract base class for statement AST nodes.
  * 

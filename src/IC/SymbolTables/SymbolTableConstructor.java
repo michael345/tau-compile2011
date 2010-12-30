@@ -21,7 +21,7 @@ public class SymbolTableConstructor implements Visitor {
    private SymbolTable st;
    private SymbolTable currentScope;
    private boolean forwardRef;
-   
+   private int blockCounter = 0;
    private List<ASTNode> forwardRefs;
    
  
@@ -73,11 +73,14 @@ public class SymbolTableConstructor implements Visitor {
            System.out.println("semantic error at line " + icClass.getLine()  +"  Fatal error!");
            System.exit(-1);
        }
-       for (Field field : icClass.getFields())
+       for (Field field : icClass.getFields()) {
     	   if (!classTable.insert(field.getName(), new SemanticSymbol(field.getSemanticType(), new Kind(Kind.FIELD), field.getName(), false))) { 
     	       System.out.println("Error: Illegal redefinition; element " + field.getName() + " in line #" + field.getLine());
                System.exit(-1);
     	   }
+    	   field.accept(this);
+    	   field.getType().accept(this);
+       }
         
 
        for (Method method : icClass.getMethods()) {
@@ -119,6 +122,7 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(Field field) {
+       field.getType().accept(this);
        field.setEnclosingScope(currentScope);
        return null;
    }
@@ -128,6 +132,7 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(Formal formal) {
+       formal.getType().accept(this);
        formal.setEnclosingScope(currentScope);
        return null;   
    }
@@ -149,6 +154,7 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(CallStatement callStatement) {
        callStatement.getCall().accept(this);
+      // callStatement.setSemanticType(callStatement.getCall().getSemanticType());
        callStatement.setEnclosingScope(currentScope);
        
 	   return null;
@@ -181,7 +187,7 @@ public class SymbolTableConstructor implements Visitor {
    public Object visit(While whileStatement) {
 	   
       SymbolTable whileSymbolTable = new SymbolTable("while");
-      whileStatement.setEnclosingScope(whileSymbolTable); //TODO: maybe currentScope
+      whileStatement.setEnclosingScope(whileSymbolTable); 
       whileSymbolTable.setLoop(true);
       whileSymbolTable.setParentSymbolTable(currentScope);
       currentScope = whileSymbolTable;
@@ -203,9 +209,10 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(StatementsBlock statementsBlock) {
-       SymbolTable blockTable = new BlockSymbolTable("block"); // TODO: want this ID to be statement block in "sfunc"
+       SymbolTable blockTable = new BlockSymbolTable("block" + blockCounter++); // TODO: want this ID to be statement block in "sfunc"
        SymbolTable symbolTable;
        statementsBlock.setEnclosingScope(blockTable);
+     //  currentScope.addChild(blockTable);
        blockTable.setParentSymbolTable(currentScope);
        for (Statement statement : statementsBlock.getStatements()) { 
            currentScope = blockTable; 
@@ -234,6 +241,7 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(LocalVariable localVariable) {
+       localVariable.getType().accept(this);
        localVariable.setEnclosingScope(currentScope);
        if (localVariable.hasInitValue()) { 
            localVariable.getInitValue().accept(this);
@@ -262,14 +270,13 @@ public class SymbolTableConstructor implements Visitor {
                SymbolTable st = getClassSymbolTable(str, location); 
                if (st == null)  {
                    if (forwardRef == true) { 
-                       System.out.println("semantic error at line " + location.getLine() + ": unresolved identifier.");
+                       System.out.println("semantic error at line " + location.getLine() + ": 9unresolved identifier.");
                        System.exit(-1);
                    }
                    else { 
                        forwardRefs.add(location);
                    }
                    
-                   //return null;
                }
                else {
                    Type realType = st.lookup(location.getName()).getType();
@@ -282,7 +289,7 @@ public class SymbolTableConstructor implements Visitor {
                    SemanticSymbol symbolLookup = location.getEnclosingScope().lookup(vl.getName());
                    if (symbolLookup == null) {
                        if (forwardRef == true) { 
-                           System.out.println("semantic error at line " + location.getLine() + ": unresolved identifier.");
+                           System.out.println("semantic error at line " + location.getLine() + ": 8unresolved identifier.");
                            System.exit(-1);
                        }
                        forwardRefs.add(location);
@@ -295,14 +302,21 @@ public class SymbolTableConstructor implements Visitor {
                        SymbolTable st = getClassSymbolTable(str, location); 
                        if (st == null) { 
                            if (forwardRef == true) { 
-                               System.out.println("semantic error at line " + location.getLine() + ": unresolved identifier.");
+                               System.out.println("semantic error at line " + location.getLine() + ": no such class - \"" + str + "\".");
                                System.exit(-1);
                            }
                            forwardRefs.add(location);
                        } 
                        else {
-                           Type realType = st.lookup(location.getName()).getType();
-                           location.setSemanticType(realType);
+                           SemanticSymbol semSymbol = st.lookup(location.getName());
+                           if (semSymbol == null) { 
+                               System.out.println("semantic error at line " + location.getLine() + ": class " + str + " does not have field " + location.getName() +". " );
+                               System.exit(-1);
+                           }
+                           else {
+                               Type realType = st.lookup(location.getName()).getType();
+                               location.setSemanticType(realType);
+                           }
                        }
                    }
                }
@@ -311,11 +325,12 @@ public class SymbolTableConstructor implements Visitor {
                    Type t = location.getLocation().getSemanticType();
                    if (t == null) { 
                        if (forwardRef) { 
-                           System.out.println("semantic error at line " + location.getLine() + ": unresolved identifier.");
+                           System.out.println("semantic error at line " + location.getLine() + ": unspecified semantic error.");
                            System.exit(-1);
                        }
                        else {
                            forwardRefs.add(location);
+                           return null;//maybe not needed
                        }
                    }
                    else {
@@ -323,7 +338,7 @@ public class SymbolTableConstructor implements Visitor {
                        SymbolTable st = getClassSymbolTable(className, location);
                        if (st == null) {
                            if (forwardRef) { 
-                               System.out.println("semantic error at line " + location.getLine() + ": unresolved identifier.");
+                               System.out.println("semantic error at line " + location.getLine() + ": no such class - \"" + className + "\".");
                                System.exit(-1);
                            }
                            else { 
@@ -467,7 +482,7 @@ public class SymbolTableConstructor implements Visitor {
                SemanticSymbol funcFromClass = st.localLookup(funcName);
                if (funcFromClass == null){
                    if (forwardRef) {
-                       System.out.println("semantic error at line " + call.getLine() + " : Method " + funcName +" is undefined");
+                       System.out.println("semantic error at line " + call.getLine() + " : method " + funcName +" is undefined");
                        System.exit(-1);
                    }
                    forwardRefs.add(call);
@@ -475,23 +490,32 @@ public class SymbolTableConstructor implements Visitor {
                }
            }
            else if (call.getLocation() instanceof ArrayLocation) {
+               call.getLocation().accept(this);
+
                Type locationType = call.getLocation().getSemanticType();
                String className = locationType.toString();
                SymbolTable st = getClassSymbolTable(className, call); // we assume if passed Symboltable contsructor this exists
                if (st == null) { 
                    if (forwardRef) {
-                       System.out.println("semantic error at line " + call.getLine() + " : Method " + funcName +" is undefined");
+                       System.out.println("semantic error at line " + call.getLine() + " : method " + funcName +" is undefined");
                        System.exit(-1);
                    }
                    forwardRefs.add(call); 
+                   return null;
                }
                SemanticSymbol answer = st.lookup(funcName);
                if (answer == null) { 
                    if (forwardRef) {
-                       System.out.println("semantic error at line " + call.getLine() + " : Method " + funcName +" is undefined");
+                       System.out.println("semantic error at line " + call.getLine() + " : method " + funcName +" is undefined");
                        System.exit(-1);
                    }
                    forwardRefs.add(call); 
+               }
+               else { //answer is not null, make sure its a method
+                   if (!answer.isMethod()) { 
+                       System.out.println("semantic error at line " + call.getLine() + " : method " + funcName +" is undefined for class " + className + ".");
+                       System.exit(-1);
+                   }
                }
            }
            else { // e.g. exprssionblock, new class, etc
@@ -508,18 +532,18 @@ public class SymbolTableConstructor implements Visitor {
               }
               String className = t.toString();
               SymbolTable st = getClassSymbolTable(className, call);
-              if(st == null){
+              if (st == null){
                   if (forwardRef) {
                       System.out.println("semantic error at line " + call.getLine() + " : method " + call.getName() +" is used before definition");
                       System.exit(-1);
                   }
                   forwardRefs.add(call); 
-                  
+                  return null;
               }
               SemanticSymbol funcFromClass = st.lookup(funcName);
               if (funcFromClass == null){
                   if (forwardRef) {
-                      System.out.println("semantic error at line " + call.getLine() + " : Method " + funcName +" is undefined");
+                      System.out.println("semantic error at line " + call.getLine() + " : method " + funcName +" is undefined");
                       System.exit(-1);
                   }
                   forwardRefs.add(call); 
@@ -550,7 +574,7 @@ public class SymbolTableConstructor implements Visitor {
        SemanticSymbol temp = currentScope.getGlobal().lookup(newClass.getName());
        if (temp == null) { 
            if (forwardRef == true) { 
-               System.out.println("semantic error at line " + newClass.getLine() + ": unresolved identifier.");
+               System.out.println("semantic error at line " + newClass.getLine() + ": class \"" + newClass.getName() + "\" is undefined.");
                System.exit(-1);
            }
            forwardRefs.add(newClass);
@@ -569,7 +593,6 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(Length length) {
        length.setEnclosingScope(currentScope);
-      // length.getArray().setEnclosingScope(currentScope);
        length.getArray().accept(this);
        return null;
    }
@@ -587,7 +610,7 @@ public class SymbolTableConstructor implements Visitor {
        
        if (first.getSemanticType() == null || second.getSemanticType() == null) { 
            if (forwardRef) { 
-               System.out.println("semantic error at line " + binaryOp.getLine() + ": unresolved identifier.");
+               System.out.println("semantic error at line " + binaryOp.getLine() + ": math binary operation problem.");
 
                System.exit(-1);
            }
@@ -626,7 +649,7 @@ public class SymbolTableConstructor implements Visitor {
        
        if (first.getSemanticType() == null || second.getSemanticType() == null) { 
            if (forwardRef) { 
-               System.out.println("semantic error at line " + binaryOp.getLine() + ": unresolved identifier.");
+               System.out.println("semantic error at line " + binaryOp.getLine() + ": logical binary operation problem.");
 
                System.exit(-1);
            }
@@ -679,7 +702,7 @@ public class SymbolTableConstructor implements Visitor {
        
        if (first.getSemanticType() == null) { 
            if (forwardRef) { 
-               System.out.println("semantic error at line " + unaryOp.getLine() + ": unresolved identifier.");
+               System.out.println("semantic error at line " + unaryOp.getLine() + ": math unary op type problem.");
 
                System.exit(-1);
            }
@@ -712,7 +735,7 @@ public class SymbolTableConstructor implements Visitor {
        
        if (first.getSemanticType() == null) { 
            if (forwardRef) { 
-               System.out.println("semantic error at line " + unaryOp.getLine() + ": unresolved identifier.");
+               System.out.println("semantic error at line " + unaryOp.getLine() + ": logical unary op type problem.");
                System.exit(-1);
            }
            forwardRefs.add(unaryOp);
@@ -745,7 +768,7 @@ public class SymbolTableConstructor implements Visitor {
        
        if (expressionBlock.getExpression().getSemanticType() == null) { 
            if (forwardRef == true) { 
-               System.out.println("semantic error at line " + expressionBlock.getLine() + ": unresolved identifier.");
+               System.out.println("semantic error at line " + expressionBlock.getLine() + ": unspecified.");
                System.exit(-1);
            }
            forwardRefs.add(expressionBlock);
@@ -763,6 +786,7 @@ public class SymbolTableConstructor implements Visitor {
 	   SymbolTable symbolTable;//child to be
 	   
 	   currentScope = methodTable;
+	   method.getType().accept(this);
        if (method.getFormals().size() > 0) {
            for (Formal formal : method.getFormals()) { 
         	   formal.accept(this);
