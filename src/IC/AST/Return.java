@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.TYPE.VoidType;
+
 /**
  * Return statement AST node.
  * 
@@ -21,6 +23,7 @@ public class Return extends Statement {
 	 */
 	public Return(int line) {
 		super(line);
+		setSemanticType(new VoidType(0));
 	}
 
 	/**
@@ -34,6 +37,8 @@ public class Return extends Statement {
 	public Return(int line, Expression value) {
 		this(line);
 		this.value = value;
+		setSemanticType(new VoidType(0));
+
 	}
 
 	public boolean hasValue() {

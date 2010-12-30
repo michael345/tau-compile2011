@@ -2,6 +2,8 @@ package IC.AST;
 
 import java.util.List;
 
+import IC.TYPE.VoidType;
+
 /**
  * Root AST node for an IC program.
  * 
@@ -24,7 +26,10 @@ public class Program extends ASTNode {
 	public Program(List<ICClass> classes) {
 		super(0);
 		this.classes = classes;
+	    setSemanticType(new VoidType(0));
+
 	}
+	
 
 	public List<ICClass> getClasses() {
 		return classes;

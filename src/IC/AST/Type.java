@@ -1,5 +1,9 @@
 package IC.AST;
 
+import IC.SymbolTables.SymbolTable;
+import IC.TYPE.TypeTable;
+import IC.TYPE.VoidType;
+
 
 /**
  * Abstract base class for data type AST nodes.
@@ -22,6 +26,7 @@ public abstract class Type extends ASTNode {
 	 */
 	protected Type(int line) {
 		super(line);
+		setSemanticType(new VoidType(0));
 	}
 
 	public abstract String getName();
@@ -32,6 +37,12 @@ public abstract class Type extends ASTNode {
 
 	public void incrementDimension() {
 		++dimension;
+	}
+	
+	public void setEnclosingScope(SymbolTable t) { 
+	    if (getEnclosingScope() == null) { 
+	        super.setEnclosingScope(t);
+	    }
 	}
 
     

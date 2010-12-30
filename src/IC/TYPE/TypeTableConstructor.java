@@ -98,19 +98,19 @@ public class TypeTableConstructor implements Visitor {
     }
 
     public Object visit(PrimitiveType type) {
-        Type temp = stringToType(type.getName());
-        type.setSemanticType(TypeTable.primitiveType(temp));
+        type.setSemanticType(TypeTable.voidType);
         return null; 
     }
 
     public Object visit(UserType type) {
-        type.setSemanticType(TypeTable.getClassType(type.getName()));
+        type.setSemanticType(TypeTable.voidType);
         return null;
     }
 
     public Object visit(Field field) {
         IC.AST.Type type = field.getType();
         field.setSemanticType(addAllSubArraysToTypeTable(type));
+       // field.getType().setSemanticType(TypeTable.voidType);
         return null;
     }
 
@@ -122,6 +122,7 @@ public class TypeTableConstructor implements Visitor {
     public Object visit(Formal formal) {
         IC.AST.Type type = formal.getType();
         formal.setSemanticType(addAllSubArraysToTypeTable(type));
+       // formal.getType().setSemanticType(TypeTable.voidType);
         return null;   
     }
 
@@ -191,7 +192,10 @@ public class TypeTableConstructor implements Visitor {
         if (localVariable.hasInitValue()) {
             localVariable.getInitValue().accept(this);
         }
+       // localVariable.getType().setSemanticType(TypeTable.voidType);
+
         return null;
+
     }
 
     public Object visit(VariableLocation location) {
@@ -234,13 +238,8 @@ public class TypeTableConstructor implements Visitor {
 
     public Object visit(NewArray newArray) {
         newArray.getSize().accept(this);
-        Type t = addAllSubArraysToTypeTable(newArray.getType());
-        int dim = newArray.getType().getDimension(); 
+        Type t = addAllSubArraysToTypeTable(newArray.getType()); //returned t is the element type of the array
         Type temp = TypeTable.arrayType(t);
-
-        for (int i = 0; i < dim-1; i++) {
-            temp = TypeTable.arrayType(temp);
-        }
         newArray.setSemanticType(temp);
         return null;
     }

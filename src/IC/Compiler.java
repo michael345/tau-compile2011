@@ -8,6 +8,7 @@ import IC.AST.ASTNode;
 import IC.AST.Field;
 import IC.AST.ICClass;
 import IC.AST.Method;
+import IC.AST.PrettyPrinter;
 import IC.AST.Program;
 import IC.Parser.Lexer;
 import IC.Parser.LexicalError;
@@ -15,6 +16,7 @@ import IC.Parser.LibraryParser;
 import IC.Parser.Parser;
 import IC.Parser.SyntaxError;
 import IC.SemanticChecks.BreakContinueChecker;
+import IC.SemanticChecks.ReturnAllPathsCheck;
 import IC.SemanticChecks.ScopeChecker;
 import IC.SemanticChecks.SingleMainCheck;
 import IC.SemanticChecks.ThisChecker;
@@ -115,7 +117,6 @@ public class Compiler {
         
         
         
-       
         
         public static void main(String[] args) {
             //testTypeTable();
@@ -141,6 +142,7 @@ public class Compiler {
                 icParser.printTokens = false;
                 Symbol parseSymbol = icParser.parse();
                 Program icProg = (Program) parseSymbol.value;
+                Program libProg = null;
                 if (!parseSuccessful(args[0], parseSymbol)) {
                     System.exit(-1);
                 }
@@ -151,7 +153,7 @@ public class Compiler {
                     LibraryParser libSigParser = new LibraryParser(libSigLexer);
                     libSigParser.printTokens = false;
                     Symbol libParseSymbol = libSigParser.parse(); 
-                    Program libProg = (Program) libParseSymbol.value; //the lib program
+                    libProg = (Program) libParseSymbol.value; //the lib program
                     ICClass libraryClass = libProg.getClasses().get(0); //get the library class
                     libNameIsLibrary(libraryClass);
                     if (!parseSuccessful(signaturePath, libParseSymbol)) {
@@ -167,7 +169,7 @@ public class Compiler {
                 TypeTableConstructor ttc = new TypeTableConstructor(args[0]);
                 ttc.visit(icProg); //build type table
                 if (!TypeTable.isLegalHeirarchy()) {
-                    System.out.println("Semantic Error: Illegal class heirarchy.");
+                     System.out.println("Semantic Error: Illegal class heirarchy.");
                      System.exit(-1);
                 }
                 SymbolTableConstructor stc = new SymbolTableConstructor(args[0]);
@@ -184,7 +186,14 @@ public class Compiler {
                     st.printSymbolTable();
                     TypeTable.printTable();
                     System.out.println("Type heirarchy legality: " + TypeTable.isLegalHeirarchy()); //TODO: remove this before handing in
-
+                }
+                
+                if (isPrint) {  
+                    PrettyPrinter printer = new PrettyPrinter(args[0]);
+                    String traverse = (String)printer.visit(icProg);
+                    System.out.println(traverse);
+                        
+                    
                 }
 
                 icTextFile.close();
@@ -222,6 +231,8 @@ public class Compiler {
                 System.exit(-1);
             }
             typeCheck(icProg);
+            ReturnAllPathsCheck.doAllPathsHaveReturn(icProg);
+              
             
            
             

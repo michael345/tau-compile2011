@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.TYPE.VoidType;
+
 /**
  * If statement AST node.
  * 
@@ -30,6 +32,7 @@ public class If extends Statement {
 	public If(Expression condition, Statement operation, Statement elseOperation) {
 		this(condition, operation);
 		this.elseOperation = elseOperation;
+		setSemanticType(new VoidType(0));
 	}
 
 	/**

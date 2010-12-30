@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.TYPE.VoidType;
+
 /**
  * Break statement AST node.
  * 
@@ -19,6 +21,8 @@ public class Break extends Statement {
 	 */
 	public Break(int line) {
 		super(line);
+	      setSemanticType(new VoidType(0));
+
 	}
 
 }

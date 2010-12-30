@@ -1,5 +1,7 @@
 package IC.AST;
 
+import IC.TYPE.VoidType;
+
 /**
  * Continue statement AST node.
  * 
@@ -19,6 +21,8 @@ public class Continue extends Statement {
 	 */
 	public Continue(int line) {
 		super(line);
+	      setSemanticType(new VoidType(0));
+
 	}
 
 }
