@@ -1,60 +1,16 @@
-class SomeSemanticErrors{
+class A {
+	
+
 	int a;
-	int b;
 	
-	static void main(string[] args){}
-	
-	// not suppose to return anything - on every path !
-	void f(){
-		int x = 6;
-		if (x < 7){
-			return;
-		} else {
-				return;
-		}
+	static void main(string[] args) {
+		b.foo();
 	}
-	
-	int g(){
-		return 2*7-2*3;
+}
+
+class B { 
+	int a;
+	int foo() { 
+		return 4;
 	}
-	
-	boolean yyy(){
-		if(1 != 4)
-			return true;
-		return false;
-	}
-	
-	string z(){
-		return "stringTest";
-	}
-	void test(){
-		boolean b = false || !yyy();
-	} 
-	
-	void test0(){
-		string s = z() + "!!!";
-	} 	
-		
-	void test1(){
-		int j;
-		j = -g() + 7;
-	}
-	
-	void test2(){
-		//int k = this + 1;
-	}
-	
-	void test3(){
-		//Library.printi(STRING.length);	
-	}
-	
-	void test4(){
-		//SomeSemanticErrors t = new this();
-	}
-		
-	void test5(){
-		int[] w = new int[3];
-	}
-			
-	
 }

@@ -360,15 +360,8 @@ public class SymbolTableConstructor implements Visitor {
        }
        else {
            if ((temp = location.getEnclosingScope().lookup(location.getName())) == null) { 
-               if (forwardRef) {
                    System.out.println("Semantic error at line " + location.getLine() + ": var " + location.getName() + " used before definition.");
                    System.exit(-1); 
-               }
-               else { 
-                   forwardRefs.add(location);
-                   //return null;
-                   
-               } 
            }
            else { 
                location.setSemanticType(temp.getType());
