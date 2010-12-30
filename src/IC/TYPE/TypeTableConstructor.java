@@ -77,7 +77,6 @@ public class TypeTableConstructor implements Visitor {
     }
     
     public Object visit(Program program) {
-        //output.append("Abstract Syntax Tree: " + ICFilePath + "\n");
         for (ICClass icClass : program.getClasses()) {
             TypeTable.classType(icClass);
         }
@@ -110,7 +109,6 @@ public class TypeTableConstructor implements Visitor {
     public Object visit(Field field) {
         IC.AST.Type type = field.getType();
         field.setSemanticType(addAllSubArraysToTypeTable(type));
-       // field.getType().setSemanticType(TypeTable.voidType);
         return null;
     }
 
@@ -122,7 +120,6 @@ public class TypeTableConstructor implements Visitor {
     public Object visit(Formal formal) {
         IC.AST.Type type = formal.getType();
         formal.setSemanticType(addAllSubArraysToTypeTable(type));
-       // formal.getType().setSemanticType(TypeTable.voidType);
         return null;   
     }
 
@@ -227,7 +224,6 @@ public class TypeTableConstructor implements Visitor {
     }
 
     public Object visit(This thisExpression) {
-      //TODO: set call.setSemanticType to something - or not
         return null;
     }
 
@@ -246,7 +242,7 @@ public class TypeTableConstructor implements Visitor {
 
     public Object visit(Length length) {
         length.getArray().accept(this);
-        length.setSemanticType(TypeTable.primitiveType(new IntType(0)));// TODO: maybe set length.setSemanticType to TypeInt ?
+        length.setSemanticType(TypeTable.primitiveType(new IntType(0)));
         return null;
     }
 
