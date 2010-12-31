@@ -1,46 +1,78 @@
-class A {}
+class A {
 
-class B
-{
+int var;
 
-	int a;
-	string b;
-	boolean c;
-	A d;
-	
-	int foo() { 
-		return 2;
-	}
-	
+void foo() {
+a = 3;
+
+b = 5;
+
+int b;
+
+var = 7;
 }
 
-class C extends B
-{
-
-	static void main(string[] args) { }
-	
-	string foo(int x, string y, boolean z)
-	{
-		B bClass = new B();
-		int aa;
-		string bb;
-		boolean cc;
-		A dd;
-		
-		aa = x;
-		bb = y;
-		cc = z;
-		dd = new A();
-		
-		bClass.a = aa;
-		bClass.b = bb;
-		bClass.c = cc;
-		bClass.d = dd;
-		a = aa;
-		b = bb;
-		c = cc;
-		d = dd;
-		
-		return bClass.b;	
-	}
+void bar() {
+foo = 3;
 }
+
+static void one() {
+this.var = 3;
+
+var = 3;
+}
+
+void two() {
+this.var = 3;
+this.nothere = 5;
+
+this.one = 5;
+}
+
+void three() {
+A.notthere(100);
+A.two();
+A.var();
+}
+
+void four() {
+int three;
+string notAMethod;
+three();
+
+undefined(1,2,3);
+one();
+notAMethod();
+var();
+}
+
+static void five() {
+four();
+}
+}
+
+class B {
+
+int a;
+B b;
+
+void c(int d)
+{
+this.a = 5;
+}
+
+void f(int d)
+{
+this.c(8);
+this.g(13);
+this.e();
+this.a(3);
+}
+
+static void e()
+{
+this.a = 8;
+this.c(8);
+}
+}
+
