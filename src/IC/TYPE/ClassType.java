@@ -13,7 +13,6 @@ public class ClassType extends Type {
 
 
 
-    @Override
     public String toString() {
             return classAST.getName();
         

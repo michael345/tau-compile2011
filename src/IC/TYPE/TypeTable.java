@@ -10,7 +10,7 @@ import java.util.Set;
 import IC.AST.ICClass;
 
 public class TypeTable {
-    private static int idIndex = 1; // moved from TypeTableConstructor
+    private static int idIndex = 1; 
     private static Map<Type,ArrayType> uniqueArrayTypes = new HashMap<Type,ArrayType>();
     private static Map<String,ClassType> uniqueClassTypes = new HashMap<String,ClassType>();
     private static Set<MethodType> uniqueMethodTypes = new HashSet<MethodType>();

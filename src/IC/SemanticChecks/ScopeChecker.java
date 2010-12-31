@@ -61,7 +61,6 @@ import IC.TYPE.VoidType;
 public class ScopeChecker implements Visitor { 
 
    public Object visit(Program program) { 
-       Object temp;
        for (ICClass icClass : program.getClasses()) {
           icClass.accept(this);
        }
@@ -192,7 +191,7 @@ public class ScopeChecker implements Visitor {
        return null;
    }
 
-   public Object visit(VariableLocation location) {//TODO: Test this
+   public Object visit(VariableLocation location) {
        
        if (!location.isExternal()) { 
     	   
@@ -366,16 +365,7 @@ public Object visit(ArrayLocation location) {
        return null; 
    }
 
-   public Object visit(NewArray newArray) {//TODO: Write this
-//       Expression size = newArray.getSize();
-//       size.accept(this);
-//       IC.AST.Type debugType = newArray.getType();
-//       IC.TYPE.Type type = newArray.getSemanticType(); //should be array of 
-//       if (isInt(newArray.getSize())) { 
-//           if (newArray.getSemanticType() != TypeTable.arrayType(type)) { 
-//               return newArray;
-//           }
-//       }
+   public Object visit(NewArray newArray) {
        return null;
    }
 

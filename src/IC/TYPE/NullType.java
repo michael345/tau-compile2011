@@ -7,7 +7,7 @@ public class NullType extends Type{
         this.id = id;
     }
     
-    @Override
+    
     public String toString() {
         return "null";
     }

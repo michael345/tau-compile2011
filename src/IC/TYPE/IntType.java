@@ -7,7 +7,6 @@ public class IntType extends Type {
         this.id = id;
     }
     
-    @Override
     public String toString() {
         return "int";
     }

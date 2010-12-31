@@ -117,7 +117,7 @@ public class SymbolTable {
             return true;
         }
         else 
-            return false; // TODO: maybe throw some kind of error - illegal re-definition
+            return false;
     }
     
     public List<SymbolTable> getChildren() {
@@ -133,7 +133,7 @@ public class SymbolTable {
     public void addChild(SymbolTable child) { 
         if (child!=null){
 	    	if (children.contains(child))  {
-	            ;// TODO: maybe a problem? 
+	            ;
 	        }
 	        else {
 	            child.setParentSymbolTable(this);
