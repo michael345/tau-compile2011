@@ -47,6 +47,7 @@ import IC.SymbolTables.SemanticSymbol;
 import IC.SymbolTables.SymbolTable;
 import IC.TYPE.ArrayType;
 import IC.TYPE.BoolType;
+import IC.TYPE.ClassType;
 import IC.TYPE.IntType;
 import IC.TYPE.Kind;
 import IC.TYPE.MethodType;
@@ -249,10 +250,17 @@ public class TypeChecker implements Visitor {
        }
        else if (location.getLocation() instanceof VariableLocation ) {
            VariableLocation vl = (VariableLocation) location.getLocation();
-           location.getLocation().setSemanticType(location.getEnclosingScope().lookup(vl.getName()).getType());
-           Type t = location.getLocation().getSemanticType();
-           String str = t.toString(); //this is the classname, for instance A
-           SymbolTable st = getClassSymbolTable(str, location); 
+           SymbolTable st;
+           if(vl.getSemanticType() instanceof ClassType){
+        	   st = getClassSymbolTable(vl.getSemanticType().toString(), location);
+           }
+           else{
+	           SemanticSymbol smbo = location.getEnclosingScope().lookup(vl.getName());
+	           location.getLocation().setSemanticType(smbo.getType());
+	           Type t = location.getLocation().getSemanticType();
+	           String str = t.toString(); //this is the classname, for instance A
+	           st = getClassSymbolTable(str, location); 
+           }
            Type realType = st.lookup(location.getName()).getType();
            location.setSemanticType(realType);
            return null;
@@ -315,11 +323,19 @@ public Object visit(ArrayLocation location) {
        else {                           // location = object name 
            if (call.getLocation() instanceof VariableLocation) {
                VariableLocation objectName = (VariableLocation) call.getLocation();
+               SymbolTable st;
+               if(objectName.getSemanticType() instanceof ClassType){
+            	   st = getClassSymbolTable(objectName.getSemanticType().toString(), call);
+               }
+               else{
                SemanticSymbol smbo = call.getEnclosingScope().lookup(objectName.getName());
-               call.getLocation().setSemanticType(smbo.getType());
+              // call.getLocation().setSemanticType(smbo.getType());
+               
                Type t = call.getLocation().getSemanticType();
                String str = t.toString(); //this is the classname, for instance A
-               SymbolTable st = getClassSymbolTable(str, call);
+               st = getClassSymbolTable(str, call);
+               }
+               
                SemanticSymbol methodSymbol = st.lookup(funcName);
                return checkFormalsToArgs(call, methodSymbol);
            }
