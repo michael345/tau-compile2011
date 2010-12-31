@@ -1,50 +1,7 @@
 package IC.SemanticChecks;
 
-import IC.AST.ASTNode;
-import IC.AST.ArrayLocation;
-import IC.AST.Assignment;
-import IC.AST.Break;
-import IC.AST.CallStatement;
-import IC.AST.Continue;
-import IC.AST.Expression;
-import IC.AST.ExpressionBlock;
-import IC.AST.Field;
-import IC.AST.Formal;
-import IC.AST.ICClass;
-import IC.AST.If;
-import IC.AST.Length;
-import IC.AST.LibraryMethod;
-import IC.AST.Literal;
-import IC.AST.LocalVariable;
-import IC.AST.Location;
-import IC.AST.LogicalBinaryOp;
-import IC.AST.LogicalUnaryOp;
-import IC.AST.MathBinaryOp;
-import IC.AST.MathUnaryOp;
-import IC.AST.Method;
-import IC.AST.NewArray;
-import IC.AST.NewClass;
-import IC.AST.PrimitiveType;
-import IC.AST.Program;
-import IC.AST.Return;
-import IC.AST.Statement;
-import IC.AST.StatementsBlock;
-import IC.AST.StaticCall;
-import IC.AST.StaticMethod;
-import IC.AST.This;
-import IC.AST.UserType;
-import IC.AST.VariableLocation;
-import IC.AST.VirtualCall;
-import IC.AST.VirtualMethod;
-import IC.AST.Visitor;
-import IC.AST.While;
-import IC.SymbolTables.BlockSymbolTable;
-import IC.SymbolTables.ClassSymbolTable;
-import IC.SymbolTables.GlobalSymbolTable;
-import IC.SymbolTables.MethodSymbolTable;
-import IC.SymbolTables.SemanticSymbol;
-import IC.SymbolTables.SymbolTable;
-import IC.TYPE.Kind;
+import IC.AST.*;
+import IC.SymbolTables.*;
 
 public class ThisChecker implements Visitor {
 

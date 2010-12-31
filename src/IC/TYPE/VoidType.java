@@ -7,7 +7,6 @@ public class VoidType extends Type {
         this.id = id;
     }
     
-    @Override
     public String toString() {
         return "void";
     }

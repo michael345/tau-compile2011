@@ -1,6 +1,6 @@
 package IC.TYPE;
 
-import java.util.StringTokenizer;
+
 
 import IC.AST.*;
 
@@ -36,10 +36,10 @@ public abstract class Type {
     public static Type getArrayType(NewArray node) { 
         Type t  = stringToType(node.getType().getName());
         
-        int dim = node.getType().getDimension(); //TODO: WTF!? dim == 0?!
+        int dim = node.getType().getDimension(); 
         Type temp = TypeTable.arrayType(t);
 
-        for (int i = 0; i < dim; i++) { //TODO: Maybe dim-1 ?
+        for (int i = 0; i < dim; i++) { 
             temp = TypeTable.arrayType(temp);
         }
         return temp;

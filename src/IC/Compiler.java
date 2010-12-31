@@ -185,7 +185,6 @@ public class Compiler {
                 if (isDumpSymTable(args)) {
                     st.printSymbolTable();
                     TypeTable.printTable();
-                    System.out.println("Type heirarchy legality: " + TypeTable.isLegalHeirarchy()); //TODO: remove this before handing in
                 }
                 
                 if (isPrint) {  
@@ -222,7 +221,10 @@ public class Compiler {
 		}
 
 		private static void semanticChecks(Program icProg) {
-           
+		    if (!TypeTable.isLegalHeirarchy()) { 
+		        System.out.println("semantic error: illegal class heirarchy.");
+		        System.exit(-1);
+		    }
 		    scopeCheck(icProg);
 		    bcCheck(icProg);
             thisCheck(icProg);

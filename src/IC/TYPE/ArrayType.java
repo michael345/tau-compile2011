@@ -10,7 +10,7 @@ public class ArrayType extends Type {
     }
 
 
-    public String toString() { // surprisingly this actually works
+    public String toString() { 
         Type tempType = elemType;
         ArrayType tempArrayType;
         String extraBrackets = "";

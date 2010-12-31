@@ -5,7 +5,6 @@ import IC.AST.*;
 
 public class TypeTableConstructor implements Visitor {
 
-    private int depth = 0; // depth of indentation
 
     private String ICFilePath;
 

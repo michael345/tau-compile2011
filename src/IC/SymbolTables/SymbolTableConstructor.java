@@ -225,7 +225,7 @@ public class SymbolTableConstructor implements Visitor {
        SymbolTable blockTable = new BlockSymbolTable("block" + blockCounter++); 
        SymbolTable symbolTable;
        statementsBlock.setEnclosingScope(blockTable);
-       currentScope.addChild(blockTable); //TODO: added this instead of what's happening in the bottom of the function
+       currentScope.addChild(blockTable); 
        blockTable.setParentSymbolTable(currentScope);
        for (Statement statement : statementsBlock.getStatements()) { 
            currentScope = blockTable; 
@@ -243,7 +243,7 @@ public class SymbolTableConstructor implements Visitor {
            else {
                symbolTable = (SymbolTable)statement.accept(this);
                if (symbolTable != null){
-                   blockTable.addChild(symbolTable);// TODO: removed this, seems to be working
+                   blockTable.addChild(symbolTable);
                }
            }
        }
@@ -868,35 +868,17 @@ public class SymbolTableConstructor implements Visitor {
    private boolean isBool(ASTNode node) {
        return Type.isBool(node);
    }
-   
-   private boolean isNull(ASTNode node) {
-       return Type.isNull(node);
-   }
-   
+
    private boolean isString(ASTNode node) {
        return Type.isString(node);
    }
-   
-   private boolean isVoid(ASTNode node) {
-       return Type.isVoid(node);
-   }
-   
-   private boolean hasSameType(ASTNode node1, ASTNode node2) { 
-       return (node1.getSemanticType() == node2.getSemanticType());
-   }
-   
+
    private boolean isSubTypeOf(Type first, Type second) {
        return (IC.TYPE.TypeTable.isSubTypeOf(first, second));
  }
-   
-   
-   private boolean isSubTypeOf(ASTNode first, Type second) {
-       return isSubTypeOf(first.getSemanticType(), second);
-    }
-   
+
    private boolean isSubTypeOf(ASTNode first, ASTNode second) {
       return isSubTypeOf(first.getSemanticType(), second.getSemanticType());
    }
-   
    
 }

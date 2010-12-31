@@ -31,7 +31,6 @@ public class MethodType extends Type {
         this.returnType = returnType;
     }
 
-    @Override
     public String toString() {
         int i = 0;
         String result = "{";
@@ -40,7 +39,7 @@ public class MethodType extends Type {
         for (i = 0; i<paramTypes.length-1; i++) { 
             result += paramTypes[i] + ", ";
         }
-        result += paramTypes[i] + " -> " + returnType + "}";// maybe i+1 
+        result += paramTypes[i] + " -> " + returnType + "}";
         return result;
     }
     

@@ -136,7 +136,7 @@ public class TypeChecker implements Visitor {
        return callStatement.getCall().accept(this);
    }
 
-   public Object visit(Return returnStatement) {       //non-scoped
+   public Object visit(Return returnStatement) {      
        String methodId = getEnclosingMethod(returnStatement).getId();
        MethodType methodType = (MethodType) getEnclosingMethod(returnStatement).getParentSymbolTable().lookup(methodId).getType();
        Type formalReturnType = methodType.getReturnType();
@@ -369,7 +369,7 @@ public Object visit(ArrayLocation location) {
        return null;
 }
 
-   public Object visit(This thisExpression) { // TODO:
+   public Object visit(This thisExpression) { 
        return null;
    }
 
@@ -382,13 +382,10 @@ public Object visit(ArrayLocation location) {
        return null; 
    }
 
-   public Object visit(NewArray newArray) { // Done I think       
+   public Object visit(NewArray newArray) {   
        Expression size = newArray.getSize();
        size.accept(this);
-    //   int dim = newArray.getType().getDimension();
-       Type arrayType = Type.getArrayType(newArray); 
-       
-      // IC.TYPE.Type type = newArray.getSemanticType(); //should be array of 
+       Type arrayType = Type.getArrayType(newArray);        
        if (Type.isInt(newArray.getSize())) { 
            if (newArray.getSemanticType() != arrayType) { 
                return newArray;
@@ -502,10 +499,7 @@ public Object visit(ArrayLocation location) {
        return null;
 }
    
-   
-   private boolean hasSameType(ASTNode node1, ASTNode node2) { 
-       return (node1.getSemanticType() == node2.getSemanticType());
-   }
+
    
    private boolean isSubTypeOf(Type first, Type second) {
        return (IC.TYPE.TypeTable.isSubTypeOf(first, second));
