@@ -1,10 +1,30 @@
 class A
 {
-	static void main(string[] args) { }
 	
-	int foo() { 
-		int foo = 4;
-		return foo;
+	static void main(string[] args) { }
+
+	void foo()
+	{
+		int x;
+		string str;
+		boolean bool;
+		
+		x = 4;
+		str = "s";
+		bool = true;
+		
+		if(x){
+			bool = !bool;
+		}
+		
+		if(str){
+			bool = !bool;
+		}
+		else{}
+		
+		while(x){break;}
+		
+		return;
 	}
 	
 }
