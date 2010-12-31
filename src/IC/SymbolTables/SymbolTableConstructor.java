@@ -1,10 +1,8 @@
 package IC.SymbolTables;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.management.ObjectName;
 
 import IC.BinaryOps;
 import IC.UnaryOps;
@@ -172,7 +170,6 @@ public class SymbolTableConstructor implements Visitor {
 
    public Object visit(CallStatement callStatement) {
        callStatement.getCall().accept(this);
-      // callStatement.setSemanticType(callStatement.getCall().getSemanticType());
        callStatement.setEnclosingScope(currentScope);
        
 	   return null;
