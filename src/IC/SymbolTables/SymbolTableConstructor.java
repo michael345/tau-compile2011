@@ -48,7 +48,9 @@ public class SymbolTableConstructor implements Visitor {
        
        for (ICClass icClass : program.getClasses()) {
           currentScope = st;
-          st.addChild((ClassSymbolTable)icClass.accept(this));
+          SymbolTable classTable = new ClassSymbolTable(icClass.getName());
+          icClass.setEnclosingScope(classTable);
+          st.addChild(icClass.getEnclosingScope());
        }
        
        for (ICClass icClass : program.getClasses()) {
@@ -63,6 +65,10 @@ public class SymbolTableConstructor implements Visitor {
                dadTable.addChild(son); 
            }
         }
+       for (ICClass icClass : program.getClasses()) {
+           icClass.accept(this);
+        }
+       
        program.setEnclosingScope(st);
        forwardRef = true;
        for (ASTNode node : forwardRefs) { 
@@ -72,7 +78,7 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(ICClass icClass) {
-	   SymbolTable classTable = new ClassSymbolTable(icClass.getName());
+	   SymbolTable classTable = icClass.getEnclosingScope();
 	   icClass.setEnclosingScope(classTable);
 	   currentScope = classTable;
 	   SemanticSymbol thisSym = new SemanticSymbol(TypeTable.getClassType(icClass.getName()), new Kind(Kind.FIELD),"this",false);
