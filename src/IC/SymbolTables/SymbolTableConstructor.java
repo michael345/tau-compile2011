@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.management.ObjectName;
+
 import IC.BinaryOps;
 import IC.UnaryOps;
 import IC.AST.*;
 import IC.TYPE.BoolType;
+import IC.TYPE.ClassType;
 import IC.TYPE.IntType;
 import IC.TYPE.Kind;
 import IC.TYPE.MethodType;
@@ -296,20 +299,33 @@ public class SymbolTableConstructor implements Visitor {
            else {
                if (location.getLocation() instanceof VariableLocation) {
                    VariableLocation vl = (VariableLocation) location.getLocation();
-                   SemanticSymbol symbolLookup = location.getEnclosingScope().lookup(vl.getName());
-                   if (symbolLookup == null) {
-                       if (forwardRef == true) { 
-                           System.out.println("semantic error at line " + location.getLine() + ": "+ vl.getName() +" is undefined.");
-                           System.exit(-1);
-                       }
-                       forwardRefs.add(location);
-                       
+                   vl.accept(this);
+                   SymbolTable st = null;
+                   String str = "";
+                   if (vl.getSemanticType() instanceof ClassType){
+                	   str = vl.getSemanticType().toString();
+                	   st = getClassSymbolTable(vl.getSemanticType().toString(), location);
                    }
-                   else {
-                       location.getLocation().setSemanticType(symbolLookup.getType());
-                       Type t = location.getLocation().getSemanticType();
-                       String str = t.toString(); //this is the classname, for instance A
-                       SymbolTable st = getClassSymbolTable(str, location); 
+                   else{
+                	   SemanticSymbol symbolLookup = location.getEnclosingScope().lookup(vl.getName());
+                       if (symbolLookup == null) {
+                           if (forwardRef == true) { 
+                               System.out.println("semantic error at line " + location.getLine() + ": "+ vl.getName() +" is undefined.");
+                               System.exit(-1);
+                           }
+                           forwardRefs.add(location);
+                           
+                       }
+                       
+                       else {
+                           location.getLocation().setSemanticType(symbolLookup.getType());
+                           Type t = location.getLocation().getSemanticType();
+                           str = t.toString(); //this is the classname, for instance A
+                           st = getClassSymbolTable(str, location); 
+                   }
+                   }
+                   
+                       
                        if (st == null) { 
                            if (forwardRef == true) { 
                                System.out.println("semantic error at line " + location.getLine() + ": no such class - \"" + str + "\".");
@@ -328,7 +344,7 @@ public class SymbolTableConstructor implements Visitor {
                                location.setSemanticType(realType);
                            }
                        }
-                   }
+                   
                }
                else { // location.getLocation instanceof ArrayLocation
                    location.getLocation().accept(this); 
@@ -436,9 +452,11 @@ public class SymbolTableConstructor implements Visitor {
    }
 
    public Object visit(VirtualCall call) {
+	   
        if (call.getEnclosingScope() == null) { 
            call.setEnclosingScope(currentScope);
        }
+       SymbolTable currsymta = call.getEnclosingScope();
          for (Expression e : call.getArguments()){
              e.accept(this);
          }
@@ -469,12 +487,26 @@ public class SymbolTableConstructor implements Visitor {
            if (call.getLocation() instanceof VariableLocation) { 
         	   call.getLocation().accept(this);
                VariableLocation objectName = (VariableLocation) call.getLocation();
+               if(objectName.getSemanticType() instanceof ClassType && forwardRef){
+            	   currsymta = getClassSymbolTable(objectName.getSemanticType().toString(), call);
+            	   st = currsymta;
+               }
+               else{
                SemanticSymbol symbol = call.getEnclosingScope().lookup(objectName.getName());
-               if (symbol == null){ return call;}//not found//TODO: THIS IS WRONG!!!!!!!!
+               if (symbol == null){ 
+            	   if (forwardRef) {
+                       System.out.println("semantic error at line " + call.getLine() + " : method " + call.getName() +" is used before definition");
+                       System.exit(-1);
+                   }
+                   forwardRefs.add(call);
+                   return null;
+               }
                call.getLocation().setSemanticType(symbol.getType());
+           
                Type t = call.getLocation().getSemanticType();
                String str = t.toString(); //this is the classname, for instance A
                SymbolTable st = getClassSymbolTable(str, call);
+               }
                if(st == null){
                    if (forwardRef) {
                        System.out.println("semantic error at line " + call.getLine() + " : method " + call.getName() +" is used before definition");
