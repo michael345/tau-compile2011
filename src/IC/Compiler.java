@@ -202,7 +202,7 @@ public class Compiler {
                 System.exit(-1);
             }
             catch (LexicalError se) { 
-                se.printStackTrace();
+                se.printMessage();
                 System.exit(-1);
             }  
             
