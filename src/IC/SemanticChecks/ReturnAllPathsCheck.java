@@ -25,7 +25,7 @@ public class ReturnAllPathsCheck {
                 if (meth instanceof LibraryMethod) { 
                     continue;
                 }
-                IC.TYPE.MethodType mt = (MethodType) meth.getEnclosingScope().lookup(meth.getName()).getType();
+                IC.TYPE.MethodType mt = (MethodType) meth.getEnclosingScope().getParentSymbolTable().lookup(meth.getName()).getType();
                 IC.TYPE.Type rt = mt.getReturnType();
                 if (rt.equals(TypeTable.voidType)) { 
                     continue;
