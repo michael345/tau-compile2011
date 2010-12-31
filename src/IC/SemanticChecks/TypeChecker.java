@@ -138,7 +138,7 @@ public class TypeChecker implements Visitor {
 
    public Object visit(Return returnStatement) {       //non-scoped
        String methodId = getEnclosingMethod(returnStatement).getId();
-       MethodType methodType = (MethodType) getEnclosingMethod(returnStatement).lookup(methodId).getType();
+       MethodType methodType = (MethodType) getEnclosingMethod(returnStatement).getParentSymbolTable().lookup(methodId).getType();
        Type formalReturnType = methodType.getReturnType();
        Type actualRetType = null;
        boolean returned = false;
