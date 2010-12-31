@@ -119,7 +119,11 @@ public class TypeChecker implements Visitor {
    }
 
    public Object visit(Assignment assignment) {
-       assignment.getAssignment().accept(this);
+       Object temp;
+       temp = assignment.getAssignment().accept(this);
+       if (temp != null){
+    	   return temp;
+    	   }
        assignment.getVariable().accept(this);
        if (!isSubTypeOf(assignment.getAssignment(), assignment.getVariable())) { 
            return assignment;
@@ -302,12 +306,17 @@ public Object visit(ArrayLocation location) {
        String funcName = call.getName();
        if (call.getLocation() == null) { // method is in the same class as the call
            SemanticSymbol methodSymbol = call.getEnclosingScope().lookup(funcName); 
+           if(!(methodSymbol.getType() instanceof MethodType)){
+        	   System.out.println("semantic error at line " + call.getLine() + ": there is no method in the name of '" + call.getName() +"'.");
+               System.exit(-1); 
+           }
            return checkFormalsToArgs(call, methodSymbol);
        }
        else {                           // location = object name 
            if (call.getLocation() instanceof VariableLocation) {
                VariableLocation objectName = (VariableLocation) call.getLocation();
-               call.getLocation().setSemanticType(call.getEnclosingScope().lookup(objectName.getName()).getType());
+               SemanticSymbol smbo = call.getEnclosingScope().lookup(objectName.getName());
+               call.getLocation().setSemanticType(smbo.getType());
                Type t = call.getLocation().getSemanticType();
                String str = t.toString(); //this is the classname, for instance A
                SymbolTable st = getClassSymbolTable(str, call);
@@ -332,11 +341,12 @@ public Object visit(ArrayLocation location) {
        
        
        if (args.size() != paramsLength) { 
-           return call;
-       }
+    	   System.out.println("semantic error at line " + call.getLine() + ": not the correct amount of parameters in call '" + call.getName() +"'.");
+           System.exit(-1);       }
        for (int i = 0; i < paramsLength; i++) { 
            if (!isSubTypeOf(args.get(i), params[i])) { 
-               return call; // args dont fit formals type-wise
+        	   System.out.println("semantic error at line " + call.getLine() + ": parameter number " + (i+1) + " is not of the correct type.");
+               System.exit(-1);
            }
        }
        call.setSemanticType(methType.getReturnType());
