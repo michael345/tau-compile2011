@@ -1,17 +1,87 @@
-class A {
+class A
+{
+	static void main(string[] args) { }
 	
-
 	int a;
 	
-	static void main(string[] args) {
-		int [] b = new int[5];
-		b[4] = 5;
+	void b(int c)
+	{
+		int d;
+		int e = 5;
+		int f;
+		int g;
+		int h;
+		int i;
+		int j = 5;
+		int k;
+		
+		f = e;
+		
+		if (f > 1)
+		{
+			int k = 9;
+			d = 2;
+			g = 3;
+			e = g + d;
+			int j = 8;
+		}
+		else if (f == 0)
+		{
+			d = 5;
+			g = 6;
+			e = g - d;
+			j = 9;
+		}
+		else
+		{
+			int j;			
+			d = 8;
+			j = d;
+		}
+		
+		func(d);
+		f = d;
+		k = f;
+		
+		while (f > 0)
+		{
+			g = 5;
+			d = d + g;
+		}
+		
+		{
+			h = 5 + k;
+		}
+		
+		d = h;
+	}
+	
+	void func(int a)
+	{
 	}
 }
 
-class B { 
-	int a;
-	int foo() { 
-		return 4;
+class B
+{
+	void b()
+	{
+		A[] b;
+		A[] c;
+		A d;
+		
+		b = new A[12];
+		
+		c = b;
+		d = b[0];
+	}
+}
+
+class C
+{	
+	int b;
+	
+	void a()
+	{
+		int b = b;
 	}
 }
