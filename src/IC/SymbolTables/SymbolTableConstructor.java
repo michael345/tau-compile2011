@@ -49,6 +49,35 @@ public class SymbolTableConstructor implements Visitor {
        for (ICClass icClass : program.getClasses()) {
           currentScope = st;
           SymbolTable classTable = new ClassSymbolTable(icClass.getName());
+          SemanticSymbol thisSym = new SemanticSymbol(TypeTable.getClassType(icClass.getName()), new Kind(Kind.FIELD),"this",false);
+   	   if (!classTable.insert("this",thisSym)) { 
+              System.out.println("semantic error at line " + icClass.getLine()  +"  Fatal error!");
+              System.exit(-1);
+          }
+          for (Field field : icClass.getFields()) {
+       	   if (!classTable.insert(field.getName(), new SemanticSymbol(field.getSemanticType(), new Kind(Kind.FIELD), field.getName(), false))) { 
+       	       System.out.println("Error: Illegal redefinition; element " + field.getName() + " in line #" + field.getLine());
+                  System.exit(-1);
+       	   }
+          }
+           
+
+          for (Method method : icClass.getMethods()) {
+              if (method instanceof VirtualMethod) { 
+                  boolean a = classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.VIRTUALMETHOD),method.getName(),false));
+                  if (!a) { 
+                      System.out.println("Error: Illegal redefinition; element " + method.getName() + " in line #" + method.getLine());
+                      System.exit(-1);
+                  }
+              }
+              else {
+                  boolean a = classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.STATICMETHOD),method.getName(),false));
+                  if (!a) { 
+                      System.out.println("Error: Illegal redefinition; element " + method.getName() + " in line #" + method.getLine());
+                      System.exit(-1);
+                  }
+              }
+          }
           icClass.setEnclosingScope(classTable);
           st.addChild(icClass.getEnclosingScope());
        }
@@ -81,37 +110,13 @@ public class SymbolTableConstructor implements Visitor {
 	   SymbolTable classTable = icClass.getEnclosingScope();
 	   icClass.setEnclosingScope(classTable);
 	   currentScope = classTable;
-	   SemanticSymbol thisSym = new SemanticSymbol(TypeTable.getClassType(icClass.getName()), new Kind(Kind.FIELD),"this",false);
-	   if (!classTable.insert("this",thisSym)) { 
-           System.out.println("semantic error at line " + icClass.getLine()  +"  Fatal error!");
-           System.exit(-1);
-       }
+	   
        for (Field field : icClass.getFields()) {
-    	   if (!classTable.insert(field.getName(), new SemanticSymbol(field.getSemanticType(), new Kind(Kind.FIELD), field.getName(), false))) { 
-    	       System.out.println("Error: Illegal redefinition; element " + field.getName() + " in line #" + field.getLine());
-               System.exit(-1);
-    	   }
+    	   
     	   field.accept(this);
     	   field.getType().accept(this);
        }
         
-
-       for (Method method : icClass.getMethods()) {
-           if (method instanceof VirtualMethod) { 
-               boolean a = classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.VIRTUALMETHOD),method.getName(),false));
-               if (!a) { 
-                   System.out.println("Error: Illegal redefinition; element " + method.getName() + " in line #" + method.getLine());
-                   System.exit(-1);
-               }
-           }
-           else {
-               boolean a = classTable.insert(method.getName(),new SemanticSymbol(method.getSemanticType(), new Kind(Kind.STATICMETHOD),method.getName(),false));
-               if (!a) { 
-                   System.out.println("Error: Illegal redefinition; element " + method.getName() + " in line #" + method.getLine());
-                   System.exit(-1);
-               }
-           }
-       }
        
      
        for (Method method : icClass.getMethods()) {
@@ -341,7 +346,9 @@ public class SymbolTableConstructor implements Visitor {
                        } 
                        else {
                            SemanticSymbol semSymbol = st.lookup(location.getName());
+                           
                            if (semSymbol == null) { 
+                        	   
                                System.out.println("semantic error at line " + location.getLine() + ": class " + str + " does not have field " + location.getName() +". " );
                                System.exit(-1);
                            }
