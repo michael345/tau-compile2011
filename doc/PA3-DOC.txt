@@ -136,16 +136,18 @@ IC.TYPE
 ======
 CLASS TypeTable:
 	This class holds all of the primitive types, and all of the unique array, methods and class types.
-
+	This class represents a static type table of all types in the input program.
+	
 CLASS TypeTableConstructor:
-	A class which is ment to build the type table through visiting the AST. Through this constructor
-	we give some nodes their semantic type - (method, field & classe AST nodes).
+	A class which is meant to build the type table through visiting the AST. Through this constructor
+	we give some nodes their semantic type - (method, field & classes AST nodes).
+	Basically the type table constructor traverses the AST and for each new type that it sees it adds that type to the program type table.
 
 IC.SymbolTable
 ==============
 CLASS SymbolTable
-		    A class which is ment to represent the symbol table of a certin entity (class,method etc.),
-		    Later the structure of these symbol tables will represent the program.
+		    A class which is meant to represent the symbol table (and scope) of a certain entity (class,method etc.),
+		    Later the structure of these symbol tables will represent the program structure.
 		    This class holds the basic design of our symbol table. the main methods that are defined here
 		    are: the insert method and the lookup methods.
 
@@ -161,7 +163,7 @@ CLASS SymbolTableConstructor
 			It's job is to visit in all nodes of the AST and set semantic type for each node as well as setting an enclosing scope
 			for each node meaning setting a symbol table where the search definition for the variable represented by that AST node 
 			is commenced when needed.
-			the parent-child relations betwenn the symbol tables is also determined here. 
+			the parent-child relations between the symbol tables is also determined here. 
 			
 IC.SemanticChecks
 =================
@@ -246,6 +248,6 @@ as well as the AST if needed (which is now updated with enclosing scope and sema
 
 							BUGS
 							----
-no bugs found.
+no known bugs found.
 
 
