@@ -1,5 +1,9 @@
 package IC.lir.parameter;
 
-public class LIRLabel extends LIRParameter {
-
+public class LIRLabel extends LIROperand {
+    String name;
+    
+    public String toString() { 
+        return name;
+    }
 }

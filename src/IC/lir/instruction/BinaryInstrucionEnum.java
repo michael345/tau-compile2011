@@ -1,18 +1,20 @@
 package IC.lir.instruction;
 
-public enum ArithmeticInstrucionEnum {
+public enum BinaryInstrucionEnum {
     ADD("Add"),
     SUB("Sub"),
     MUL("Mul"),
     DIV("Div"),
     MOD("Mod"),
-    INT("Int"),
-    DEC("Dec"),
-    NEG("Neg");
+    AND("And"),
+    OR("Or"),
+    XOR("Xor"),
+    COMPARE("Compare");
+    
     
     private String name;
 
-    private ArithmeticInstrucionEnum(String name) { 
+    private BinaryInstrucionEnum(String name) { 
         this.name = name;
     }
 

@@ -1,6 +1,6 @@
 package IC.lir.parameter;
 
-public class LIRMemory extends LIRParameter {
+public class LIRMemory extends LIROperand {
 
     String name;
 

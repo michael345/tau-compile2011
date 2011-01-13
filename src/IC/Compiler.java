@@ -31,6 +31,8 @@ import IC.TYPE.Type;
 import IC.TYPE.TypeTable;
 import IC.TYPE.TypeTableConstructor;
 import IC.TYPE.VoidType;
+import IC.lir.LirProgram;
+import IC.lir.LirTranslator;
 
 public class Compiler {
         
@@ -196,6 +198,13 @@ public class Compiler {
                 }
 
                 icTextFile.close();
+                
+                LirProgram lirProg = LirProgram.getInstance();
+                LirTranslator lirTranslator = new LirTranslator();
+                lirTranslator.visit(icProg);
+                System.out.println(lirProg.toString());
+                
+                
             }catch (SyntaxError se) { 
                 se.printErrorMsg();
                 System.exit(-1);

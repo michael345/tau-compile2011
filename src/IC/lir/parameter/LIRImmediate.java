@@ -1,6 +1,6 @@
 package IC.lir.parameter;
 
-public class LIRImmediate extends LIRParameter {
+public class LIRImmediate extends LIROperand {
 
     int value;
     
@@ -11,5 +11,9 @@ public class LIRImmediate extends LIRParameter {
     
     public int getValue() { 
         return value;
+    }
+    
+    public String toString() { 
+        return "" + value;
     }
 }
