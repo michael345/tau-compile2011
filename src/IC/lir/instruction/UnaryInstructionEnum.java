@@ -1,15 +1,14 @@
 package IC.lir.instruction;
 
-public enum LogicalInstructionEnum {
+public enum UnaryInstructionEnum {
     NOT("Not"),
-    AND("And"),
-    OR("Or"),
-    XOR("Xor"),
-    COMPARE("Compare");
+    DEC("Dec"),
+    INC("Inc"),
+    NEG("Neg");
     
     private String name;
 
-    private LogicalInstructionEnum(String name) { 
+    private UnaryInstructionEnum(String name) { 
         this.name = name;
     }
 
