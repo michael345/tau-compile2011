@@ -1,19 +1,23 @@
 package IC.lir.parameter;
 
 public class LIRString extends LIRParameter {
-    private String name;
+    private LIRStringLabel label;
     private String text;
     private static int stringCounter = 0;
 
     public LIRString(String text) {
         super();
-        this.name = "str" + stringCounter++;
+        this.label = new LIRStringLabel("str" + stringCounter++);
         this.text = text;
         
     }
 
+    public LIRStringLabel getLabel() { 
+        return label;
+    }
+    
     public String getName() {
-        return name;
+        return label.toString();
     }
 
     public String getText() {
@@ -30,7 +34,7 @@ public class LIRString extends LIRParameter {
     }
     
     public String toString() { 
-        return name + ": " + text;
+        return getName() + ": " + text;
     }
     
     

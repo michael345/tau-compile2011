@@ -1,6 +1,7 @@
 package IC;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.LinkedList;
 
 import java_cup.runtime.Symbol;
@@ -204,6 +205,13 @@ public class Compiler {
                 lirTranslator.visit(icProg);
                 System.out.println(lirProg.toString());
                 
+                if (shouldPrintLir(args)) { 
+                    FileWriter fw = new FileWriter(args[0].substring(0, args[0].length()-3) + ".lir");
+                    fw.append(lirProg.toString());
+                    fw.close();
+                    
+                }
+                
                 
             }catch (SyntaxError se) { 
                 se.printErrorMsg();
@@ -219,6 +227,17 @@ public class Compiler {
                e.printStackTrace();
                System.exit(-1);
             }
+        }
+
+        private static boolean shouldPrintLir(String[] args) {
+            for (int i = 0; i < args.length; i++) { 
+
+                if (args[i].compareTo("-print-lir") == 0) { 
+
+                    return true;
+                }
+            }
+            return false;
         }
 
         private static void libNameIsLibrary(ICClass libraryClass) {

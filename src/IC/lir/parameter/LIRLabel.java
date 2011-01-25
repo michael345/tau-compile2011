@@ -6,4 +6,11 @@ public class LIRLabel extends LIROperand {
     public String toString() { 
         return name;
     }
+
+    public LIRLabel(String name) {
+        super();
+        this.name = name;
+    }
+    
+    
 }

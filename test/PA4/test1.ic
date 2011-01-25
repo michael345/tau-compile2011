@@ -1,0 +1,34 @@
+class C extends B { 
+	
+	
+}
+ 
+class A {
+
+	int [] arr;
+	
+	static void main(string[] args) { 
+
+		int m = 5;
+		int n = 4;
+		boolean b = m < n; // (n - m)
+		string s = "hello";
+		string g = s + "hi";
+		
+		
+	
+	}
+	
+	int foo() { 
+		return 6;
+	}
+	
+	void bar() { 
+		return;
+	}
+	
+}
+
+class B extends A { 
+
+}
