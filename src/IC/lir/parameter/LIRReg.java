@@ -2,7 +2,7 @@ package IC.lir.parameter;
 
 public class LIRReg extends LIROperand {
     private int registerID;
-    private final static int[] auxilary = new int[64];
+    private final static int[] auxilary = new int[10000]; //Practically infinite
     private static int registerCount = 0;
     
     public LIRReg() {
