@@ -1,9 +1,9 @@
 package IC.lir;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import IC.BinaryOps;
+import IC.AST.ASTNode;
 import IC.AST.ArrayLocation;
 import IC.AST.Assignment;
 import IC.AST.Break;
@@ -39,27 +39,39 @@ import IC.AST.VariableLocation;
 import IC.AST.VirtualCall;
 import IC.AST.VirtualMethod;
 import IC.AST.While;
+import IC.SymbolTables.SemanticSymbol;
+import IC.SymbolTables.SymbolTable;
 import IC.TYPE.BoolType;
 import IC.TYPE.IntType;
+import IC.TYPE.Kind;
+import IC.TYPE.MethodType;
 import IC.TYPE.NullType;
 import IC.TYPE.StringType;
 import IC.TYPE.TypeTable;
 import IC.TYPE.VoidType;
+import IC.lir.instruction.ArrayLengthInstruction;
 import IC.lir.instruction.BinaryInstrucionEnum;
 import IC.lir.instruction.BinaryInstruction;
 import IC.lir.instruction.ConditionLabelInstruction;
+import IC.lir.instruction.EndLabelInstruction;
 import IC.lir.instruction.JumpInstruction;
 import IC.lir.instruction.JumpInstructionEnum;
 import IC.lir.instruction.LIRInstruction;
 import IC.lir.instruction.LabelInstruction;
 import IC.lir.instruction.LibraryInstruction;
+import IC.lir.instruction.LoopLabelInstruction;
 import IC.lir.instruction.MoveArrayInstruction;
 import IC.lir.instruction.MoveFieldInstruction;
 import IC.lir.instruction.MoveInstruction;
+import IC.lir.instruction.ReturnInstruction;
+import IC.lir.instruction.StaticCallInstruction;
 import IC.lir.instruction.UnaryInstruction;
 import IC.lir.instruction.UnaryInstructionEnum;
+import IC.lir.instruction.VirtualCallInstruction;
+import IC.lir.parameter.ArgumentPair;
 import IC.lir.parameter.ArrayPair;
 import IC.lir.parameter.FieldPair;
+import IC.lir.parameter.LIRDummyReg;
 import IC.lir.parameter.LIRImmediate;
 import IC.lir.parameter.LIRLabel;
 import IC.lir.parameter.LIRMemory;
@@ -68,6 +80,7 @@ import IC.lir.parameter.LIRParameter;
 import IC.lir.parameter.LIRReg;
 import IC.lir.parameter.LIRString;
 import IC.lir.parameter.LIRStringLabel;
+import IC.lir.parameter.ThisMemory;
 import IC.lir.parameter.ZeroImmediate;
 
 public class LirTranslator implements IC.AST.Visitor{
@@ -75,6 +88,10 @@ public class LirTranslator implements IC.AST.Visitor{
     LirProgram lirProg;
     FieldPair lastPair;
     ArrayPair lastArrayPair;
+    
+    String recentLoopLabel;
+    String recentEndLabel;
+    
     
     public Object visit(Program program) {
        // debug this so much
@@ -104,7 +121,7 @@ public class LirTranslator implements IC.AST.Visitor{
                     }
                     for (Method method : icClass.getMethods()) { 
                         if (method instanceof VirtualMethod) { // maybe need static. if do - remove this if
-                            classLayout.addMethodOffset(method.getName());
+                            classLayout.addMethodOffset("_" + icClass.getName() + "_" + method.getName());
                         }
                     }
                     lirProg.getClassLayouts().add(classLayout);
@@ -112,16 +129,18 @@ public class LirTranslator implements IC.AST.Visitor{
             }
         }
         
-        /*
-         * debugging section
-         */ 
-//        for (ClassLayout classLayout : lirProg.getClassLayouts()) { 
-//            System.out.println(classLayout.toString());
-//            System.out.println();
-//
-//        }
-        // end of debug
-      
+         
+        //constructing the dispatch table data structure
+        for (ClassLayout layout : lirProg.getClassLayouts()) {
+            LIRDispatchTable dTable = new LIRDispatchTable(new LIRLabel("_DV_" + layout.getName()));
+            for (String method : layout.getMethodToOffset().keySet()) { 
+                dTable.addLabel(new LIRLabel(method));
+            }
+            lirProg.addDispatchTable(dTable);
+        }
+        
+        
+        
         for (ICClass icClass : program.getClasses()) { 
             if (icClass.getName().compareTo("Library") == 0) {}
             else {
@@ -133,8 +152,6 @@ public class LirTranslator implements IC.AST.Visitor{
 
     
     public Object visit(ICClass icClass) {
-        LIRDispatchTable table = new LIRDispatchTable(icClass.getName());
-        lirProg.addDispatchTable(table);
         for (Method method : icClass.getMethods()) { 
            method.accept(this);
         }
@@ -156,13 +173,15 @@ public class LirTranslator implements IC.AST.Visitor{
         String name = method.getEnclosingScope().getParentSymbolTable().getId() + "_" + method.getName();
         LabelInstruction entryPoint = new LabelInstruction(name);
         lirProg.addInstruction(entryPoint);
-        // 2. add label to Dispatch Vector of the class we're in
-        //ClassLayout temp = lirProg.getClassLayout(method.getEnclosingScope().getParentSymbolTable().getId());
-        //temp = temp;
-        lirProg.getDispatchTable(method.getEnclosingScope().getParentSymbolTable().getId()).addLabel(new LIRLabel(name));
-        // 3. visit the method statements
-
-        // TODO Auto-generated method stub
+        // 2. visit the method statements
+        for (Statement statement : method.getStatements()) { 
+            statement.accept(this);
+        }
+        
+        // to make each function returns something
+        ReturnInstruction ret = new ReturnInstruction(new LIRImmediate(9999)); 
+        lirProg.addInstruction(ret);
+        lirProg.addCommentIntsruction("#############################");
         return null;
     }
 
@@ -172,17 +191,26 @@ public class LirTranslator implements IC.AST.Visitor{
         LabelInstruction entryPoint;
         if (method.getName().compareTo("main") == 0) {          
             entryPoint = new LabelInstruction("ic_main");
-            lirProg.addCommentIntsruction("main in " + method.getEnclosingScope().getParentSymbolTable().getId());
         }
         else { 
             entryPoint = new LabelInstruction(method.getName());
-            lirProg.addCommentIntsruction(method.getName() + " in " + method.getEnclosingScope().getParentSymbolTable().getId());
         }
-        
+        lirProg.addCommentIntsruction(method.getName() + " in " + method.getEnclosingScope().getParentSymbolTable().getId());
         lirProg.addInstruction(entryPoint);
+        
         for (Statement statement :method.getStatements()) { 
             statement.accept(this);
         }
+        
+        if (method.getName().compareTo("main") == 0) {          
+            LibraryInstruction libInst = new LibraryInstruction("exit", LIRDummyReg.getInstance(), ZeroImmediate.getInstance());
+            lirProg.addInstruction(libInst);
+        }
+        else { 
+            ReturnInstruction ret = new ReturnInstruction(new LIRImmediate(9999)); 
+            lirProg.addInstruction(ret);
+        }
+        lirProg.addCommentIntsruction("#############################");
         return null;
     }
 
@@ -193,13 +221,11 @@ public class LirTranslator implements IC.AST.Visitor{
 
     
     public Object visit(Formal formal) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     
     public Object visit(PrimitiveType type) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -209,21 +235,10 @@ public class LirTranslator implements IC.AST.Visitor{
     }
 
     
-    public Object visit(Assignment assignment) { //TODO: Finish this
+    public Object visit(Assignment assignment) { 
         lirProg.addCommentIntsruction("Assignment on line " + assignment.getLine());
         Object rhs = assignment.getAssignment().accept(this);
-        LIRReg rightReg = null;
-        if (rhs instanceof LIRReg) { 
-            rightReg = (LIRReg) rhs;
-        }
-        else if (rhs instanceof LIRMemory) { 
-             //TODO:
-        }
-        else if (rhs instanceof LIRImmediate) { 
-            rightReg = new LIRReg();
-            LIRInstruction move1 = new MoveInstruction((LIRImmediate) rhs, rightReg);
-            lirProg.addInstruction(move1);
-        }
+        LIRReg rightReg = putInRegister(rhs);
         
         
         Object lhs = assignment.getVariable().accept(this);
@@ -243,9 +258,17 @@ public class LirTranslator implements IC.AST.Visitor{
 
             }
             else {
-                LIRMemory mem = new LIRMemory(((VariableLocation) assignment.getVariable()).getName());
-                MoveInstruction move = new MoveInstruction(rightReg,mem);
-                lirProg.addInstruction(move);
+                if (isField((VariableLocation) (assignment.getVariable()))) { 
+                    MoveFieldInstruction moveField = new MoveFieldInstruction(lastPair,rightReg,true); //move R2, R1
+                    lirProg.addInstruction(moveField);
+                    lastPair.getLocation().makeFreeRegister();
+                    lastPair = null;
+                }
+                else { 
+                    LIRMemory mem = new LIRMemory(((VariableLocation) assignment.getVariable()).getName());
+                    MoveInstruction move = new MoveInstruction(rightReg,mem);
+                    lirProg.addInstruction(move);
+                }
             }
         }
         
@@ -265,37 +288,92 @@ public class LirTranslator implements IC.AST.Visitor{
 
     
     public Object visit(CallStatement callStatement) {
-        // TODO Auto-generated method stub
+        callStatement.getCall().accept(this); 
         return null;
     }
 
     
     public Object visit(Return returnStatement) {
-        // TODO Auto-generated method stub
+        if (returnStatement.hasValue()) { 
+            LIRReg result = putInRegister(returnStatement.getValue().accept(this));
+            ReturnInstruction ret = new ReturnInstruction(result);
+            lirProg.addInstruction(ret);
+            result.makeFreeRegister();
+        }
         return null;
     }
 
     
     public Object visit(If ifStatement) {
-        // TODO Auto-generated method stub
+        lirProg.addCommentIntsruction("If at line " + ifStatement.getLine()); 
+        LIRReg cond = putInRegister(ifStatement.getCondition().accept(this));
+        ConditionLabelInstruction trueActions = new ConditionLabelInstruction();
+        ConditionLabelInstruction falseActions = null;
+        JumpInstruction conditionalJumpToFalse = null;
+        JumpInstruction conditionalJumpToEnd = null;
+
+        if (ifStatement.hasElse()) { 
+            falseActions = new ConditionLabelInstruction();
+            conditionalJumpToFalse = new JumpInstruction(JumpInstructionEnum.True, falseActions.getLabel());
+        }
+        
+        
+        EndLabelInstruction endLabel = new EndLabelInstruction();
+        BinaryInstruction compare = new BinaryInstruction(ZeroImmediate.getInstance(), cond, BinaryInstrucionEnum.COMPARE);
+        JumpInstruction jumpToEndUnconditional = new JumpInstruction(JumpInstructionEnum.Unconditional, endLabel.getLabel());
+        conditionalJumpToEnd = new JumpInstruction(JumpInstructionEnum.True, endLabel.getLabel());
+
+        
+        lirProg.addInstruction(compare);
+
+        if (ifStatement.hasElse()) { 
+            lirProg.addInstruction(conditionalJumpToFalse);
+            lirProg.addInstruction(trueActions);
+            ifStatement.getOperation().accept(this);
+            lirProg.addInstruction(jumpToEndUnconditional);
+            lirProg.addInstruction(falseActions);
+            ifStatement.getElseOperation().accept(this);
+        }
+        else { 
+            lirProg.addInstruction(conditionalJumpToEnd);
+            lirProg.addInstruction(trueActions);
+            ifStatement.getOperation().accept(this);
+        }
+        lirProg.addInstruction(endLabel);
         return null;
     }
 
     
     public Object visit(While whileStatement) {
-        // TODO Auto-generated method stub
+        lirProg.addCommentIntsruction("While at " + whileStatement.getLine());
+        LoopLabelInstruction loopy = new LoopLabelInstruction();
+        EndLabelInstruction endLabel = new EndLabelInstruction();
+        recentEndLabel = endLabel.getLabel();
+        recentLoopLabel = loopy.getLabel();
+        lirProg.addInstruction(loopy);
+        LIRReg cond = putInRegister(whileStatement.getCondition().accept(this));
+        BinaryInstruction compare = new BinaryInstruction(ZeroImmediate.getInstance(), cond, BinaryInstrucionEnum.COMPARE);
+        lirProg.addInstruction(compare);
+        JumpInstruction conditionalJumpToEnd = new JumpInstruction(JumpInstructionEnum.True, endLabel.getLabel());
+        lirProg.addInstruction(conditionalJumpToEnd);
+        whileStatement.getOperation().accept(this);
+        JumpInstruction unconditionalJumpToloop = new JumpInstruction(JumpInstructionEnum.Unconditional, loopy.getLabel());
+        lirProg.addInstruction(unconditionalJumpToloop);
+        lirProg.addInstruction(endLabel);
         return null;
     }
 
     
     public Object visit(Break breakStatement) {
-        // TODO Auto-generated method stub
+        JumpInstruction breaky = new JumpInstruction(JumpInstructionEnum.Unconditional, recentEndLabel);
+        lirProg.addInstruction(breaky);
         return null;
     }
 
     
     public Object visit(Continue continueStatement) {
-        // TODO Auto-generated method stub
+        JumpInstruction continuey = new JumpInstruction(JumpInstructionEnum.Unconditional, recentLoopLabel);
+        lirProg.addInstruction(continuey);
         return null;
     }
 
@@ -351,21 +429,35 @@ public class LirTranslator implements IC.AST.Visitor{
                 System.exit(-1);
             }
             LIRReg locationReg = (LIRReg) temp; //R1
-            reg = new LIRReg(); //R2  
+            
             int offset = lirProg.getClassLayout(location.getLocation().getSemanticType().toString()).getFieldToOffset().get(location.getName());
             LIRImmediate offsetImmediate = new LIRImmediate(offset);
             if (lastPair != null) { 
                 lastPair.getLocation().makeFreeRegister();   
             }
+            reg = new LIRReg(); //R2  
             FieldPair pair = new FieldPair(locationReg,offsetImmediate); 
             lastPair = pair;
             MoveFieldInstruction mfi = new MoveFieldInstruction(pair, reg, false);
             lirProg.addInstruction(mfi);
         }
-        //else if (/*TODO: check if location is field or not*/) { 
+        else if (isField(location)) { 
+            reg = new LIRReg();
+            MoveInstruction move = new MoveInstruction(new ThisMemory(), reg);
+            LIRReg fieldReg = new LIRReg();
+            ClassLayout cl = lirProg.getClassLayout(location.getEnclosingScope().getEnclosingClassSymbolTable().getId()); //Maybe _DV_ ?
+            int offset = cl.getFieldOffset(location.getName());
+            if (lastPair != null) { 
+                lastPair.getLocation().makeFreeRegister();   
+            }
+            lastPair = new FieldPair(reg,new LIRImmediate(offset));
+            MoveFieldInstruction moveField = new MoveFieldInstruction(lastPair, fieldReg, false);
+            lirProg.addInstruction(move);
+            lirProg.addInstruction(moveField);
+            reg.makeFreeRegister();
+            return fieldReg;
             
-            
-        //}
+        }
         else { 
             mem = new LIRMemory(location.getName());
             reg = new LIRReg();
@@ -373,6 +465,11 @@ public class LirTranslator implements IC.AST.Visitor{
             lirProg.addInstruction(move);
         }
         return reg;
+    }
+
+
+    private boolean isField(VariableLocation location) {
+        return location.getEnclosingScope().lookup(location.getName()).getKind().getKind()==Kind.FIELD;
     }
 
     
@@ -386,45 +483,166 @@ public class LirTranslator implements IC.AST.Visitor{
         LIRReg result = new LIRReg();
         MoveArrayInstruction move = new MoveArrayInstruction(arrayPair, result, false);
         lirProg.addInstruction(move);
-        
-        
         return result;
     }
 
     
     public Object visit(StaticCall call) {
-        // TODO Auto-generated method stub
-        return null;
+       
+        if (call.getClassName().compareTo("Library") == 0) {
+            lirProg.addCommentIntsruction("Library call " + call.getName() + " at line " + call.getLine());
+            SymbolTable methodSymbolTable = call.getEnclosingScope().getMethod(call.getClassName(), call.getName());
+            MethodType methodType = (MethodType) methodSymbolTable.lookup(call.getName()).getType();
+            LIRReg resultReg;
+        
+            if (methodType.getReturnType().equals(TypeTable.voidType)) { 
+                resultReg = LIRDummyReg.getInstance();
+            }
+            else {
+                resultReg = new LIRReg();
+            } 
+        
+            LinkedList<LIRParameter> arguments = new LinkedList<LIRParameter>();
+            for (Expression expr : call.getArguments()) { 
+                arguments.add(putInRegister(expr.accept(this)));
+            }
+            
+            LibraryInstruction lib = new LibraryInstruction(call.getName(), resultReg, arguments);
+            for (LIRParameter liro : arguments) { 
+                if (liro instanceof LIRReg) { 
+                    ((LIRReg) liro).makeFreeRegister();
+                }
+            }
+            lirProg.addInstruction(lib);
+            return resultReg;
+        }
+        else {
+            lirProg.addCommentIntsruction("Static Call " + call.getName() + " at line " + call.getLine());
+    
+            LinkedList<LIROperand> arguments = new LinkedList<LIROperand>();
+            for (Expression argument : call.getArguments()) { 
+                arguments.add((LIROperand)argument.accept(this));
+            }
+            LinkedList<ArgumentPair> pairs = new LinkedList<ArgumentPair>();
+            SymbolTable methodSymbolTable = call.getEnclosingScope().getMethod(call.getClassName(), call.getName());
+            int i = arguments.size()-1;
+            for (SemanticSymbol symbol : methodSymbolTable.getEntries().values()) { 
+                if (symbol.getKind().getKind() == Kind.FORMAL) { 
+                    ArgumentPair pair = new ArgumentPair(symbol.getId(),arguments.get(i--).toString());
+                    pairs.add(pair);
+                    
+                }
+            }
+            pairs = reverseList(pairs);
+            LIRReg resultReg;
+            MethodType methodType = (MethodType) methodSymbolTable.lookup(call.getName()).getType();
+            
+            
+            if (methodType.getReturnType().equals(TypeTable.voidType)) { 
+                resultReg = LIRDummyReg.getInstance();
+            }
+            else {
+                resultReg = new LIRReg();
+            } 
+            
+            String funcName = "_" + call.getClassName() + "_" + call.getName();
+            StaticCallInstruction staticCallInstruction = new StaticCallInstruction(funcName, resultReg, pairs);
+            lirProg.addInstruction(staticCallInstruction);
+            return resultReg;
+        }
     }
 
     
     public Object visit(VirtualCall call) {
-        // TODO Auto-generated method stub
-        return null;
+        lirProg.addCommentIntsruction("Virtual Call " + call.getName() + " at line " + call.getLine());
+        LIRReg object;
+        String className;
+        if (call.isExternal()) { 
+            object = putInRegister(call.getLocation().accept(this));
+            className = call.getLocation().getSemanticType().toString();
+        }
+        else { 
+            LIRMemory that = new ThisMemory();
+            object = putInRegister(that);
+            className = call.getEnclosingScope().lookupSymbolTableContaining(call.getName()).getId();
+        }
+        
+        LIRImmediate offset = new LIRImmediate(lirProg.getClassLayout(className).getMethodOffset("_" + className + "_" + call.getName()));
+        
+        LinkedList<LIROperand> arguments = new LinkedList<LIROperand>();
+        for (Expression argument : call.getArguments()) { 
+            arguments.add((LIROperand)argument.accept(this));
+        }
+        
+        
+        LinkedList<ArgumentPair> pairs = new LinkedList<ArgumentPair>();
+        SymbolTable methodSymbolTable = call.getEnclosingScope().getMethod(className, call.getName());
+        int i = arguments.size()-1;
+        for (SemanticSymbol symbol : methodSymbolTable.getEntries().values()) { 
+            if (symbol.getKind().getKind() == Kind.FORMAL) { 
+                ArgumentPair pair = new ArgumentPair(symbol.getId(),arguments.get(i--).toString());
+                pairs.add(pair);
+                
+            }
+        }
+        pairs = reverseList(pairs);
+        LIRReg resultReg;
+        MethodType methodType = (MethodType) methodSymbolTable.lookup(call.getName()).getType();
+        
+        
+        if (methodType.getReturnType().equals(TypeTable.voidType)) { 
+            resultReg = LIRDummyReg.getInstance();
+        }
+        else {
+            resultReg = new LIRReg();
+        } 
+        
+        VirtualCallInstruction virtualCallInstruction = new VirtualCallInstruction(object,offset,resultReg,pairs);
+        lirProg.addInstruction(virtualCallInstruction);
+        return resultReg;
     }
 
     
     public Object visit(This thisExpression) {
-        // TODO Auto-generated method stub
-        return null;
+        LIRReg result = new LIRReg();
+        MoveInstruction move = new MoveInstruction(new ThisMemory(), result);
+        lirProg.addInstruction(move);
+        return result;
     }
 
     
     public Object visit(NewClass newClass) {
-        // TODO Auto-generated method stub
-        return null;
+        lirProg.addCommentIntsruction("New Class " + newClass.getName() + " at line " + newClass.getLine());
+        int size = lirProg.getClassLayout(newClass.getName()).getAllocationSize();
+        LIRReg resultReg = new LIRReg();
+        LibraryInstruction libInst = new LibraryInstruction("allocateObject", resultReg, new LIRImmediate(size));
+        MoveFieldInstruction moveField = new MoveFieldInstruction(new FieldPair(resultReg,ZeroImmediate.getInstance()),lirProg.getDispatchTable("_DV_" + newClass.getName()).getLabel() , true);
+        lirProg.addInstruction(libInst);
+        lirProg.addInstruction(moveField);
+        return resultReg;
     }
 
     
     public Object visit(NewArray newArray) {
-        // TODO Auto-generated method stub
-        return null;
+        LIRReg size = putInRegister(newArray.getSize().accept(this));
+        LIRImmediate factor = new LIRImmediate(4);
+        BinaryInstruction multiply = new BinaryInstruction(factor, size, BinaryInstrucionEnum.MUL);
+        LIRReg result = new LIRReg();
+        LibraryInstruction lib = new LibraryInstruction("allocateArray", result, size);
+        lirProg.addInstruction(multiply);
+        lirProg.addInstruction(lib);
+        size.makeFreeRegister();
+        return result;
     }
 
     
-    public Object visit(Length length) {
-        // TODO Auto-generated method stub
-        return null;
+    public Object visit(Length length) { 
+        LIRReg reg = putInRegister(length.getArray().accept(this));
+        LIRReg result = new LIRReg();
+        ArrayLengthInstruction inst = new ArrayLengthInstruction(result,reg);
+        lirProg.addInstruction(inst);
+        reg.makeFreeRegister();
+        return result;
     }
 
     
@@ -434,7 +652,7 @@ public class LirTranslator implements IC.AST.Visitor{
         Object first = binaryOp.getFirstOperand().accept(this);
         LIRReg firstReg = null, secondReg = null;
         BinaryOps operator = binaryOp.getOperator();
-        if (binaryOp.getSemanticType().equals(TypeTable.stringType)) { //"Hello" + "Kitty"
+        if (binaryOp.getSemanticType().equals(TypeTable.stringType)) {
             secondReg = putInRegister(second);
             firstReg = putInRegister(first);
             LIRReg result = new LIRReg();
@@ -476,7 +694,7 @@ public class LirTranslator implements IC.AST.Visitor{
         }
     }
     
-    public JumpInstructionEnum getJumpEnum(BinaryOps operator ) { 
+    public JumpInstructionEnum getJumpEnum(BinaryOps operator) { 
         switch (operator) { 
         case GT: 
             return JumpInstructionEnum.Greater;
@@ -515,9 +733,10 @@ public class LirTranslator implements IC.AST.Visitor{
             second = binaryOp.getSecondOperand().accept(this);
             secondReg = putInRegister(second);
             firstReg = putInRegister(first);
+            
             BinaryInstruction comparison = new BinaryInstruction(firstReg,secondReg,getBinaryEnum(operator)); //Should be Compare
             ConditionLabelInstruction condLabel = new ConditionLabelInstruction(); 
-            LabelInstruction endLabel = new LabelInstruction("endLabel");
+            EndLabelInstruction endLabel = new EndLabelInstruction();
             JumpInstruction jumpToFalse = new JumpInstruction(getJumpEnum(operator),condLabel.getLabel()); //TODO: check, maybe completely wrong jump enum recieved, needs testing
             JumpInstruction jumpToEnd = new JumpInstruction(JumpInstructionEnum.Unconditional, endLabel.getLabel());
             MoveInstruction trueCompareInstruction = new MoveInstruction(new LIRImmediate(1),secondReg);
@@ -569,7 +788,7 @@ public class LirTranslator implements IC.AST.Visitor{
 
     
     public Object visit(LogicalUnaryOp unaryOp) {
-        Object operand = unaryOp.getOperand().accept(this); //ClassCastException expected
+        Object operand = unaryOp.getOperand().accept(this);
         if (operand == null) { 
             System.out.println("Fuck you! logicalUnaryOp");
             System.exit(-1);
@@ -603,7 +822,7 @@ public class LirTranslator implements IC.AST.Visitor{
             param = new LIRImmediate(value);
         }
         else if (literal.getSemanticType().equals(new VoidType(0))) { 
-            //TODO: Make sure this isnt needed.
+            //semantic analysis made sure this doesnt happen.
         }
         else if (literal.getSemanticType().equals(new StringType(0))) { 
             String strValue = (String) literal.getValue();
@@ -617,8 +836,7 @@ public class LirTranslator implements IC.AST.Visitor{
 
     
     public Object visit(ExpressionBlock expressionBlock) {
-        // TODO Auto-generated method stub
-        return null;
+        return expressionBlock.getExpression().accept(this);
     }
     
     /*
@@ -632,6 +850,20 @@ public class LirTranslator implements IC.AST.Visitor{
         lirProg.addInstruction(loadZero);
         return resultReg;
     }
+    
+    public LinkedList<ArgumentPair> reverseList(LinkedList<ArgumentPair> pairs) { 
+        ArgumentPair [] array = new ArgumentPair[pairs.size()];
+        int i = 0;
+        for (ArgumentPair pair : pairs) { 
+            array[i++] = pair;
+        }
+        LinkedList<ArgumentPair> result = new LinkedList<ArgumentPair>();
+        for (i = array.length-1; i>=0; i--) { 
+            result.add(array[i]);
+        }
+        return result;
+    }
+    
     
     public LIRReg putInRegister(Object input) { 
         if (input == null) {
@@ -667,7 +899,7 @@ public class LirTranslator implements IC.AST.Visitor{
         
         else { 
             return null;
-            //TODO: Handle pairs? fields? etc
+            
         }
         
     }

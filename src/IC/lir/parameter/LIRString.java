@@ -1,6 +1,6 @@
 package IC.lir.parameter;
 
-public class LIRString extends LIRParameter {
+public class LIRString extends LIROperand {
     private LIRStringLabel label;
     private String text;
     private static int stringCounter = 0;

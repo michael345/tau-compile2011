@@ -1,0 +1,16 @@
+Move 5,R0
+Move R0,m
+Move 4,R0
+Move R0,n
+
+#Logical Binary Op at line 14
+Move m,R0
+Move n,R1
+Compare R0,R1
+JumpL _cond0
+Move 1,R1
+Jump _endLabel
+_cond0:
+Move 0,R1
+_endLabel:
+Move R1,b
