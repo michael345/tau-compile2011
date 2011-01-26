@@ -1,6 +1,5 @@
 ########## String Literals ###########
-str0: "wrong"
-str1: "right"
+str0: "hey"
 ######################################
 ########## Dispatch Vectors ##########
 _DV_A: []
@@ -9,113 +8,16 @@ _DV_A: []
 #main in A
 _ic_main:
 
-#If at line 6
+#Assignment on line 28
+Move 4,R0
+Move x19,R1
+Move R0,x19
+Move x19,R0
+Move R0,y20
 
-#Logical Binary Op at line 6
-Move 1,R0
-Compare 0,R0
-JumpTrue _cond0
-Move 0,R1
-Compare 0,R1
-JumpTrue _cond0
-Move 1,null
-_cond0:
-Move 0,null
-Compare 0,R1
-JumpTrue _cond2
-_cond1:
-
-#Library call println at line 7
+#Library call println at line 31
 Move str0,R0
 Library __println(R0),Rdummy
-Jump _end1
-_cond2:
-
-#Library call println at line 9
-Move str1,R0
-Library __println(R0),Rdummy
-_end1:
-
-#If at line 11
-
-#Logical Binary Op at line 11
-Move 0,R0
-Compare 1,R0
-JumpTrue _cond3
-Move 1,R2
-Compare 1,R2
-JumpTrue _cond3
-Move 0,null
-_cond3:
-Move 1,null
-Compare 0,R2
-JumpTrue _cond5
-_cond4:
-
-#Library call println at line 12
-Move str1,R0
-Library __println(R0),Rdummy
-Jump _end3
-_cond5:
-
-#Library call println at line 14
-Move str0,R0
-Library __println(R0),Rdummy
-_end3:
-
-#If at line 16
-
-#Logical Binary Op at line 16
-Move 0,R0
-Compare 1,R0
-JumpTrue _cond6
-Move 0,R3
-Compare 1,R3
-JumpTrue _cond6
-Move 0,null
-_cond6:
-Move 1,null
-Compare 0,R3
-JumpTrue _cond8
-_cond7:
-
-#Library call println at line 17
-Move str0,R0
-Library __println(R0),Rdummy
-Jump _end5
-_cond8:
-
-#Library call println at line 19
-Move str1,R0
-Library __println(R0),Rdummy
-_end5:
-
-#If at line 21
-
-#Logical Binary Op at line 21
-Move 1,R0
-Compare 0,R0
-JumpTrue _cond9
-Move 1,R4
-Compare 0,R4
-JumpTrue _cond9
-Move 1,null
-_cond9:
-Move 0,null
-Compare 0,R4
-JumpTrue _cond11
-_cond10:
-
-#Library call println at line 22
-Move str1,R0
-Library __println(R0),Rdummy
-Jump _end7
-_cond11:
-
-#Library call println at line 24
-Move str0,R0
-Library __println(R0),Rdummy
-_end7:
 Library __exit(0),Rdummy
 
 ##############################
