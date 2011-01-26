@@ -265,7 +265,7 @@ public class LirTranslator implements IC.AST.Visitor{
                     lastPair = null;
                 }
                 else { 
-                    LIRMemory mem = new LIRMemory(((VariableLocation) assignment.getVariable()).getName());
+                    LIRMemory mem = new LIRMemory(assignment.getEnclosingScope().lookup(((VariableLocation) assignment.getVariable()).getName()));
                     MoveInstruction move = new MoveInstruction(rightReg,mem);
                     lirProg.addInstruction(move);
                 }
@@ -407,7 +407,7 @@ public class LirTranslator implements IC.AST.Visitor{
             else { 
                 reg = (LIRReg) initVal;
             }
-            mem = new LIRMemory(localVariable.getName());
+            mem = new LIRMemory(localVariable.getEnclosingScope().lookup(localVariable.getName()));
             MoveInstruction move = new MoveInstruction(reg,mem);
             lirProg.addInstruction(move);
             
@@ -459,7 +459,7 @@ public class LirTranslator implements IC.AST.Visitor{
             
         }
         else { 
-            mem = new LIRMemory(location.getName());
+            mem = new LIRMemory(location.getEnclosingScope().lookup(location.getName()));
             reg = new LIRReg();
             MoveInstruction move = new MoveInstruction(mem, reg);
             lirProg.addInstruction(move);
@@ -697,13 +697,13 @@ public class LirTranslator implements IC.AST.Visitor{
     public JumpInstructionEnum getJumpEnum(BinaryOps operator) { 
         switch (operator) { 
         case GT: 
-            return JumpInstructionEnum.Greater;
-        case GTE:
-            return JumpInstructionEnum.GreaterEqual;
-        case LT:
-            return JumpInstructionEnum.Less;
-        case LTE:
             return JumpInstructionEnum.LessEqual;
+        case GTE:
+            return JumpInstructionEnum.Less;
+        case LT:
+            return JumpInstructionEnum.GreaterEqual;
+        case LTE:
+            return JumpInstructionEnum.Greater;
         case LOR: 
             return JumpInstructionEnum.True;
         case LAND:
@@ -726,22 +726,55 @@ public class LirTranslator implements IC.AST.Visitor{
         Object second = null;
         BinaryOps operator = binaryOp.getOperator();
         LIRReg firstReg = null, secondReg = null;
+        EndLabelInstruction endLabel = new EndLabelInstruction();
+        MoveInstruction trueCompareInstruction = new MoveInstruction(new LIRImmediate(1),secondReg);
+        MoveInstruction falseCompareInstruction = new MoveInstruction(ZeroImmediate.getInstance(),secondReg);
+        ConditionLabelInstruction condLabel = new ConditionLabelInstruction(); 
+
         
-        if (binaryOp.getOperator() == BinaryOps.LAND) { }       //TODO: Need to do this shit
-        else if (binaryOp.getOperator() == BinaryOps.LOR) { }   //TODO: Need to do this shit
+        if (binaryOp.getOperator() == BinaryOps.LAND) { 
+            firstReg = putInRegister(first);
+            BinaryInstruction compare = new BinaryInstruction(ZeroImmediate.getInstance(),firstReg, BinaryInstrucionEnum.COMPARE);
+            lirProg.addInstruction(compare);
+            JumpInstruction jumpFalse = new JumpInstruction(JumpInstructionEnum.True, condLabel.getLabel());
+            lirProg.addInstruction(jumpFalse);
+            
+            second = binaryOp.getSecondOperand().accept(this);
+            secondReg = putInRegister(second);
+            BinaryInstruction compare2 = new BinaryInstruction(ZeroImmediate.getInstance(),secondReg, BinaryInstrucionEnum.COMPARE);
+            lirProg.addInstruction(compare2);
+            lirProg.addInstruction(jumpFalse);
+            lirProg.addInstruction(trueCompareInstruction);
+            lirProg.addInstruction(condLabel);
+            lirProg.addInstruction(falseCompareInstruction);
+            firstReg.makeFreeRegister();
+            return secondReg;
+        }       
+        else if (binaryOp.getOperator() == BinaryOps.LOR) {
+            firstReg = putInRegister(first);
+            BinaryInstruction compare = new BinaryInstruction(new LIRImmediate(1),firstReg, BinaryInstrucionEnum.COMPARE);
+            lirProg.addInstruction(compare);
+            JumpInstruction jumpTrue = new JumpInstruction(JumpInstructionEnum.True, condLabel.getLabel());
+            lirProg.addInstruction(jumpTrue);
+            secondReg = putInRegister(binaryOp.getSecondOperand().accept(this));
+            BinaryInstruction compare2 = new BinaryInstruction(new LIRImmediate(1),secondReg, BinaryInstrucionEnum.COMPARE);
+            lirProg.addInstruction(compare2);
+            lirProg.addInstruction(jumpTrue);
+            lirProg.addInstruction(falseCompareInstruction);
+            lirProg.addInstruction(condLabel);
+            lirProg.addInstruction(trueCompareInstruction);
+            firstReg.makeFreeRegister();
+            return secondReg;
+        }   
         else { 
             second = binaryOp.getSecondOperand().accept(this);
             secondReg = putInRegister(second);
             firstReg = putInRegister(first);
             
             BinaryInstruction comparison = new BinaryInstruction(firstReg,secondReg,getBinaryEnum(operator)); //Should be Compare
-            ConditionLabelInstruction condLabel = new ConditionLabelInstruction(); 
-            EndLabelInstruction endLabel = new EndLabelInstruction();
-            JumpInstruction jumpToFalse = new JumpInstruction(getJumpEnum(operator),condLabel.getLabel()); //TODO: check, maybe completely wrong jump enum recieved, needs testing
+            JumpInstruction jumpToFalse = new JumpInstruction(getJumpEnum(operator),condLabel.getLabel()); 
             JumpInstruction jumpToEnd = new JumpInstruction(JumpInstructionEnum.Unconditional, endLabel.getLabel());
-            MoveInstruction trueCompareInstruction = new MoveInstruction(new LIRImmediate(1),secondReg);
-            MoveInstruction falseCompareInstruction = new MoveInstruction(ZeroImmediate.getInstance(),secondReg);
-            
+              
             
             // remember, Compare = op2 - op1 
             lirProg.addInstruction(comparison);

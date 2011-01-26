@@ -1,20 +1,22 @@
 package IC.lir.parameter;
 
+import IC.SymbolTables.SemanticSymbol;
+
 public class LIRMemory extends LIROperand {
 
-    String name;
+    private SemanticSymbol symbol;
 
-    public LIRMemory(String name) {
+    public LIRMemory(SemanticSymbol symbol) {
         super();
-        this.name = name;
+        this.symbol = symbol;
     }
     
     public String getName() { 
-        return name;
+        return symbol.getId();
     }
     
     public String toString() { 
-        return getName();
+        return getName() + symbol.getUniqueID();
     }
     
 }

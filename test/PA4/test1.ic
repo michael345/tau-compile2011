@@ -1,21 +1,31 @@
 
-class A extends B {
+class A {
 
-	int x;
 
 	static void main(string[] args) { 
-		int y = 1;
-		{ 
-			int y = 3;
-		} 
-		x = y;
+		if (true && false) 
+			Library.println("wrong");
+		else { 
+			Library.println("right");
+		}
+		if (false || true) 
+			Library.println("right");
+		else { 
+			Library.println("wrong");
+		}
+		if (false || false) 
+			Library.println("wrong");
+		else { 
+			Library.println("right");
+		}
+		if (true && true) 
+			Library.println("right");
+		else { 
+			Library.println("wrong");
+		}
 	}
+	
 
 	
 }
 
-class B { 
-	int func(int a) {
-		return a * a;
-	 }
-}

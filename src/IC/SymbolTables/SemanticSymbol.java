@@ -9,6 +9,8 @@ public class SemanticSymbol {
     private Kind kind;
     private String id;
     private boolean isForwardRef;
+    private int uniqueID;
+    private static int counter = 0; // for PA4
     
     public SemanticSymbol(Type type, Kind kind, String id,
             boolean isForwardRef) {
@@ -16,12 +18,17 @@ public class SemanticSymbol {
         this.kind = kind;
         this.id = id;
         this.isForwardRef = isForwardRef;
+        uniqueID = counter++;
     }
 
     public Type getType() {
         return type;
     }
 
+    public int getUniqueID() { 
+        return uniqueID;
+    }
+    
     public void setType(Type type) {
         this.type = type;
     }
