@@ -46,12 +46,20 @@ public class ClassLayout {
         }
 
         public void addMethodOffset(String method) {
-            if (methodToOffset.containsKey(method)) {
-                methodToOffset.put(method,methodToOffset.get(method));
+            String methodName = method.substring(method.indexOf("_",1)+1); //without CLASS_
+            String keyName;
+            for (String key : methodToOffset.keySet()) { 
+                keyName = key.substring(method.indexOf("_",1)+1);
+                if (methodName.compareTo(keyName) == 0) { 
+                    int offset = methodToOffset.get(key);
+                    methodToOffset.remove(key);
+                    methodToOffset.put(method, offset);
+                    return;
+                }
             }
-            else { 
-                methodToOffset.put(method,methodOffset++);
-            }
+            
+            methodToOffset.put(method,methodOffset++);
+            
         }
         
         public void addFieldOffset(String field) { 
@@ -96,6 +104,10 @@ public class ClassLayout {
 
         public void setName(String name) {
             this.name = name;
+        }
+        
+        public int getAllocationSize() { 
+            return (fieldToOffset.size() + 1) * 4;
         }
         
         public String toString() { 

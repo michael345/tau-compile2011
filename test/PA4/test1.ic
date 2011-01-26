@@ -1,34 +1,21 @@
-class C extends B { 
-	
-	
-}
- 
-class A {
 
-	int [] arr;
-	
+class A extends B {
+
+	int x;
+
 	static void main(string[] args) { 
+		int y = 1;
+		{ 
+			int y = 3;
+		} 
+		x = y;
+	}
 
-		int m = 5;
-		int n = 4;
-		boolean b = m < n; // (n - m)
-		string s = "hello";
-		string g = s + "hi";
-		
-		
-	
-	}
-	
-	int foo() { 
-		return 6;
-	}
-	
-	void bar() { 
-		return;
-	}
 	
 }
 
-class B extends A { 
-
+class B { 
+	int func(int a) {
+		return a * a;
+	 }
 }

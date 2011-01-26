@@ -5,22 +5,31 @@ import java.util.List;
 import IC.lir.parameter.LIRLabel;
 
 public class LIRDispatchTable {
-    String name;
+    LIRLabel name;
     List<LIRLabel> labels;
     
     public LIRDispatchTable(String name) {
         super();
+        this.name = new LIRLabel(name);
+        this.labels = new LinkedList<LIRLabel>();
+    }
+    
+    public LIRDispatchTable(LIRLabel name) {
+        super();
         this.name = name;
         this.labels = new LinkedList<LIRLabel>();
     }
-
-    public String getName() {
+    
+    
+    public LIRLabel getLabel() { 
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getName() {
+        return name.toString();
     }
+
+   
 
     public List<LIRLabel> getLabels() {
         return labels;
@@ -35,7 +44,7 @@ public class LIRDispatchTable {
     }
     
     public String toString() { 
-        StringBuffer out = new StringBuffer("_DV_" + name + ": [");
+        StringBuffer out = new StringBuffer(name + ": [");
         for (LIRLabel label : labels) { 
             out.append(label + ",");
         }

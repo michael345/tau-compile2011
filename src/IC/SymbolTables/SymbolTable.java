@@ -71,6 +71,30 @@ public class SymbolTable {
     }
     
     
+    public SymbolTable recursiveGetClass(String className, SymbolTable startPos) { 
+        if (startPos.getId().compareTo(className) == 0) { 
+            return startPos;
+        }
+        SymbolTable temp = null;
+        for (SymbolTable child : startPos.getChildren()) { 
+            if ((temp = recursiveGetClass(className, child)) != null) { 
+                return temp;
+            }
+        }
+        return null;
+        
+    }
+    
+    public SymbolTable getMethod(String className, String methodName) { 
+        SymbolTable classSt = recursiveGetClass(className, getGlobal());
+        for (SymbolTable child : classSt.getChildren()) { 
+            if (child.getId().compareTo(methodName) == 0 ) {
+                return child;
+            }
+        }
+        return null;
+    }
+    
     public SymbolTable symbolTableLookup(String symTableID) { // returns child Symbol Table with id symTableID
         for (SymbolTable child : children) { 
             if (0 == symTableID.compareTo(child.getId())) { 
@@ -96,6 +120,16 @@ public class SymbolTable {
         for (temp = this; temp != null; temp = temp.getParentSymbolTable()) {
             if (temp.localLookup(key) != null) {
                 return temp.localLookup(key);
+            }
+        }
+        return null; 
+    }
+    
+    public SymbolTable lookupSymbolTableContaining(String key) { // without forward referencing
+        SymbolTable temp;
+        for (temp = this; temp != null; temp = temp.getParentSymbolTable()) {
+            if (temp.localLookup(key) != null) {
+                return temp;
             }
         }
         return null; 
@@ -191,6 +225,13 @@ public class SymbolTable {
         System.out.println();
     }
     
+    public SymbolTable getEnclosingClassSymbolTable() { 
+        SymbolTable temp = this;
+        while (!(temp instanceof ClassSymbolTable)) { 
+            temp = temp.getParentSymbolTable();
+        }
+        return temp;
+    }
     
     
 }
