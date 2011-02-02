@@ -3,7 +3,6 @@ package IC.lir;
 import java.util.LinkedList;
 
 import IC.BinaryOps;
-import IC.AST.ASTNode;
 import IC.AST.ArrayLocation;
 import IC.AST.Assignment;
 import IC.AST.Break;
@@ -19,6 +18,7 @@ import IC.AST.Length;
 import IC.AST.LibraryMethod;
 import IC.AST.Literal;
 import IC.AST.LocalVariable;
+import IC.AST.Location;
 import IC.AST.LogicalBinaryOp;
 import IC.AST.LogicalUnaryOp;
 import IC.AST.MathBinaryOp;
@@ -193,7 +193,8 @@ public class LirTranslator implements IC.AST.Visitor{
             entryPoint = new LabelInstruction("ic_main");
         }
         else { 
-            entryPoint = new LabelInstruction(method.getName());
+            String name = method.getEnclosingScope().getParentSymbolTable().getId() + "_" + method.getName();
+            entryPoint = new LabelInstruction(name);
         }
         lirProg.addCommentIntsruction(method.getName() + " in " + method.getEnclosingScope().getParentSymbolTable().getId());
         lirProg.addInstruction(entryPoint);
@@ -242,6 +243,19 @@ public class LirTranslator implements IC.AST.Visitor{
         
         
         Object lhs = assignment.getVariable().accept(this);
+        if (lhs instanceof VariableLocation) { 
+            //lirProg.deleteLastLine();
+           // lhsObj = dependantVisitVariable(lhs,false);
+        }
+        else if (lhs instanceof ArrayLocation) {
+           // lirProg.deleteLastLine();
+            //lhsObj = dependantVisitArray(lhs,false);
+        }
+        else { 
+           // System.out.println("Something went wrong, assingment on line " + assignment.getLine());
+           //System.exit(-1);
+        }
+        lirProg.deleteLastLine();
         LIRReg lhsReg = (LIRReg) lhs;
         if (assignment.getVariable() instanceof ArrayLocation) {            
             MoveArrayInstruction move = new MoveArrayInstruction(lastArrayPair, rightReg, true);
@@ -528,7 +542,7 @@ public class LirTranslator implements IC.AST.Visitor{
             int i = arguments.size()-1;
             for (SemanticSymbol symbol : methodSymbolTable.getEntries().values()) { 
                 if (symbol.getKind().getKind() == Kind.FORMAL) { 
-                    ArgumentPair pair = new ArgumentPair(symbol.getId(),arguments.get(i--).toString());
+                    ArgumentPair pair = new ArgumentPair(symbol.getId() + symbol.getUniqueID(),arguments.get(i--).toString());
                     pairs.add(pair);
                     
                 }
@@ -580,7 +594,7 @@ public class LirTranslator implements IC.AST.Visitor{
         int i = arguments.size()-1;
         for (SemanticSymbol symbol : methodSymbolTable.getEntries().values()) { 
             if (symbol.getKind().getKind() == Kind.FORMAL) { 
-                ArgumentPair pair = new ArgumentPair(symbol.getId(),arguments.get(i--).toString());
+                ArgumentPair pair = new ArgumentPair(symbol.getId() + symbol.getUniqueID(),arguments.get(i--).toString());
                 pairs.add(pair);
                 
             }
@@ -697,21 +711,21 @@ public class LirTranslator implements IC.AST.Visitor{
     public JumpInstructionEnum getJumpEnum(BinaryOps operator) { 
         switch (operator) { 
         case GT: 
-            return JumpInstructionEnum.LessEqual;
-        case GTE:
-            return JumpInstructionEnum.Less;
-        case LT:
             return JumpInstructionEnum.GreaterEqual;
-        case LTE:
+        case GTE:
             return JumpInstructionEnum.Greater;
+        case LT:
+            return JumpInstructionEnum.LessEqual;
+        case LTE:
+            return JumpInstructionEnum.Less;
         case LOR: 
             return JumpInstructionEnum.True;
         case LAND:
             return JumpInstructionEnum.True;
         case NEQUAL:
-            return JumpInstructionEnum.False;
-        case EQUAL:
             return JumpInstructionEnum.True;
+        case EQUAL:
+            return JumpInstructionEnum.False;
         default:
             return JumpInstructionEnum.True;
         }
@@ -727,8 +741,6 @@ public class LirTranslator implements IC.AST.Visitor{
         BinaryOps operator = binaryOp.getOperator();
         LIRReg firstReg = null, secondReg = null;
         EndLabelInstruction endLabel = new EndLabelInstruction();
-        MoveInstruction trueCompareInstruction = new MoveInstruction(new LIRImmediate(1),secondReg);
-        MoveInstruction falseCompareInstruction = new MoveInstruction(ZeroImmediate.getInstance(),secondReg);
         ConditionLabelInstruction condLabel = new ConditionLabelInstruction(); 
 
         
@@ -741,12 +753,18 @@ public class LirTranslator implements IC.AST.Visitor{
             
             second = binaryOp.getSecondOperand().accept(this);
             secondReg = putInRegister(second);
+            MoveInstruction trueCompareInstruction = new MoveInstruction(new LIRImmediate(1),secondReg);
+            MoveInstruction falseCompareInstruction = new MoveInstruction(ZeroImmediate.getInstance(),secondReg);
+            
             BinaryInstruction compare2 = new BinaryInstruction(ZeroImmediate.getInstance(),secondReg, BinaryInstrucionEnum.COMPARE);
             lirProg.addInstruction(compare2);
             lirProg.addInstruction(jumpFalse);
             lirProg.addInstruction(trueCompareInstruction);
+            JumpInstruction jumpToEnd = new JumpInstruction(JumpInstructionEnum.Unconditional, endLabel.getLabel());
+            lirProg.addInstruction(jumpToEnd);
             lirProg.addInstruction(condLabel);
             lirProg.addInstruction(falseCompareInstruction);
+            lirProg.addInstruction(endLabel);
             firstReg.makeFreeRegister();
             return secondReg;
         }       
@@ -760,9 +778,14 @@ public class LirTranslator implements IC.AST.Visitor{
             BinaryInstruction compare2 = new BinaryInstruction(new LIRImmediate(1),secondReg, BinaryInstrucionEnum.COMPARE);
             lirProg.addInstruction(compare2);
             lirProg.addInstruction(jumpTrue);
+            MoveInstruction falseCompareInstruction = new MoveInstruction(ZeroImmediate.getInstance(),secondReg);
             lirProg.addInstruction(falseCompareInstruction);
+            JumpInstruction jumpToEnd = new JumpInstruction(JumpInstructionEnum.Unconditional, endLabel.getLabel());
+            lirProg.addInstruction(jumpToEnd);
             lirProg.addInstruction(condLabel);
+            MoveInstruction trueCompareInstruction = new MoveInstruction(new LIRImmediate(1),secondReg);
             lirProg.addInstruction(trueCompareInstruction);
+            lirProg.addInstruction(endLabel);
             firstReg.makeFreeRegister();
             return secondReg;
         }   
@@ -770,7 +793,8 @@ public class LirTranslator implements IC.AST.Visitor{
             second = binaryOp.getSecondOperand().accept(this);
             secondReg = putInRegister(second);
             firstReg = putInRegister(first);
-            
+            MoveInstruction trueCompareInstruction = new MoveInstruction(new LIRImmediate(1),secondReg);
+            MoveInstruction falseCompareInstruction = new MoveInstruction(ZeroImmediate.getInstance(),secondReg);
             BinaryInstruction comparison = new BinaryInstruction(firstReg,secondReg,getBinaryEnum(operator)); //Should be Compare
             JumpInstruction jumpToFalse = new JumpInstruction(getJumpEnum(operator),condLabel.getLabel()); 
             JumpInstruction jumpToEnd = new JumpInstruction(JumpInstructionEnum.Unconditional, endLabel.getLabel());

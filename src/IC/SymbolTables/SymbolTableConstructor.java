@@ -457,7 +457,7 @@ public class SymbolTableConstructor implements Visitor {
     	  
        }
        
-       
+       call.setSemanticType(((MethodType) funcFromClass.getType()).getReturnType());
        return null;
    }
 

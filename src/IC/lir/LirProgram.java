@@ -136,6 +136,11 @@ public class LirProgram {
         CommentInstruction comment = new CommentInstruction(commentText);
         addInstruction(comment);
     }
+
+    public void deleteLastLine() {
+        int size = instructions.size();
+        instructions.remove(size-1);
+    }
     
     
 }
