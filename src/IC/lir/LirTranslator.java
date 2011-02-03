@@ -585,7 +585,14 @@ public class LirTranslator implements IC.AST.Visitor{
         
         LinkedList<LIROperand> arguments = new LinkedList<LIROperand>();
         for (Expression argument : call.getArguments()) { 
-            arguments.add((LIROperand)argument.accept(this));
+            Object tempArg = argument.accept(this);
+            if (tempArg instanceof LIRString) { 
+                String name = ((LIRString) tempArg).getName();
+                arguments.add(new LIRStringLabel(name));
+            }
+            else { 
+                arguments.add((LIROperand) tempArg);
+            }
         }
         
         
@@ -851,9 +858,9 @@ public class LirTranslator implements IC.AST.Visitor{
             System.exit(-1);
         }
         
-        LIRReg operandReg = (LIRReg) operand;
+        LIRReg operandReg = putInRegister(operand);
         
-        LIRInstruction negation = new UnaryInstruction(operandReg,UnaryInstructionEnum.NEG);
+        LIRInstruction negation = new BinaryInstruction(new LIRImmediate(1), operandReg,BinaryInstrucionEnum.XOR);
         lirProg.addInstruction(negation);
         return operandReg;
     }

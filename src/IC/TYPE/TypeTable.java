@@ -147,6 +147,7 @@ public class TypeTable {
      * Check if subtype is a subtype of type, according to ic specification
      * **/
     public static boolean isSubTypeOf(Type subtype, Type type) { 
+        if (subtype == null || type == null)  return false;
         if (subtype == nullType) return true;
         else if (type == nullType) return false;
         else if (subtype.equals(type)) return true;

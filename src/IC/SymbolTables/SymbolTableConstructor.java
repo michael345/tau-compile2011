@@ -534,6 +534,7 @@ public class SymbolTableConstructor implements Visitor {
                    forwardRefs.add(call);
                    return null;
                }
+               call.setSemanticType(((MethodType) funcFromClass.getType()).getReturnType());
            }
            else if (call.getLocation() instanceof ArrayLocation) {
                call.getLocation().accept(this);

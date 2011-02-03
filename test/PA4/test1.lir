@@ -1,245 +1,265 @@
 ########## String Literals ###########
-str0: "You win!"
-str1: "You lose!"
+str0: "Primes less than "
+str1: ": "
+str2: " "
+str3: ""
 ######################################
 ########## Dispatch Vectors ##########
-_DV_A: []
+_DV_Sieve: [_Sieve_initArray,_Sieve_sieveAll,_Sieve_sieve,_Sieve_printPrimes,_Sieve_test]
 #####################################
 
-#main in A
-_ic_main:
+#initArray in Sieve
+_Sieve_initArray:
+Move 0,R0
+Move R0,i24
 
-#If at line 6
+#While at 7
+_loop0:
 
-#Logical Binary Op at line 6
-Move 1,R0
-Compare 1,R0
-JumpTrue _cond0
+#Logical Binary Op at line 7
+Move i24,R0
+Move this,R1
+MoveField R1.1,R2
+ArrayLength R2,R1
+Compare R0,R1
+JumpLE _cond0
 Move 1,R1
-Compare 1,R1
-JumpTrue _cond0
-Move 0,R1
-Jump _end0
-_cond0:
-Move 1,R1
-_end0:
-Compare 0,R1
-JumpTrue _cond2
-_cond1:
-
-#Library call println at line 7
-Move str0,R0
-Library __println(R0),Rdummy
 Jump _end1
-_cond2:
-
-#Library call println at line 10
-Move str1,R0
-Library __println(R0),Rdummy
+_cond0:
+Move 0,R1
 _end1:
+Compare 0,R1
+JumpTrue _end0
 
-#If at line 12
+#Assignment on line 8
+Move i24,R0
+Move this,R2
+MoveField R2.1,R3
+Move i24,R1
+MoveArray R0,R3[R1]
 
-#Logical Binary Op at line 12
-Move 1,R0
-Compare 1,R0
-JumpTrue _cond3
-Move 0,R2
-Compare 1,R2
-JumpTrue _cond3
-Move 0,R2
-Jump _end2
-_cond3:
-Move 1,R2
-_end2:
-Compare 0,R2
-JumpTrue _cond5
-_cond4:
+#Assignment on line 9
 
-#Library call println at line 13
-Move str0,R0
-Library __println(R0),Rdummy
+#Math binary operation '+' at line 9
+Move i24,R0
+Move 1,R1
+Add R1,R0
+Move R0,i24
+Jump _loop0
+_end0:
+Return 9999
+
+##############################
+
+#sieveAll in Sieve
+_Sieve_sieveAll:
+Move 2,R0
+Move R0,i25
+
+#While at 15
+_loop1:
+
+#Logical Binary Op at line 15
+Move i25,R0
+Move this,R1
+MoveField R1.1,R2
+ArrayLength R2,R1
+Compare R0,R1
+JumpLE _cond1
+Move 1,R1
 Jump _end3
+_cond1:
+Move 0,R1
+_end3:
+Compare 0,R1
+JumpTrue _end2
+
+#Virtual Call sieve at line 16
+Move this,R0
+Move i25,R2
+VirtualCall R0.2(n26=R2),Rdummy
+
+#Assignment on line 17
+
+#Math binary operation '+' at line 17
+Move i25,R3
+Move 1,R4
+Add R4,R3
+Move R3,i25
+Jump _loop1
+_end2:
+Return 9999
+
+##############################
+
+#sieve in Sieve
+_Sieve_sieve:
+
+#Math binary operation '*' at line 22
+Move n26,R1
+Move 2,R3
+Mul R1,R3
+Move R3,i27
+
+#While at 23
+_loop2:
+
+#Logical Binary Op at line 23
+Move i27,R1
+Move this,R3
+MoveField R3.1,R4
+ArrayLength R4,R1
+Compare R1,R1
+JumpLE _cond2
+Move 1,R1
+Jump _end5
+_cond2:
+Move 0,R1
+_end5:
+Compare 0,R1
+JumpTrue _end4
+
+#Assignment on line 24
+Move 0,R1
+Move this,R3
+MoveField R3.1,R4
+Move i27,R3
+MoveArray R1,R4[R3]
+
+#Assignment on line 25
+
+#Math binary operation '+' at line 25
+Move n26,R1
+Move i27,R3
+Add R1,R3
+Move R3,i27
+Jump _loop2
+_end4:
+Return 9999
+
+##############################
+
+#printPrimes in Sieve
+_Sieve_printPrimes:
+Move 2,R1
+Move R1,i28
+
+#Library call print at line 31
+Move str0,R1
+Library __print(R1),Rdummy
+
+#Library call printi at line 32
+Move this,R1
+MoveField R1.1,R3
+ArrayLength R3,R1
+Library __printi(R1),Rdummy
+
+#Library call print at line 33
+Move str1,R1
+Library __print(R1),Rdummy
+
+#While at 34
+_loop3:
+
+#Logical Binary Op at line 34
+Move i28,R1
+Move this,R3
+MoveField R3.1,R4
+ArrayLength R4,R1
+Compare R1,R1
+JumpLE _cond3
+Move 1,R1
+Jump _end7
+_cond3:
+Move 0,R1
+_end7:
+Compare 0,R1
+JumpTrue _end6
+
+#If at line 35
+
+#Logical Binary Op at line 35
+Move this,R1
+MoveField R1.1,R3
+Move i28,R1
+MoveArray R3[R1],R3
+Move 0,R4
+Compare R3,R4
+JumpTrue _cond4
+Move 1,R4
+Jump _end8
+_cond4:
+Move 0,R4
+_end8:
+Compare 0,R4
+JumpTrue _end9
 _cond5:
 
-#Library call println at line 16
-Move str1,R0
-Library __println(R0),Rdummy
-_end3:
+#Library call printi at line 36
+Move this,R3
+MoveField R3.1,R5
+Move i28,R1
+MoveArray R5[R1],R3
+Library __printi(R3),Rdummy
 
-#If at line 18
-
-#Logical Binary Op at line 18
-Move 0,R0
-Compare 1,R0
-JumpTrue _cond6
-Move 1,R3
-Compare 1,R3
-JumpTrue _cond6
-Move 0,R3
-Jump _end4
-_cond6:
-Move 1,R3
-_end4:
-Compare 0,R3
-JumpTrue _cond8
-_cond7:
-
-#Library call println at line 19
-Move str0,R0
-Library __println(R0),Rdummy
-Jump _end5
-_cond8:
-
-#Library call println at line 22
-Move str1,R0
-Library __println(R0),Rdummy
-_end5:
-
-#If at line 25
-
-#Logical Binary Op at line 25
-Move 0,R0
-Compare 1,R0
-JumpTrue _cond9
-Move 0,R4
-Compare 1,R4
-JumpTrue _cond9
-Move 0,R4
-Jump _end6
-_cond9:
-Move 1,R4
-_end6:
-Compare 0,R4
-JumpTrue _cond11
-_cond10:
-
-#Library call println at line 26
-Move str1,R0
-Library __println(R0),Rdummy
-Jump _end7
-_cond11:
-
-#Library call println at line 29
-Move str0,R0
-Library __println(R0),Rdummy
-_end7:
-
-#If at line 31
-
-#Logical Binary Op at line 31
-Move 1,R0
-Compare 0,R0
-JumpTrue _cond12
-Move 1,R5
-Compare 0,R5
-JumpTrue _cond12
-Move 1,R5
-Jump _end8
-_cond12:
-Move 0,R5
-_end8:
-Compare 0,R5
-JumpTrue _cond14
-_cond13:
-
-#Library call println at line 32
-Move str0,R0
-Library __println(R0),Rdummy
-Jump _end9
-_cond14:
-
-#Library call println at line 35
-Move str1,R0
-Library __println(R0),Rdummy
+#Library call print at line 37
+Move str2,R3
+Library __print(R3),Rdummy
 _end9:
 
-#If at line 38
+#Assignment on line 39
 
-#Logical Binary Op at line 38
-Move 1,R0
-Compare 0,R0
-JumpTrue _cond15
-Move 0,R6
-Compare 0,R6
-JumpTrue _cond15
+#Math binary operation '+' at line 39
+Move i28,R3
 Move 1,R6
-Jump _end10
-_cond15:
-Move 0,R6
-_end10:
-Compare 0,R6
-JumpTrue _cond17
-_cond16:
+Add R6,R3
+Move R3,i28
+Jump _loop3
+_end6:
+Return 9999
 
-#Library call println at line 39
-Move str1,R0
-Library __println(R0),Rdummy
-Jump _end11
-_cond17:
+##############################
 
-#Library call println at line 42
-Move str0,R0
-Library __println(R0),Rdummy
-_end11:
+#main in Sieve
+_ic_main:
 
-#If at line 44
+#Virtual Call test at line 45
 
-#Logical Binary Op at line 44
-Move 0,R0
-Compare 0,R0
-JumpTrue _cond18
-Move 1,R7
-Compare 0,R7
-JumpTrue _cond18
-Move 1,R7
-Jump _end12
-_cond18:
-Move 0,R7
-_end12:
-Compare 0,R7
-JumpTrue _cond20
-_cond19:
-
-#Library call println at line 45
-Move str1,R0
-Library __println(R0),Rdummy
-Jump _end13
-_cond20:
-
-#Library call println at line 48
-Move str0,R0
-Library __println(R0),Rdummy
-_end13:
-
-#If at line 50
-
-#Logical Binary Op at line 50
-Move 0,R0
-Compare 0,R0
-JumpTrue _cond21
-Move 0,R8
-Compare 0,R8
-JumpTrue _cond21
-Move 1,R8
-Jump _end14
-_cond21:
-Move 0,R8
-_end14:
-Compare 0,R8
-JumpTrue _cond23
-_cond22:
-
-#Library call println at line 51
-Move str1,R0
-Library __println(R0),Rdummy
-Jump _end15
-_cond23:
-
-#Library call println at line 54
-Move str0,R0
-Library __println(R0),Rdummy
-_end15:
+#New Class Sieve at line 45
+Library __allocateObject(8),R1
+MoveField _DV_Sieve,R1.0
+VirtualCall R1.4(),Rdummy
 Library __exit(0),Rdummy
+
+##############################
+
+#test in Sieve
+_Sieve_test:
+Move 100,R3
+Move R3,n30
+
+#Assignment on line 51
+Move n30,R3
+Mul 4,R3
+Library __allocateArray(R3),R5
+Move this,R3
+MoveField R5,R3.1
+
+#Virtual Call initArray at line 53
+Move this,R1
+VirtualCall R1.0(),Rdummy
+
+#Virtual Call sieveAll at line 54
+Move this,R3
+VirtualCall R3.1(),Rdummy
+
+#Virtual Call printPrimes at line 55
+Move this,R5
+VirtualCall R5.3(),Rdummy
+
+#Library call println at line 56
+Move str3,R6
+Library __println(R6),Rdummy
+Return 9999
 
 ##############################
