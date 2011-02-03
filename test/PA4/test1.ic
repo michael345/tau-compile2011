@@ -1,60 +1,60 @@
-class A {
-	
-	int a;
+class Sieve {
 
-	static void main(string[] args) {
-		if (true || true) {
-			Library.println("You win!");
-		}
-		else { 
-			Library.println("You lose!");
-		}
-		if (true || false) {
-			Library.println("You win!");
-		}
-		else { 
-			Library.println("You lose!");
-		}
-		if (false || true) { 
-			Library.println("You win!");
-		}
-		else { 
-			Library.println("You lose!");
-		}
+  int[] num;
 
-		if (false || false) {
-			Library.println("You lose!");
-		}
-		else { 
-			Library.println("You win!");
-		}
-		if (true && true) { 
-			Library.println("You win!");
-		}
-		else { 
-			Library.println("You lose!");
-		}
+  void initArray() {
+    int i = 0;
+    while (i < num.length) {
+      num[i] = i;
+      i=i+1;
+    }
+  }
 
-		if (true && false) {
-			Library.println("You lose!");
-		}
-		else { 
-			Library.println("You win!");
-		}
-		if (false && true) { 
-			Library.println("You lose!");
-		}
-		else { 
-			Library.println("You win!");
-		}
-		if (false && false) {
-			Library.println("You lose!");
-		}
-		else { 
-			Library.println("You win!");
-		}
-	}
-	
-	
-	
+  void sieveAll() {
+    int i = 2;
+    while (i < num.length) {
+      sieve(i);
+      i=i+1; 
+    }
+  }
+
+  void sieve(int n) {
+    int i = 2*n;
+    while (i < num.length) {
+      num[i] = 0;
+      i=i+n;
+    }
+  }
+
+  void printPrimes() {
+    int i = 2;
+    Library.print("Primes less than ");
+    Library.printi(num.length);
+    Library.print(": ");
+    while (i < num.length) {
+      if (num[i] != 0) {
+        Library.printi(num[i]);
+        Library.print(" ");
+      }
+      i=i+1;
+    }
+  }
+
+
+  static void main(string[] args) {
+    (new Sieve()).test();
+  }
+
+  void test() {
+    int n = 100;
+
+    num = new int[n];
+
+    initArray();
+    sieveAll();
+    printPrimes();
+    Library.println("");
+
+  }
+
 }
