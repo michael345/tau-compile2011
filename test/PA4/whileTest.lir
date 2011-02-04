@@ -1,0 +1,257 @@
+########## String Literals ###########
+str0: ""
+str2: "check1"
+str3: "check2"
+str4: "check3"
+str5: "OK"
+######################################
+########## Dispatch Vectors ##########
+_DV_WhileTest: []
+_DV_A: [_A_init]
+_DV_Utils: []
+#####################################
+
+#main in WhileTest
+_ic_main:
+Move 8,R0
+Move R0,j27
+Move 100,R0
+Move R0,i28
+Move 2,R0
+Move R0,t129
+Move 2,R0
+Move R0,t230
+Move 2,R0
+Move R0,t331
+
+#While at 12
+_loop0:
+
+#Logical Binary Op at line 12
+Move j27,R0
+Move 0,R1
+Compare R0,R1
+JumpGE _cond0
+Move 1,R1
+Jump _end1
+_cond0:
+Move 0,R1
+_end1:
+Compare 0,R1
+JumpTrue _end0
+
+#Library call printi at line 13
+Move 200,R0
+Library __printi(R0),Rdummy
+
+#Library call println at line 14
+Move str0,R0
+Library __println(R0),Rdummy
+
+#Library call printi at line 15
+
+#Math binary operation '+' at line 15
+Move i28,R0
+Move 1000,R2
+Add R2,R0
+Library __printi(R0),Rdummy
+
+#Library call println at line 16
+Move str0,R0
+Library __println(R0),Rdummy
+
+#While at 17
+_loop1:
+
+#Logical Binary Op at line 17
+Move t129,R0
+Move 0,R2
+Compare R0,R2
+JumpGE _cond1
+Move 1,R2
+Jump _end3
+_cond1:
+Move 0,R2
+_end3:
+Compare 0,R2
+JumpTrue _end2
+
+#Library call println at line 17
+Move str2,R0
+Library __println(R0),Rdummy
+
+#Assignment on line 19
+
+#Math binary operation '-' at line 19
+Move i28,R0
+Move 1,R3
+Sub R3,R0
+Move R0,i28
+
+#Assignment on line 20
+
+#Math binary operation '-' at line 20
+Move j27,R0
+Move 1,R3
+Sub R3,R0
+Move R0,j27
+
+#Assignment on line 21
+
+#Math binary operation '-' at line 21
+Move t129,R0
+Move 1,R3
+Sub R3,R0
+Move R0,t129
+Jump _loop1
+_end2:
+
+#Assignment on line 23
+Move 2,R0
+Move R0,t129
+
+#While at 24
+_loop2:
+
+#Logical Binary Op at line 24
+Move t230,R0
+Move 0,R3
+Compare R0,R3
+JumpGE _cond2
+Move 1,R3
+Jump _end5
+_cond2:
+Move 0,R3
+_end5:
+Compare 0,R3
+JumpTrue _end4
+
+#Library call println at line 24
+Move str3,R0
+Library __println(R0),Rdummy
+
+#Assignment on line 25
+
+#Math binary operation '-' at line 25
+Move i28,R0
+Move 1,R4
+Sub R4,R0
+Move R0,i28
+
+#Assignment on line 26
+
+#Math binary operation '-' at line 26
+Move j27,R0
+Move 1,R4
+Sub R4,R0
+Move R0,j27
+
+#Assignment on line 27
+
+#Math binary operation '-' at line 27
+Move t230,R0
+Move 1,R4
+Sub R4,R0
+Move R0,t230
+Jump _loop2
+_end4:
+
+#Assignment on line 29
+Move 2,R0
+Move R0,t230
+
+#While at 30
+_loop3:
+
+#Logical Binary Op at line 30
+Move t331,R0
+Move 0,R4
+Compare R0,R4
+JumpGE _cond3
+Move 1,R4
+Jump _end7
+_cond3:
+Move 0,R4
+_end7:
+Compare 0,R4
+JumpTrue _end6
+
+#Library call println at line 30
+Move str4,R0
+Library __println(R0),Rdummy
+
+#Assignment on line 31
+
+#Math binary operation '-' at line 31
+Move i28,R0
+Move 1,R5
+Sub R5,R0
+Move R0,i28
+
+#Assignment on line 32
+
+#Math binary operation '-' at line 32
+Move j27,R0
+Move 1,R5
+Sub R5,R0
+Move R0,j27
+
+#Assignment on line 33
+
+#Math binary operation '-' at line 33
+Move t331,R0
+Move 1,R5
+Sub R5,R0
+Move R0,t331
+Jump _loop3
+_end6:
+
+#Assignment on line 35
+Move 2,R0
+Move R0,t331
+
+#Assignment on line 36
+
+#Math binary operation '-' at line 36
+Move j27,R0
+Move 1,R5
+Sub R5,R0
+Move R0,j27
+Jump _loop0
+Jump _loop0
+_end0:
+
+#Library call print at line 40
+Move str5,R0
+Library __print(R0),Rdummy
+Library __exit(0),Rdummy
+
+##############################
+
+#init in A
+_A_init:
+
+#Assignment on line 54
+Move 0,R0
+Move this,R5
+MoveField R0,R5.1
+
+#Assignment on line 55
+Move 8,R0
+Mul 4,R0
+Library __allocateArray(R0),R5
+Move this,R0
+MoveField R5,R0.2
+Return 9999
+
+##############################
+
+#printmsg in Utils
+_Utils_printmsg:
+
+#Library call print at line 62
+Move str32,R0
+Library __print(R0),Rdummy
+Return 9999
+
+##############################
