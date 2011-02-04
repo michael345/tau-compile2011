@@ -58,7 +58,12 @@ public class LibraryInstruction extends LIRInstruction {
         for (int i = 0; i < size - 1; i++) { 
             output.append(params[i].toString() + ",");
         }
-        output.append(params[size-1].toString() + ")," + destination);
+        if (size == 0) { 
+            output.append(")," + destination);
+        }
+        else {
+            output.append(params[size-1].toString() + ")," + destination);
+        }
         return output.toString();
     }
 }
