@@ -1,400 +1,297 @@
 ########## String Literals ###########
-str0: " "
-str1: ""
+str0: "B: "
+str1: "Money: "
+str2: ""
+str3: "a"
+str4: "A: "
 ######################################
 ########## Dispatch Vectors ##########
-_DV_Quicksort: [_Quicksort_partition,_Quicksort_quicksort,_Quicksort_initArray,_Quicksort_printArray]
+_DV_A: [_A_test,_A_init,_A_print]
+_DV_B: [_A_test,_B_init,_B_print]
 #####################################
 
-#partition in Quicksort
-_Quicksort_partition:
-Move this,R0
-MoveField R0.1,R1
-Move low23,R2
-MoveArray R1[R2],R3
-Move R3,pivot25
-Move low23,R3
-Move R3,i26
-Move high24,R3
-Move R3,j27
+#init in B
+_B_init:
 
-#While at 11
+#Assignment on line 5
+Move id0,R0
+Move this,R1
+MoveField R0,R1.1
+
+#Assignment on line 6
+Move 1000,R0
+Move this,R1
+MoveField R0,R1.4
+
+#Assignment on line 7
+Move 7,R0
+Move this,R1
+MoveField R0,R1.2
+
+#Assignment on line 8
+Move this,R0
+MoveField R0.2,R1
+Mul 4,R1
+Library __allocateArray(R1),R2
+Move this,R1
+MoveField R2,R1.3
+Move 0,R0
+Move R0,i30
+
+#While at 10
 _loop0:
+
+#Logical Binary Op at line 10
+Move i30,R0
+Move this,R1
+MoveField R1.3,R2
+ArrayLength R2,R3
+Compare R0,R3
+JumpLE _cond0
 Move 1,R3
+Jump _end1
+_cond0:
+Move 0,R3
+_end1:
 Compare 0,R3
 JumpTrue _end0
 
-#While at 12
-_loop1:
-
-#Logical Binary Op at line 12
-Move this,R4
-MoveField R4.1,R5
-Move i26,R0
-MoveArray R5[R0],R6
-Move pivot25,R7
-Compare R6,R7
-JumpLE _cond0
-Move 1,R7
-Jump _end2
-_cond0:
-Move 0,R7
-_end2:
-Compare 0,R7
-JumpTrue _end1
+#Assignment on line 11
+Move i30,R0
+Move this,R2
+MoveField R2.3,R4
+Move i30,R1
+MoveArray R0,R4[R1]
 
 #Assignment on line 12
 
 #Math binary operation '+' at line 12
-Move i26,R6
-Move 1,R8
-Add R8,R6
-Move R6,i26
-Jump _loop1
-_end1:
-
-#While at 13
-_loop2:
-
-#Logical Binary Op at line 13
-Move this,R0
-MoveField R0.1,R4
-Move j27,R5
-MoveArray R4[R5],R6
-Move pivot25,R8
-Compare R6,R8
-JumpGE _cond1
-Move 1,R8
-Jump _end4
-_cond1:
-Move 0,R8
-_end4:
-Compare 0,R8
-JumpTrue _end3
-
-#Assignment on line 13
-
-#Math binary operation '-' at line 13
-Move j27,R6
-Move 1,R9
-Sub R9,R6
-Move R6,j27
-Jump _loop2
-_end3:
-
-#If at line 15
-
-#Logical Binary Op at line 15
-Move i26,R0
-Move j27,R4
-Compare R0,R4
-JumpG _cond2
-Move 1,R4
-Jump _end5
-_cond2:
-Move 0,R4
-_end5:
-Compare 0,R4
-JumpTrue _end6
-_cond3:
-Jump _end0
-_end6:
-
-#Assignment on line 17
-Move this,R0
-MoveField R0.1,R5
-Move i26,R6
-MoveArray R5[R6],R9
-Move R9,tmp28
-
-#Assignment on line 18
-Move this,R0
-MoveField R0.1,R5
-Move j27,R6
-MoveArray R5[R6],R9
-Move this,R10
-MoveField R10.1,R11
-Move i26,R0
-MoveArray R9,R11[R0]
-
-#Assignment on line 19
-Move tmp28,R0
-Move this,R9
-MoveField R9.1,R10
-Move j27,R11
-MoveArray R0,R10[R11]
-
-#Assignment on line 20
-
-#Math binary operation '+' at line 20
-Move i26,R0
-Move 1,R9
-Add R9,R0
-Move R0,i26
-
-#Assignment on line 21
-
-#Math binary operation '-' at line 21
-Move j27,R0
-Move 1,R9
-Sub R9,R0
-Move R0,j27
+Move i30,R0
+Move 1,R1
+Add R1,R0
+Move R0,i30
 Jump _loop0
 _end0:
-Move j27,R0
-Return R0
 Return 9999
 
 ##############################
 
-#quicksort in Quicksort
-_Quicksort_quicksort:
+#print in B
+_B_print:
 
-#If at line 28
+#Library call println at line 17
 
-#Logical Binary Op at line 28
-Move low29,R0
-Move high30,R9
-Compare R0,R9
-JumpLE _cond4
-Move 1,R9
-Jump _end7
-_cond4:
-Move 0,R9
-_end7:
-Compare 0,R9
-JumpTrue _end8
-_cond5:
-
-#Virtual Call partition at line 29
+#Math binary operation '+' at line 17
 Move this,R0
-Move low29,R10
-Move high30,R11
-VirtualCall R0.0(low23=R10,high24=R11),R12
-Move R12,mid31
+MoveField R0.1,R1
+Move str0,R2
+Library __stringCat(R2,R1),R4
+Library __println(R4),Rdummy
 
-#Virtual Call quicksort at line 30
-Move this,R12
-Move low29,R13
-Move mid31,R14
-VirtualCall R12.1(low29=R13,high30=R14),Rdummy
+#Library call print at line 18
+Move str1,R1
+Library __print(R1),Rdummy
 
-#Virtual Call quicksort at line 31
-Move this,R15
+#Library call printi at line 19
+Move this,R1
+MoveField R1.4,R2
+Library __printi(R2),Rdummy
 
-#Math binary operation '+' at line 31
-Move mid31,R16
-Move 1,R17
-Add R17,R16
-Move high30,R17
-VirtualCall R15.1(low29=R16,high30=R17),Rdummy
-_end8:
+#Library call println at line 20
+Move str2,R0
+Library __println(R0),Rdummy
+Move 0,R0
+Move R0,i31
+
+#While at 22
+_loop1:
+
+#Logical Binary Op at line 22
+Move i31,R0
+Move this,R2
+MoveField R2.3,R4
+ArrayLength R4,R1
+Compare R0,R1
+JumpLE _cond1
+Move 1,R1
+Jump _end3
+_cond1:
+Move 0,R1
+_end3:
+Compare 0,R1
+JumpTrue _end2
+
+#Library call printi at line 23
+Move this,R0
+MoveField R0.3,R4
+Move i31,R2
+MoveArray R4[R2],R5
+Library __printi(R5),Rdummy
+
+#Assignment on line 24
+
+#Math binary operation '+' at line 24
+Move i31,R5
+Move 1,R6
+Add R6,R5
+Move R5,i31
+Jump _loop1
+_end2:
 Return 9999
 
 ##############################
 
-#initArray in Quicksort
-_Quicksort_initArray:
-Move 0,R18
-Move R18,i32
+#main in A
+_ic_main:
 
-#While at 37
+#New Class A at line 36
+Library __allocateObject(16),R0
+MoveField _DV_A,R0.0
+Move R0,a32
+
+#New Class B at line 37
+Library __allocateObject(20),R0
+MoveField _DV_B,R0.0
+Move R0,b33
+
+#Virtual Call test at line 38
+Move a32,R0
+VirtualCall R0.0(),Rdummy
+
+#Virtual Call test at line 39
+Move b33,R2
+VirtualCall R2.0(),Rdummy
+Library __exit(0),Rdummy
+
+##############################
+
+#test in A
+_A_test:
+
+#Virtual Call init at line 45
+Move this,R4
+VirtualCall R4.1(id0=str3),Rdummy
+
+#Virtual Call print at line 46
+Move this,R5
+VirtualCall R5.2(),Rdummy
+Return 9999
+
+##############################
+
+#init in A
+_A_init:
+
+#Assignment on line 50
+Move id0,R6
+Move this,R7
+MoveField R6,R7.1
+
+#Assignment on line 51
+Move 5,R6
+Move this,R7
+MoveField R6,R7.2
+
+#Assignment on line 52
+Move this,R6
+MoveField R6.2,R7
+Mul 4,R7
+Library __allocateArray(R7),R8
+Move this,R7
+MoveField R8,R7.3
+Move 0,R6
+Move R6,i34
+
+#While at 54
+_loop2:
+
+#Logical Binary Op at line 54
+Move i34,R6
+Move this,R7
+MoveField R7.3,R8
+ArrayLength R8,R9
+Compare R6,R9
+JumpLE _cond2
+Move 1,R9
+Jump _end5
+_cond2:
+Move 0,R9
+_end5:
+Compare 0,R9
+JumpTrue _end4
+
+#Assignment on line 55
+Move i34,R6
+Move this,R8
+MoveField R8.3,R10
+Move i34,R7
+MoveArray R6,R10[R7]
+
+#Assignment on line 56
+
+#Math binary operation '+' at line 56
+Move i34,R6
+Move 1,R7
+Add R7,R6
+Move R6,i34
+Jump _loop2
+_end4:
+Return 9999
+
+##############################
+
+#print in A
+_A_print:
+
+#Library call println at line 62
+
+#Math binary operation '+' at line 62
+Move this,R6
+MoveField R6.1,R7
+Move str4,R8
+Library __stringCat(R8,R7),R10
+Library __println(R10),Rdummy
+Move 0,R7
+Move R7,i35
+
+#While at 65
 _loop3:
 
-#Logical Binary Op at line 37
-Move i32,R18
-Move this,R19
-MoveField R19.1,R20
-ArrayLength R20,R21
-Compare R18,R21
-JumpLE _cond6
-Move 1,R21
-Jump _end10
-_cond6:
-Move 0,R21
-_end10:
-Compare 0,R21
-JumpTrue _end9
+#Logical Binary Op at line 65
+Move i35,R7
+Move this,R8
+MoveField R8.3,R10
+ArrayLength R10,R6
+Compare R7,R6
+JumpLE _cond3
+Move 1,R6
+Jump _end7
+_cond3:
+Move 0,R6
+_end7:
+Compare 0,R6
+JumpTrue _end6
 
-#Assignment on line 38
-
-#Math binary operation '%' at line 38
-
-#Math binary operation '*' at line 38
-Move this,R18
-MoveField R18.1,R20
-ArrayLength R20,R19
-Move 2,R20
-Mul R20,R19
-
-#Library call random at line 38
-Library __random(),R20
-Mod R19,R20
-Move this,R19
-MoveField R19.1,R22
-Move i32,R18
-MoveArray R20,R22[R18]
-
-#Assignment on line 39
-
-#Math binary operation '+' at line 39
-Move i32,R18
-Move 1,R19
-Add R19,R18
-Move R18,i32
-Jump _loop3
-_end9:
-Return 9999
-
-##############################
-
-#printArray in Quicksort
-_Quicksort_printArray:
-Move 0,R18
-Move R18,i33
-
-#While at 46
-_loop4:
-
-#Logical Binary Op at line 46
-Move i33,R18
-Move this,R19
-MoveField R19.1,R20
-ArrayLength R20,R22
-Compare R18,R22
-JumpLE _cond7
-Move 1,R22
-Jump _end12
-_cond7:
-Move 0,R22
-_end12:
-Compare 0,R22
-JumpTrue _end11
-
-#Library call printi at line 47
-Move this,R18
-MoveField R18.1,R20
-Move i33,R19
-MoveArray R20[R19],R23
-Library __printi(R23),Rdummy
-
-#Library call print at line 48
-Move str0,R23
-Library __print(R23),Rdummy
-
-#Assignment on line 49
-
-#Math binary operation '+' at line 49
-Move i33,R23
-Move 1,R24
-Add R24,R23
-Move R23,i33
-Jump _loop4
-_end11:
-Return 9999
-
-##############################
-
-#main in Quicksort
-_ic_main:
-Move 10,R18
-Move R18,n35
-
-#New Class Quicksort at line 58
-Library __allocateObject(8),R18
-MoveField _DV_Quicksort,R18.0
-Move R18,s36
-
-#Assignment on line 59
-Move n35,R18
-Mul 4,R18
-Library __allocateArray(R18),R19
-Move s36,R18
-MoveField R19,R18.1
-
-#Assignment on line 61
-Move 0,R18
-Sub 3,R18
-Move s36,R19
-MoveField R19.1,R20
-MoveArray R18,R20[0]
-
-#Assignment on line 62
-Move 10,R18
-Move s36,R19
-MoveField R19.1,R20
-MoveArray R18,R20[1]
-
-#Assignment on line 63
-Move 4,R18
-Move s36,R19
-MoveField R19.1,R20
-MoveArray R18,R20[2]
-
-#Assignment on line 64
-Move 0,R18
-Sub 9,R18
-Move s36,R19
-MoveField R19.1,R20
-MoveArray R18,R20[3]
-
-#Assignment on line 65
-Move 13,R18
-Move s36,R19
-MoveField R19.1,R20
-MoveArray R18,R20[4]
-
-#Assignment on line 66
-Move 1,R18
-Move s36,R19
-MoveField R19.1,R20
-MoveArray R18,R20[5]
+#Library call printi at line 66
+Move this,R7
+MoveField R7.3,R10
+Move i35,R8
+MoveArray R10[R8],R11
+Library __printi(R11),Rdummy
 
 #Assignment on line 67
-Move 3,R18
-Move s36,R19
-MoveField R19.1,R20
-MoveArray R18,R20[6]
 
-#Assignment on line 68
-Move 13,R18
-Move s36,R19
-MoveField R19.1,R20
-MoveArray R18,R20[7]
+#Math binary operation '+' at line 67
+Move i35,R11
+Move 1,R12
+Add R12,R11
+Move R11,i35
+Jump _loop3
+_end6:
 
-#Assignment on line 69
-Move 13,R18
-Move s36,R19
-MoveField R19.1,R20
-MoveArray R18,R20[8]
-
-#Assignment on line 70
-Move 0,R18
-Sub 6,R18
-Move s36,R19
-MoveField R19.1,R20
-MoveArray R18,R20[9]
-
-#Virtual Call printArray at line 72
-Move s36,R18
-VirtualCall R18.3(),Rdummy
-
-#Library call println at line 73
-Move str1,R19
-Library __println(R19),Rdummy
-
-#Virtual Call quicksort at line 74
-Move s36,R19
-
-#Math binary operation '-' at line 74
-Move n35,R20
-Move 1,R23
-Sub R23,R20
-VirtualCall R19.1(low29=0,high30=R20),Rdummy
-
-#Virtual Call printArray at line 75
-Move s36,R23
-VirtualCall R23.3(),Rdummy
-Library __exit(0),Rdummy
+#Library call println at line 69
+Move str2,R7
+Library __println(R7),Rdummy
+Return 9999
 
 ##############################

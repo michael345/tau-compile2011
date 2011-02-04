@@ -1,78 +1,73 @@
-class Quicksort {
-
-    int[] a;
-
-    int partition(int low, int high) {
-	    int pivot = a[low];
-	    int i = low;
-	    int j = high;
-	    int tmp;
+class B extends A {
+	int money;
 	
-	    while (true) {
-	        while (a[i] < pivot) i = i+1;
-	        while (a[j] > pivot) j = j-1;
+	void init(string id) { 
+		this.id = id;
+		this.money = 1000;
+		size = 7;
+		arr = new int[size];
+		int i = 0;
+		while (i < arr.length) { 
+			arr[i] = i;
+			i = i +1;
+		}	
+	}
 	
-	        if (i >= j) break;
-	
-	        tmp = a[i];
-	        a[i] = a[j];
-	        a[j] = tmp;
-	        i = i+1;
-	        j = j-1;
-	    }
-	
-	    return j;
-    }
-
-    void quicksort(int low, int high) {
-	    if (low < high) {
-	        int mid = partition(low, high);
-	        quicksort(low, mid);
-	        quicksort(mid+1, high);
-	    }
-    }
-
-    void initArray() {
-	    int i = 0;
-	    while(i < a.length) {
-	        a[i] =  Library.random() % (a.length*2);
-	        i = i+1;
-	    }
-    }
-
-    void printArray() {
-	    int i = 0;
-	
-	    while(i<a.length) {
-	        Library.printi(a[i]);
-	        Library.print (" ");
-	        i = i+1;
-	    }
-
-    }
-
-    static void main(string[] args) {
-	
-		int n = 10;	
-
-    	Quicksort s = new Quicksort();
-    	s.a = new int[n];
-
-		s.a[0] = -3;
-		s.a[1] = 10;
-		s.a[2] = 4;
-		s.a[3] = -9;
-		s.a[4] = 13;
-		s.a[5] = 1;
-		s.a[6] = 3;
-		s.a[7] = 13;
-		s.a[8] = 13;
-		s.a[9] = -6;
-		
-		s.printArray();
+	void print() {
+		Library.println("B: " + id);
+		Library.print("Money: ");
+		Library.printi(money);
 		Library.println("");
-    	s.quicksort(0, n-1);
-    	s.printArray();
-    
-    }
+		int i = 0;
+		while (i < arr.length) { 
+			Library.printi(arr[i]);
+			i = i +1;
+		}
+	} 
+	
+} 
+
+class A { 
+	string id;
+	int size;
+	int [] arr;
+	
+	static void main(string[] args) { 
+		A a = new A();
+		A b = new B();
+		a.test();
+		b.test();
+		
+		
+	}
+	
+	void test() {
+		init("a");
+		print();
+	} 
+	
+	void init(string id) { 
+		this.id = id;
+		size = 5;
+		arr = new int[size];
+		int i = 0;
+		while (i < arr.length) { 
+			arr[i] = i;
+			i = i +1;
+		}	
+	}
+	
+	void print() {
+		
+		Library.println("A: " + id);
+		
+		int i = 0;
+		while (i < arr.length) { 
+			Library.printi(arr[i]);
+			i = i +1;
+		}
+		Library.println("");
+	} 
+		
+	
 }
