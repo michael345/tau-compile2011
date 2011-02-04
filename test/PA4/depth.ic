@@ -1,0 +1,50 @@
+class A{
+B b;
+int numb;
+
+static void main(string[] args){
+A a = new A();
+B b = new B();
+C c = new C();
+D d = new D();
+c.d =d;
+b.c = c;
+a.b = b;
+a.b.c.d.numd = 5;
+a.b.numb = 11;
+a.b.c.numc = a.b.numb + a.b.c.d.numd;//16
+a.numb = 48;
+
+
+Library.printi(a.b.c.numc - a.b.numb);//5
+Library.println("");
+Library.printi(a.b.c.d.numd + a.numb);//53
+Library.println("");
+a.b.c.loopy = 9;
+while(a.b.c.loopy >= 0){
+	Library.printi(a.b.c.loopy);
+	Library.println("");
+	a.b.c.loopy = a.b.c.loopy - 1;
+}
+}
+
+}
+
+
+
+class B{
+ C c;
+ int numb;
+ 
+ }
+ 
+class C {
+D d;
+int numc;
+int loopy;
+
+}
+
+class D{
+int numd;
+}

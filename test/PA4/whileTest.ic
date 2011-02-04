@@ -1,0 +1,66 @@
+class WhileTest{
+
+static void main(string[] args){
+
+	//A a = new A();
+	int j = 8;
+	int i = 100;
+	int t1=2;
+	int t2=2;
+	int t3=2;
+	
+	while(j>0){
+	Library.printi(200);
+	Library.println("");
+	Library.printi(i+1000);
+	Library.println("");
+	while(t1>0){Library.println("check1");
+	
+				 i = i-1;
+				 j=j-1;
+				 t1=t1-1;
+				}
+				t1=2;
+	while(t2>0){Library.println("check2");
+				 i = i-1;
+				 j=j-1;
+				 t2=t2-1;
+				}	
+				t2=2;		
+	while(t3>0){Library.println("check3");
+				 i = i-1;
+				 j=j-1;
+				 t3= t3-1;
+				}
+				t3=2;
+	j = j-1;
+	//g=1;
+	continue;
+}
+Library.print("OK");
+
+}
+
+
+
+
+}
+
+class A{
+	int num;
+	boolean[] bits;
+	
+	void init(){
+		num = 0;
+		bits = new boolean[8];
+	}
+}
+
+class Utils{
+
+static void printmsg(string str){
+		Library.print(str);
+	}
+
+}
+
