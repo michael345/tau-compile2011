@@ -14,7 +14,7 @@ class Library {
  static int[] stoa(string s); /* an array with the ascii codes of chars in s */
  static string atos(int[] a); /* builds a string from the ascii codes in a */
 
- static int random(int n); /* returns a random number between 0 and n-1 */
+ static int random(/*int n*/); /* returns a random number between 0 and n-1 */
  static int time();        /* number of milliseconds since program start */
  static int exit(int i);   /* terminates the program with exit code n */
 }

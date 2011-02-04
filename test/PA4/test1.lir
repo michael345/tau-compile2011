@@ -1,265 +1,400 @@
 ########## String Literals ###########
-str0: "Primes less than "
-str1: ": "
-str2: " "
-str3: ""
+str0: " "
+str1: ""
 ######################################
 ########## Dispatch Vectors ##########
-_DV_Sieve: [_Sieve_initArray,_Sieve_sieveAll,_Sieve_sieve,_Sieve_printPrimes,_Sieve_test]
+_DV_Quicksort: [_Quicksort_partition,_Quicksort_quicksort,_Quicksort_initArray,_Quicksort_printArray]
 #####################################
 
-#initArray in Sieve
-_Sieve_initArray:
-Move 0,R0
-Move R0,i24
+#partition in Quicksort
+_Quicksort_partition:
+Move this,R0
+MoveField R0.1,R1
+Move low23,R2
+MoveArray R1[R2],R3
+Move R3,pivot25
+Move low23,R3
+Move R3,i26
+Move high24,R3
+Move R3,j27
 
-#While at 7
+#While at 11
 _loop0:
-
-#Logical Binary Op at line 7
-Move i24,R0
-Move this,R1
-MoveField R1.1,R2
-ArrayLength R2,R1
-Compare R0,R1
-JumpLE _cond0
-Move 1,R1
-Jump _end1
-_cond0:
-Move 0,R1
-_end1:
-Compare 0,R1
+Move 1,R3
+Compare 0,R3
 JumpTrue _end0
 
-#Assignment on line 8
-Move i24,R0
-Move this,R2
-MoveField R2.1,R3
-Move i24,R1
-MoveArray R0,R3[R1]
-
-#Assignment on line 9
-
-#Math binary operation '+' at line 9
-Move i24,R0
-Move 1,R1
-Add R1,R0
-Move R0,i24
-Jump _loop0
-_end0:
-Return 9999
-
-##############################
-
-#sieveAll in Sieve
-_Sieve_sieveAll:
-Move 2,R0
-Move R0,i25
-
-#While at 15
+#While at 12
 _loop1:
 
-#Logical Binary Op at line 15
-Move i25,R0
-Move this,R1
-MoveField R1.1,R2
-ArrayLength R2,R1
-Compare R0,R1
-JumpLE _cond1
-Move 1,R1
-Jump _end3
-_cond1:
-Move 0,R1
-_end3:
-Compare 0,R1
-JumpTrue _end2
-
-#Virtual Call sieve at line 16
-Move this,R0
-Move i25,R2
-VirtualCall R0.2(n26=R2),Rdummy
-
-#Assignment on line 17
-
-#Math binary operation '+' at line 17
-Move i25,R3
-Move 1,R4
-Add R4,R3
-Move R3,i25
-Jump _loop1
+#Logical Binary Op at line 12
+Move this,R4
+MoveField R4.1,R5
+Move i26,R0
+MoveArray R5[R0],R6
+Move pivot25,R7
+Compare R6,R7
+JumpLE _cond0
+Move 1,R7
+Jump _end2
+_cond0:
+Move 0,R7
 _end2:
-Return 9999
+Compare 0,R7
+JumpTrue _end1
 
-##############################
+#Assignment on line 12
 
-#sieve in Sieve
-_Sieve_sieve:
+#Math binary operation '+' at line 12
+Move i26,R6
+Move 1,R8
+Add R8,R6
+Move R6,i26
+Jump _loop1
+_end1:
 
-#Math binary operation '*' at line 22
-Move n26,R1
-Move 2,R3
-Mul R1,R3
-Move R3,i27
-
-#While at 23
+#While at 13
 _loop2:
 
-#Logical Binary Op at line 23
-Move i27,R1
-Move this,R3
-MoveField R3.1,R4
-ArrayLength R4,R1
-Compare R1,R1
-JumpLE _cond2
-Move 1,R1
+#Logical Binary Op at line 13
+Move this,R0
+MoveField R0.1,R4
+Move j27,R5
+MoveArray R4[R5],R6
+Move pivot25,R8
+Compare R6,R8
+JumpGE _cond1
+Move 1,R8
+Jump _end4
+_cond1:
+Move 0,R8
+_end4:
+Compare 0,R8
+JumpTrue _end3
+
+#Assignment on line 13
+
+#Math binary operation '-' at line 13
+Move j27,R6
+Move 1,R9
+Sub R9,R6
+Move R6,j27
+Jump _loop2
+_end3:
+
+#If at line 15
+
+#Logical Binary Op at line 15
+Move i26,R0
+Move j27,R4
+Compare R0,R4
+JumpG _cond2
+Move 1,R4
 Jump _end5
 _cond2:
-Move 0,R1
+Move 0,R4
 _end5:
-Compare 0,R1
-JumpTrue _end4
+Compare 0,R4
+JumpTrue _end6
+_cond3:
+Jump _end0
+_end6:
 
-#Assignment on line 24
-Move 0,R1
-Move this,R3
-MoveField R3.1,R4
-Move i27,R3
-MoveArray R1,R4[R3]
+#Assignment on line 17
+Move this,R0
+MoveField R0.1,R5
+Move i26,R6
+MoveArray R5[R6],R9
+Move R9,tmp28
 
-#Assignment on line 25
+#Assignment on line 18
+Move this,R0
+MoveField R0.1,R5
+Move j27,R6
+MoveArray R5[R6],R9
+Move this,R10
+MoveField R10.1,R11
+Move i26,R0
+MoveArray R9,R11[R0]
 
-#Math binary operation '+' at line 25
-Move n26,R1
-Move i27,R3
-Add R1,R3
-Move R3,i27
-Jump _loop2
-_end4:
+#Assignment on line 19
+Move tmp28,R0
+Move this,R9
+MoveField R9.1,R10
+Move j27,R11
+MoveArray R0,R10[R11]
+
+#Assignment on line 20
+
+#Math binary operation '+' at line 20
+Move i26,R0
+Move 1,R9
+Add R9,R0
+Move R0,i26
+
+#Assignment on line 21
+
+#Math binary operation '-' at line 21
+Move j27,R0
+Move 1,R9
+Sub R9,R0
+Move R0,j27
+Jump _loop0
+_end0:
+Move j27,R0
+Return R0
 Return 9999
 
 ##############################
 
-#printPrimes in Sieve
-_Sieve_printPrimes:
-Move 2,R1
-Move R1,i28
+#quicksort in Quicksort
+_Quicksort_quicksort:
 
-#Library call print at line 31
-Move str0,R1
-Library __print(R1),Rdummy
+#If at line 28
 
-#Library call printi at line 32
-Move this,R1
-MoveField R1.1,R3
-ArrayLength R3,R1
-Library __printi(R1),Rdummy
-
-#Library call print at line 33
-Move str1,R1
-Library __print(R1),Rdummy
-
-#While at 34
-_loop3:
-
-#Logical Binary Op at line 34
-Move i28,R1
-Move this,R3
-MoveField R3.1,R4
-ArrayLength R4,R1
-Compare R1,R1
-JumpLE _cond3
-Move 1,R1
+#Logical Binary Op at line 28
+Move low29,R0
+Move high30,R9
+Compare R0,R9
+JumpLE _cond4
+Move 1,R9
 Jump _end7
-_cond3:
-Move 0,R1
-_end7:
-Compare 0,R1
-JumpTrue _end6
-
-#If at line 35
-
-#Logical Binary Op at line 35
-Move this,R1
-MoveField R1.1,R3
-Move i28,R1
-MoveArray R3[R1],R3
-Move 0,R4
-Compare R3,R4
-JumpTrue _cond4
-Move 1,R4
-Jump _end8
 _cond4:
-Move 0,R4
-_end8:
-Compare 0,R4
-JumpTrue _end9
+Move 0,R9
+_end7:
+Compare 0,R9
+JumpTrue _end8
 _cond5:
 
-#Library call printi at line 36
-Move this,R3
-MoveField R3.1,R5
-Move i28,R1
-MoveArray R5[R1],R3
-Library __printi(R3),Rdummy
+#Virtual Call partition at line 29
+Move this,R0
+Move low29,R10
+Move high30,R11
+VirtualCall R0.0(low23=R10,high24=R11),R12
+Move R12,mid31
 
-#Library call print at line 37
-Move str2,R3
-Library __print(R3),Rdummy
-_end9:
+#Virtual Call quicksort at line 30
+Move this,R12
+Move low29,R13
+Move mid31,R14
+VirtualCall R12.1(low29=R13,high30=R14),Rdummy
+
+#Virtual Call quicksort at line 31
+Move this,R15
+
+#Math binary operation '+' at line 31
+Move mid31,R16
+Move 1,R17
+Add R17,R16
+Move high30,R17
+VirtualCall R15.1(low29=R16,high30=R17),Rdummy
+_end8:
+Return 9999
+
+##############################
+
+#initArray in Quicksort
+_Quicksort_initArray:
+Move 0,R18
+Move R18,i32
+
+#While at 37
+_loop3:
+
+#Logical Binary Op at line 37
+Move i32,R18
+Move this,R19
+MoveField R19.1,R20
+ArrayLength R20,R21
+Compare R18,R21
+JumpLE _cond6
+Move 1,R21
+Jump _end10
+_cond6:
+Move 0,R21
+_end10:
+Compare 0,R21
+JumpTrue _end9
+
+#Assignment on line 38
+
+#Math binary operation '%' at line 38
+
+#Math binary operation '*' at line 38
+Move this,R18
+MoveField R18.1,R20
+ArrayLength R20,R19
+Move 2,R20
+Mul R20,R19
+
+#Library call random at line 38
+Library __random(),R20
+Mod R19,R20
+Move this,R19
+MoveField R19.1,R22
+Move i32,R18
+MoveArray R20,R22[R18]
 
 #Assignment on line 39
 
 #Math binary operation '+' at line 39
-Move i28,R3
-Move 1,R6
-Add R6,R3
-Move R3,i28
+Move i32,R18
+Move 1,R19
+Add R19,R18
+Move R18,i32
 Jump _loop3
-_end6:
+_end9:
 Return 9999
 
 ##############################
 
-#main in Sieve
+#printArray in Quicksort
+_Quicksort_printArray:
+Move 0,R18
+Move R18,i33
+
+#While at 46
+_loop4:
+
+#Logical Binary Op at line 46
+Move i33,R18
+Move this,R19
+MoveField R19.1,R20
+ArrayLength R20,R22
+Compare R18,R22
+JumpLE _cond7
+Move 1,R22
+Jump _end12
+_cond7:
+Move 0,R22
+_end12:
+Compare 0,R22
+JumpTrue _end11
+
+#Library call printi at line 47
+Move this,R18
+MoveField R18.1,R20
+Move i33,R19
+MoveArray R20[R19],R23
+Library __printi(R23),Rdummy
+
+#Library call print at line 48
+Move str0,R23
+Library __print(R23),Rdummy
+
+#Assignment on line 49
+
+#Math binary operation '+' at line 49
+Move i33,R23
+Move 1,R24
+Add R24,R23
+Move R23,i33
+Jump _loop4
+_end11:
+Return 9999
+
+##############################
+
+#main in Quicksort
 _ic_main:
+Move 10,R18
+Move R18,n35
 
-#Virtual Call test at line 45
+#New Class Quicksort at line 58
+Library __allocateObject(8),R18
+MoveField _DV_Quicksort,R18.0
+Move R18,s36
 
-#New Class Sieve at line 45
-Library __allocateObject(8),R1
-MoveField _DV_Sieve,R1.0
-VirtualCall R1.4(),Rdummy
+#Assignment on line 59
+Move n35,R18
+Mul 4,R18
+Library __allocateArray(R18),R19
+Move s36,R18
+MoveField R19,R18.1
+
+#Assignment on line 61
+Move 0,R18
+Sub 3,R18
+Move s36,R19
+MoveField R19.1,R20
+MoveArray R18,R20[0]
+
+#Assignment on line 62
+Move 10,R18
+Move s36,R19
+MoveField R19.1,R20
+MoveArray R18,R20[1]
+
+#Assignment on line 63
+Move 4,R18
+Move s36,R19
+MoveField R19.1,R20
+MoveArray R18,R20[2]
+
+#Assignment on line 64
+Move 0,R18
+Sub 9,R18
+Move s36,R19
+MoveField R19.1,R20
+MoveArray R18,R20[3]
+
+#Assignment on line 65
+Move 13,R18
+Move s36,R19
+MoveField R19.1,R20
+MoveArray R18,R20[4]
+
+#Assignment on line 66
+Move 1,R18
+Move s36,R19
+MoveField R19.1,R20
+MoveArray R18,R20[5]
+
+#Assignment on line 67
+Move 3,R18
+Move s36,R19
+MoveField R19.1,R20
+MoveArray R18,R20[6]
+
+#Assignment on line 68
+Move 13,R18
+Move s36,R19
+MoveField R19.1,R20
+MoveArray R18,R20[7]
+
+#Assignment on line 69
+Move 13,R18
+Move s36,R19
+MoveField R19.1,R20
+MoveArray R18,R20[8]
+
+#Assignment on line 70
+Move 0,R18
+Sub 6,R18
+Move s36,R19
+MoveField R19.1,R20
+MoveArray R18,R20[9]
+
+#Virtual Call printArray at line 72
+Move s36,R18
+VirtualCall R18.3(),Rdummy
+
+#Library call println at line 73
+Move str1,R19
+Library __println(R19),Rdummy
+
+#Virtual Call quicksort at line 74
+Move s36,R19
+
+#Math binary operation '-' at line 74
+Move n35,R20
+Move 1,R23
+Sub R23,R20
+VirtualCall R19.1(low29=0,high30=R20),Rdummy
+
+#Virtual Call printArray at line 75
+Move s36,R23
+VirtualCall R23.3(),Rdummy
 Library __exit(0),Rdummy
-
-##############################
-
-#test in Sieve
-_Sieve_test:
-Move 100,R3
-Move R3,n30
-
-#Assignment on line 51
-Move n30,R3
-Mul 4,R3
-Library __allocateArray(R3),R5
-Move this,R3
-MoveField R5,R3.1
-
-#Virtual Call initArray at line 53
-Move this,R1
-VirtualCall R1.0(),Rdummy
-
-#Virtual Call sieveAll at line 54
-Move this,R3
-VirtualCall R3.1(),Rdummy
-
-#Virtual Call printPrimes at line 55
-Move this,R5
-VirtualCall R5.3(),Rdummy
-
-#Library call println at line 56
-Move str3,R6
-Library __println(R6),Rdummy
-Return 9999
 
 ##############################

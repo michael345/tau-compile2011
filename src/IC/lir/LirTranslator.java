@@ -290,9 +290,11 @@ public class LirTranslator implements IC.AST.Visitor{
         lhsReg.makeFreeRegister();
         if (lastPair != null) { 
             lastPair.free();
+            lastPair = null;
         }
         if (lastArrayPair != null) {
             lastArrayPair.free();
+            lastArrayPair = null;
         }
         
         
@@ -362,6 +364,13 @@ public class LirTranslator implements IC.AST.Visitor{
         lirProg.addCommentIntsruction("While at " + whileStatement.getLine());
         LoopLabelInstruction loopy = new LoopLabelInstruction();
         EndLabelInstruction endLabel = new EndLabelInstruction();
+        boolean needBackupRecentLabels = false;
+        String oldLoopy = recentLoopLabel;
+        String oldEndLabel = recentEndLabel;
+        if (oldLoopy != null || oldEndLabel != null) { 
+            needBackupRecentLabels = true;
+        }
+        
         recentEndLabel = endLabel.getLabel();
         recentLoopLabel = loopy.getLabel();
         lirProg.addInstruction(loopy);
@@ -371,9 +380,15 @@ public class LirTranslator implements IC.AST.Visitor{
         JumpInstruction conditionalJumpToEnd = new JumpInstruction(JumpInstructionEnum.True, endLabel.getLabel());
         lirProg.addInstruction(conditionalJumpToEnd);
         whileStatement.getOperation().accept(this);
+        recentEndLabel = endLabel.getLabel();
+        recentLoopLabel = loopy.getLabel();
         JumpInstruction unconditionalJumpToloop = new JumpInstruction(JumpInstructionEnum.Unconditional, loopy.getLabel());
         lirProg.addInstruction(unconditionalJumpToloop);
         lirProg.addInstruction(endLabel);
+        if (needBackupRecentLabels) { 
+            recentEndLabel = oldEndLabel;
+            recentLoopLabel = oldLoopy;
+        }
         return null;
     }
 
@@ -447,7 +462,8 @@ public class LirTranslator implements IC.AST.Visitor{
             int offset = lirProg.getClassLayout(location.getLocation().getSemanticType().toString()).getFieldToOffset().get(location.getName());
             LIRImmediate offsetImmediate = new LIRImmediate(offset);
             if (lastPair != null) { 
-                lastPair.getLocation().makeFreeRegister();   
+                lastPair.getLocation().makeFreeRegister();
+                lastPair = null;
             }
             reg = new LIRReg(); //R2  
             FieldPair pair = new FieldPair(locationReg,offsetImmediate); 
@@ -462,13 +478,14 @@ public class LirTranslator implements IC.AST.Visitor{
             ClassLayout cl = lirProg.getClassLayout(location.getEnclosingScope().getEnclosingClassSymbolTable().getId()); //Maybe _DV_ ?
             int offset = cl.getFieldOffset(location.getName());
             if (lastPair != null) { 
-                lastPair.getLocation().makeFreeRegister();   
+                lastPair.getLocation().makeFreeRegister();
+                lastPair = null;
             }
             lastPair = new FieldPair(reg,new LIRImmediate(offset));
             MoveFieldInstruction moveField = new MoveFieldInstruction(lastPair, fieldReg, false);
             lirProg.addInstruction(move);
             lirProg.addInstruction(moveField);
-            reg.makeFreeRegister();
+            //reg.makeFreeRegister(); //TODO deleted this, tell oded
             return fieldReg;
             
         }
@@ -746,13 +763,12 @@ public class LirTranslator implements IC.AST.Visitor{
         Object first = binaryOp.getFirstOperand().accept(this);
         Object second = null;
         BinaryOps operator = binaryOp.getOperator();
-        LIRReg firstReg = null, secondReg = null;
+        LIRReg firstReg = putInRegister(first), secondReg = null;
         EndLabelInstruction endLabel = new EndLabelInstruction();
         ConditionLabelInstruction condLabel = new ConditionLabelInstruction(); 
 
         
         if (binaryOp.getOperator() == BinaryOps.LAND) { 
-            firstReg = putInRegister(first);
             BinaryInstruction compare = new BinaryInstruction(ZeroImmediate.getInstance(),firstReg, BinaryInstrucionEnum.COMPARE);
             lirProg.addInstruction(compare);
             JumpInstruction jumpFalse = new JumpInstruction(JumpInstructionEnum.True, condLabel.getLabel());
@@ -776,7 +792,6 @@ public class LirTranslator implements IC.AST.Visitor{
             return secondReg;
         }       
         else if (binaryOp.getOperator() == BinaryOps.LOR) {
-            firstReg = putInRegister(first);
             BinaryInstruction compare = new BinaryInstruction(new LIRImmediate(1),firstReg, BinaryInstrucionEnum.COMPARE);
             lirProg.addInstruction(compare);
             JumpInstruction jumpTrue = new JumpInstruction(JumpInstructionEnum.True, condLabel.getLabel());
@@ -799,7 +814,6 @@ public class LirTranslator implements IC.AST.Visitor{
         else { 
             second = binaryOp.getSecondOperand().accept(this);
             secondReg = putInRegister(second);
-            firstReg = putInRegister(first);
             MoveInstruction trueCompareInstruction = new MoveInstruction(new LIRImmediate(1),secondReg);
             MoveInstruction falseCompareInstruction = new MoveInstruction(ZeroImmediate.getInstance(),secondReg);
             BinaryInstruction comparison = new BinaryInstruction(firstReg,secondReg,getBinaryEnum(operator)); //Should be Compare

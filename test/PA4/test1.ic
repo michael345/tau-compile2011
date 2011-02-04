@@ -1,60 +1,78 @@
-class Sieve {
+class Quicksort {
 
-  int[] num;
+    int[] a;
 
-  void initArray() {
-    int i = 0;
-    while (i < num.length) {
-      num[i] = i;
-      i=i+1;
+    int partition(int low, int high) {
+	    int pivot = a[low];
+	    int i = low;
+	    int j = high;
+	    int tmp;
+	
+	    while (true) {
+	        while (a[i] < pivot) i = i+1;
+	        while (a[j] > pivot) j = j-1;
+	
+	        if (i >= j) break;
+	
+	        tmp = a[i];
+	        a[i] = a[j];
+	        a[j] = tmp;
+	        i = i+1;
+	        j = j-1;
+	    }
+	
+	    return j;
     }
-  }
 
-  void sieveAll() {
-    int i = 2;
-    while (i < num.length) {
-      sieve(i);
-      i=i+1; 
+    void quicksort(int low, int high) {
+	    if (low < high) {
+	        int mid = partition(low, high);
+	        quicksort(low, mid);
+	        quicksort(mid+1, high);
+	    }
     }
-  }
 
-  void sieve(int n) {
-    int i = 2*n;
-    while (i < num.length) {
-      num[i] = 0;
-      i=i+n;
+    void initArray() {
+	    int i = 0;
+	    while(i < a.length) {
+	        a[i] =  Library.random() % (a.length*2);
+	        i = i+1;
+	    }
     }
-  }
 
-  void printPrimes() {
-    int i = 2;
-    Library.print("Primes less than ");
-    Library.printi(num.length);
-    Library.print(": ");
-    while (i < num.length) {
-      if (num[i] != 0) {
-        Library.printi(num[i]);
-        Library.print(" ");
-      }
-      i=i+1;
+    void printArray() {
+	    int i = 0;
+	
+	    while(i<a.length) {
+	        Library.printi(a[i]);
+	        Library.print (" ");
+	        i = i+1;
+	    }
+
     }
-  }
 
+    static void main(string[] args) {
+	
+		int n = 10;	
 
-  static void main(string[] args) {
-    (new Sieve()).test();
-  }
+    	Quicksort s = new Quicksort();
+    	s.a = new int[n];
 
-  void test() {
-    int n = 100;
-
-    num = new int[n];
-
-    initArray();
-    sieveAll();
-    printPrimes();
-    Library.println("");
-
-  }
-
+		s.a[0] = -3;
+		s.a[1] = 10;
+		s.a[2] = 4;
+		s.a[3] = -9;
+		s.a[4] = 13;
+		s.a[5] = 1;
+		s.a[6] = 3;
+		s.a[7] = 13;
+		s.a[8] = 13;
+		s.a[9] = -6;
+		
+		s.printArray();
+		Library.println("");
+    	s.quicksort(0, n-1);
+    	s.printArray();
+    
+    }
 }
