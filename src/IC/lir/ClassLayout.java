@@ -66,6 +66,16 @@ public class ClassLayout {
             
         }
         
+        public String getMethodByOffset(int index) { 
+            int temp = -1;
+            for (String method : methodToOffset.keySet()) { 
+                temp = getMethodOffset(method);
+                if (index == temp) 
+                    return method;
+            }
+            return null;
+        }
+        
         public void addFieldOffset(String field) { 
             fieldToOffset.put(field,fieldOffset++);
         }
