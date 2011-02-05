@@ -1,22 +1,22 @@
 class B extends A{
 int x;
 string y;
-	static void runny(){
+	void runny(){
 		Library.println("this is class B");
 	}
 }
 
 class A{
 	static void main(string[] args){
-		B b = new B();
-		b.runny();
+		A a = new A();
+		a.runny();
 		} 
 
-	static void runny() {
+	static void runny(){
 		Library.println("this is class A");
 		}
 	
 	int checker(){
-		return 2;
-		} 
+		return 1;
+	} 
 }
