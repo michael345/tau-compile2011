@@ -110,6 +110,14 @@ public class ClassLayout {
             return (fieldToOffset.size() + 1) * 4;
         }
         
+        public String toStringFieldOffsets() { 
+            StringBuffer result = new StringBuffer("Class " +  this.name + ":\n");
+            result.append("Field offsets:\n");
+            for (String field : fieldToOffset.keySet()) { 
+                result.append("\t" + field + " - " + fieldToOffset.get(field) + "\n");
+            }            
+            return result.toString();
+        }
         public String toString() { 
             StringBuffer result = new StringBuffer(this.name + ":\n");
             result.append("Fields:\n");
