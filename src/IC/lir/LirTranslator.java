@@ -485,12 +485,16 @@ public class LirTranslator implements IC.AST.Visitor{
             MoveFieldInstruction moveField = new MoveFieldInstruction(lastPair, fieldReg, false);
             lirProg.addInstruction(move);
             lirProg.addInstruction(moveField);
-            //reg.makeFreeRegister(); //TODO deleted this, tell oded
             return fieldReg;
             
         }
         else { 
-            mem = new LIRMemory(location.getEnclosingScope().lookup(location.getName()));
+            if (location.getEnclosingScope().isStatic()) { 
+                mem = new LIRMemory(location.getEnclosingScope().staticLookup(location.getName()));
+            }
+            else {
+                mem = new LIRMemory(location.getEnclosingScope().lookup(location.getName()));
+            }
             reg = new LIRReg();
             MoveInstruction move = new MoveInstruction(mem, reg);
             lirProg.addInstruction(move);
@@ -523,7 +527,7 @@ public class LirTranslator implements IC.AST.Visitor{
         if (call.getClassName().compareTo("Library") == 0) {
             lirProg.addCommentIntsruction("Library call " + call.getName() + " at line " + call.getLine());
             SymbolTable methodSymbolTable = call.getEnclosingScope().getMethod(call.getClassName(), call.getName());
-            MethodType methodType = (MethodType) methodSymbolTable.lookup(call.getName()).getType();
+            MethodType methodType = (MethodType) methodSymbolTable.staticLookup(call.getName()).getType();
             LIRReg resultReg;
         
             if (methodType.getReturnType().equals(TypeTable.voidType)) { 
@@ -566,7 +570,7 @@ public class LirTranslator implements IC.AST.Visitor{
             }
             pairs = reverseList(pairs);
             LIRReg resultReg;
-            MethodType methodType = (MethodType) methodSymbolTable.lookup(call.getName()).getType();
+            MethodType methodType = (MethodType) methodSymbolTable.staticLookup(call.getName()).getType();
             
             
             if (methodType.getReturnType().equals(TypeTable.voidType)) { 

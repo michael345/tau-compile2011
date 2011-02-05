@@ -11,6 +11,7 @@ import IC.AST.Program;
 import IC.AST.Return;
 import IC.AST.Statement;
 import IC.AST.StatementsBlock;
+import IC.AST.StaticMethod;
 import IC.TYPE.MethodType;
 import IC.TYPE.TypeTable;
 
@@ -22,10 +23,18 @@ public class ReturnAllPathsCheck {
         
         for (ICClass icClass : prog.getClasses()) { 
             for (Method meth : icClass.getMethods()) { 
+                IC.TYPE.MethodType mt;
+
                 if (meth instanceof LibraryMethod) { 
                     continue;
                 }
-                IC.TYPE.MethodType mt = (MethodType) meth.getEnclosingScope().getParentSymbolTable().lookup(meth.getName()).getType();
+                else if (meth instanceof StaticMethod) { 
+                    mt = (MethodType) meth.getEnclosingScope().getParentSymbolTable().staticLookup(meth.getName()).getType();
+                }
+                else {
+                    mt = (MethodType) meth.getEnclosingScope().getParentSymbolTable().lookup(meth.getName()).getType();
+                }
+                
                 IC.TYPE.Type rt = mt.getReturnType();
                 if (rt.equals(TypeTable.voidType)) { 
                     continue;
