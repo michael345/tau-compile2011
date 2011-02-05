@@ -133,8 +133,8 @@ public class LirTranslator implements IC.AST.Visitor{
         //constructing the dispatch table data structure
         for (ClassLayout layout : lirProg.getClassLayouts()) {
             LIRDispatchTable dTable = new LIRDispatchTable(new LIRLabel("_DV_" + layout.getName()));
-            for (String method : layout.getMethodToOffset().keySet()) { 
-                dTable.addLabel(new LIRLabel(method));
+            for (int i = 0; i < layout.getMethodToOffset().keySet().size(); i++) { 
+                dTable.addLabel(new LIRLabel(layout.getMethodByOffset(i)));
             }
             lirProg.addDispatchTable(dTable);
         }
