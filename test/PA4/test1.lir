@@ -12,8 +12,8 @@ str1: "this is class A"
 #	y - 2
 
 ########## Dispatch Vectors ##########
-_DV_A: [_A_runny,_A_checker]
-_DV_B: [_B_runny,_A_checker]
+_DV_A: [_A_checker]
+_DV_B: [_A_checker]
 #####################################
 
 #runny in B
@@ -29,18 +29,14 @@ Return 9999
 #main in A
 _ic_main:
 
-#New Class A at line 11
-Library __allocateObject(4),R0
-MoveField _DV_A,R0.0
+#New Class B at line 11
+Library __allocateObject(12),R0
+MoveField _DV_B,R0.0
 Move R0,b26
 
-#Virtual Call checker at line 12
+#Virtual Call runny at line 12
 Move b26,R0
-VirtualCall R0.1(),R1
-
-#Virtual Call runny at line 13
-Move b26,R2
-VirtualCall R2.0(),Rdummy
+VirtualCall R0.-1(),Rdummy
 Library __exit(0),Rdummy
 
 ##############################
@@ -48,17 +44,17 @@ Library __exit(0),Rdummy
 #runny in A
 _A_runny:
 
-#Library call println at line 17
-Move str1,R3
-Library __println(R3),Rdummy
+#Library call println at line 16
+Move str1,R1
+Library __println(R1),Rdummy
 Return 9999
 
 ##############################
 
 #checker in A
 _A_checker:
-Move 1,R3
-Return R3
+Move 2,R1
+Return R1
 Return 9999
 
 ##############################

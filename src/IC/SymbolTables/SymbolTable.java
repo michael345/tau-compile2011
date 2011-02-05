@@ -22,6 +22,20 @@ public class SymbolTable {
         isLoop = false;
       }
     
+    public boolean isStatic() { 
+        SymbolTable temp = this;
+        
+        while (!(temp instanceof MethodSymbolTable)) { 
+            temp = temp.getParentSymbolTable();
+        }
+        String funcName = temp.getId();
+        temp = temp.getParentSymbolTable();
+        if (temp.staticLookup(funcName).getKind().getKind() == Kind.STATICMETHOD) 
+            return true;
+        else 
+            return false;
+    }
+    
     public boolean isLoop() {
         return isLoop;
     }
@@ -32,7 +46,10 @@ public class SymbolTable {
 
     public SemanticSymbol localLookup(String key) { 
         if (entries.containsKey(key)) { 
-            return entries.get(key);
+            SemanticSymbol result = entries.get(key);
+            if (result.getKind().getKind() != Kind.STATICMETHOD) { 
+                return result;
+            }
         }
         return null;
     }
@@ -40,7 +57,8 @@ public class SymbolTable {
     public SemanticSymbol staticLocalLookup(String key) { 
         if (entries.containsKey(key)) {
             SemanticSymbol result = entries.get(key);
-            if (result.getKind().getKind() == Kind.STATICMETHOD) { //only possible to return static methods
+            int tempKind = result.getKind().getKind();
+            if (tempKind == Kind.STATICMETHOD || tempKind == Kind.VAR || tempKind == Kind.FORMAL) {
                 return result;
             }
         }
@@ -69,8 +87,19 @@ public class SymbolTable {
         return null;
         
     }
+   
     
-    
+    public SemanticSymbol staticLookup(String key) { // without forward referencing
+        SymbolTable temp;
+        for (temp = this; temp != null; temp = temp.getParentSymbolTable()) {
+            if (temp.staticLocalLookup(key) != null) {
+                return temp.staticLocalLookup(key);
+            }
+        }
+        return null; 
+    }
+ 
+
     public SymbolTable recursiveGetClass(String className, SymbolTable startPos) { 
         if (startPos.getId().compareTo(className) == 0) { 
             return startPos;
