@@ -5,11 +5,13 @@ str1: "this is class A"
 ########## Class layouts #############
 #Class A:
 #Field offsets:
+#	b - 1
 
 #Class B:
 #Field offsets:
-#	x - 1
-#	y - 2
+#	b - 1
+#	x - 2
+#	y - 3
 
 ########## Dispatch Vectors ##########
 _DV_A: [_A_runny,_A_checker]
@@ -29,14 +31,19 @@ Return 9999
 #main in A
 _ic_main:
 
-#New Class A at line 11
-Library __allocateObject(4),R0
-MoveField _DV_A,R0.0
-Move R0,a26
+#New Class B at line 13
+Library __allocateObject(16),R0
+MoveField _DV_B,R0.0
+Move R0,b27
 
-#Virtual Call runny at line 12
-Move a26,R0
-VirtualCall R0.0(),Rdummy
+#Virtual Call checker at line 14
+Move b27,R0
+VirtualCall R0.1(),R1
+Move R1,x28
+
+#Library call printi at line 15
+Move x28,R1
+Library __printi(R1),Rdummy
 Library __exit(0),Rdummy
 
 ##############################
@@ -44,7 +51,7 @@ Library __exit(0),Rdummy
 #runny in A
 _A_runny:
 
-#Library call println at line 16
+#Library call println at line 20
 Move str1,R1
 Library __println(R1),Rdummy
 Return 9999
