@@ -553,7 +553,7 @@ public Object visit(ArrayLocation location) {
                    forwardRefs.add(call);
                    return null;
                }
-               SemanticSymbol funcFromClass = st.localLookup(funcName);
+               SemanticSymbol funcFromClass = st.lookup(funcName);
                if (funcFromClass == null){
                    if (forwardRef) {
                    System.out.println("semantic error at line " + call.getLine() + " : method " + funcName +" is undefined");

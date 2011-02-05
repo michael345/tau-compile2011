@@ -7,12 +7,16 @@ string y;
 }
 
 class A{
+int b;
+
 	static void main(string[] args){
-		A a = new A();
-		a.runny();
+		B b = new B();
+		int x = b.checker();
+		Library.printi(x);
+
 		} 
 
-	static void runny(){
+	void runny(){
 		Library.println("this is class A");
 		}
 	
