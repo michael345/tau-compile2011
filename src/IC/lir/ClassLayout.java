@@ -111,10 +111,10 @@ public class ClassLayout {
         }
         
         public String toStringFieldOffsets() { 
-            StringBuffer result = new StringBuffer("Class " +  this.name + ":\n");
-            result.append("Field offsets:\n");
+            StringBuffer result = new StringBuffer("#" + "Class " +  this.name + ":\n");
+            result.append("#" + "Field offsets:\n");
             for (String field : fieldToOffset.keySet()) { 
-                result.append("\t" + field + " - " + fieldToOffset.get(field) + "\n");
+                result.append("#" + "\t" + field + " - " + fieldToOffset.get(field) + "\n");
             }            
             return result.toString();
         }
