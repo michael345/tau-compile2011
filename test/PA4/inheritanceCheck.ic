@@ -9,7 +9,7 @@ string y;
 class A{
 	static void main(string[] args){
 		B b = new B();
-		b.runny();
+		b.checker();
 		} 
 
 	void runny(){

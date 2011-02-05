@@ -87,10 +87,13 @@ public class SymbolTable {
     
     public SymbolTable getMethod(String className, String methodName) { 
         SymbolTable classSt = recursiveGetClass(className, getGlobal());
-        for (SymbolTable child : classSt.getChildren()) { 
-            if (child.getId().compareTo(methodName) == 0 ) {
-                return child;
+        while (classSt instanceof ClassSymbolTable) { 
+            for (SymbolTable child : classSt.getChildren()) { 
+                if (child.getId().compareTo(methodName) == 0 ) {
+                    return child;
+                }
             }
+            classSt = classSt.getParentSymbolTable();
         }
         return null;
     }
