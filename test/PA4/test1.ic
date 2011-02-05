@@ -1,73 +1,22 @@
-class B extends A {
-	int money;
-	
-	void init(string id) { 
-		this.id = id;
-		this.money = 1000;
-		size = 7;
-		arr = new int[size];
-		int i = 0;
-		while (i < arr.length) { 
-			arr[i] = i;
-			i = i +1;
-		}	
+class B extends A{
+int x;
+string y;
+	void runny(){
+		Library.println("this is class B");
 	}
-	
-	void print() {
-		Library.println("B: " + id);
-		Library.print("Money: ");
-		Library.printi(money);
-		Library.println("");
-		int i = 0;
-		while (i < arr.length) { 
-			Library.printi(arr[i]);
-			i = i +1;
-		}
-	} 
-	
-} 
+}
 
-class A { 
-	string id;
-	int size;
-	int [] arr;
-	
-	static void main(string[] args) { 
-		A a = new A();
-		A b = new B();
-		a.test();
-		b.test();
-		
-		
-	}
-	
-	void test() {
-		init("a");
-		print();
-	} 
-	
-	void init(string id) { 
-		this.id = id;
-		size = 5;
-		arr = new int[size];
-		int i = 0;
-		while (i < arr.length) { 
-			arr[i] = i;
-			i = i +1;
-		}	
-	}
-	
-	void print() {
-		
-		Library.println("A: " + id);
-		
-		int i = 0;
-		while (i < arr.length) { 
-			Library.printi(arr[i]);
-			i = i +1;
+class A{
+	static void main(string[] args){
+		B b = new B();
+		b.checker();
+		} 
+
+	void runny(){
+		Library.println("this is class A");
 		}
-		Library.println("");
-	} 
-		
 	
+	int checker(){
+		return 1;
+		} 
 }

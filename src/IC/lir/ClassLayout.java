@@ -38,11 +38,15 @@ public class ClassLayout {
             return fieldToOffset.get(field);
         }
         
-        public int getMethodOffset(String method) { 
-            if (!methodToOffset.containsKey(method)) { 
-                return -1;
+        public int getMethodOffset(String method) {
+            String methodSuffix = method.substring(method.indexOf("_", 1));
+            for (String keyMethod : methodToOffset.keySet()) { 
+                String keySuffix = keyMethod.substring(method.indexOf("_", 1));
+                if (keySuffix.compareTo(methodSuffix) == 0) { 
+                    return methodToOffset.get(keyMethod);
+                }
             }
-            return methodToOffset.get(method);
+            return -1;
         }
 
         public void addMethodOffset(String method) {

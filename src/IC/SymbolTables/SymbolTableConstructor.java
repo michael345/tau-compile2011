@@ -502,39 +502,40 @@ public class SymbolTableConstructor implements Visitor {
             	   st = currsymta;
                }
                else{
-               SemanticSymbol symbol = call.getEnclosingScope().lookup(objectName.getName());
-               if (symbol == null){ 
-            	   if (forwardRef) {
-                       System.out.println("semantic error at line " + call.getLine() + " : method " + call.getName() +" is used before definition");
-                       System.exit(-1);
+                   SemanticSymbol symbol = call.getEnclosingScope().lookup(objectName.getName());
+                   if (symbol == null){ 
+                	   if (forwardRef) {
+                           System.out.println("semantic error at line " + call.getLine() + " : method " + call.getName() +" is used before definition");
+                           System.exit(-1);
+                       }
+                       forwardRefs.add(call);
+                       return null;
                    }
-                   forwardRefs.add(call);
-                   return null;
-               }
-               call.getLocation().setSemanticType(symbol.getType());
-           
-               Type t = call.getLocation().getSemanticType();
-               String str = t.toString(); //this is the classname, for instance A
-               SymbolTable st = getClassSymbolTable(str, call);
-               }
-               if(st == null){
-                   if (forwardRef) {
-                       System.out.println("semantic error at line " + call.getLine() + " : method " + call.getName() +" is used before definition");
-                       System.exit(-1);
+                   call.getLocation().setSemanticType(symbol.getType());
+               
+                   Type t = call.getLocation().getSemanticType();
+                   String str = t.toString(); //this is the classname, for instance A
+                   SymbolTable st = getClassSymbolTable(str, call); 
+               /*}          was a right curly here for some reason */
+                   if(st == null){
+                       if (forwardRef) {
+                           System.out.println("semantic error at line " + call.getLine() + " : method " + call.getName() +" is used before definition");
+                           System.exit(-1);
+                       }
+                       forwardRefs.add(call);
+                       return null;
                    }
-                   forwardRefs.add(call);
-                   return null;
-               }
-               SemanticSymbol funcFromClass = st.localLookup(funcName);
-               if (funcFromClass == null){
-                   if (forwardRef) {
-                       System.out.println("semantic error at line " + call.getLine() + " : method " + funcName +" is undefined");
-                       System.exit(-1);
+                   SemanticSymbol funcFromClass = st.localLookup(funcName);
+                   if (funcFromClass == null){
+                       if (forwardRef) {
+                           System.out.println("semantic error at line " + call.getLine() + " : method " + funcName +" is undefined");
+                           System.exit(-1);
+                       }
+                       forwardRefs.add(call);
+                       return null;
                    }
-                   forwardRefs.add(call);
-                   return null;
+                   call.setSemanticType(((MethodType) funcFromClass.getType()).getReturnType());
                }
-               call.setSemanticType(((MethodType) funcFromClass.getType()).getReturnType());
            }
            else if (call.getLocation() instanceof ArrayLocation) {
                call.getLocation().accept(this);
