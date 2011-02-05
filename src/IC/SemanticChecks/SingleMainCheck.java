@@ -25,7 +25,7 @@ public class SingleMainCheck {
 
     private static int handleClass(SymbolTable classTable) {
     	   int sum = 0;
-           SemanticSymbol sym = classTable.localLookup("main");
+           SemanticSymbol sym = classTable.staticLocalLookup("main");
            if (sym != null) { 
                if (sym.toString().compareTo("Static method : main {string[] -> void}") == 0) {
                sum++;
