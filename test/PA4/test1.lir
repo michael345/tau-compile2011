@@ -5,6 +5,20 @@ str2: ""
 str3: "a"
 str4: "A: "
 ######################################
+########## Class layouts #############
+Class A:
+Field offsets:
+	id - 1
+	size - 2
+	arr - 3
+
+Class B:
+Field offsets:
+	id - 1
+	size - 2
+	arr - 3
+	money - 4
+
 ########## Dispatch Vectors ##########
 _DV_A: [_A_test,_A_init,_A_print]
 _DV_B: [_A_test,_B_init,_B_print]

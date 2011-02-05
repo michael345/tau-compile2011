@@ -116,6 +116,11 @@ public class LirProgram {
             result.append(stringLiteral + "\n");
         }
         result.append("######################################\n");
+        result.append("########## Class layouts #############\n");
+
+        for (ClassLayout layout : classLayouts) { 
+            result.append(layout.toStringFieldOffsets() + "\n");
+        }
         result.append("########## Dispatch Vectors ##########\n");
         for (LIRDispatchTable dispatch : dispatchTables) { 
             result.append(dispatch + "\n");

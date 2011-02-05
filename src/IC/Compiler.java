@@ -178,10 +178,6 @@ public class Compiler {
                 SymbolTableConstructor stc = new SymbolTableConstructor(args[0]);
                 SymbolTable st = (SymbolTable) stc.visit(icProg);
                 
-                //semantic checks start here
-                
-                //break continue check
-                
                 semanticChecks(icProg);
                     
      
@@ -199,13 +195,13 @@ public class Compiler {
                 }
 
                 icTextFile.close();
-                
+                //Translate to LIR
                 LirProgram lirProg = LirProgram.getInstance();
                 LirTranslator lirTranslator = new LirTranslator();
                 lirTranslator.visit(icProg);
-                System.out.println(lirProg.toString());
+                /*System.out.println(lirProg.toString()); */
                 
-                if (shouldPrintLir(args)) { 
+                if (shouldPrintLir(args)) { // Write lir translation to file.lir
                     FileWriter fw = new FileWriter(args[0].substring(0, args[0].length()-3) + ".lir");
                     fw.append(lirProg.toString());
                     fw.close();
