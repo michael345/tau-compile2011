@@ -204,8 +204,7 @@ public class Compiler {
                 if (shouldPrintLir(args)) { // Write lir translation to file.lir
                     FileWriter fw = new FileWriter(args[0].substring(0, args[0].length()-3) + ".lir");
                     fw.append(lirProg.toString());
-                    fw.close();
-                    
+                    fw.close();  
                 }
                 
                 
