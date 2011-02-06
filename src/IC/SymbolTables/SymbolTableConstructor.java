@@ -197,10 +197,7 @@ public class SymbolTableConstructor implements Visitor {
         		ifSymbolTable.addChild(operationSymbolTable);
       	  }
       else{
-      Object ifOper = ifStatement.getOperation().accept(this);
-      if (ifOper instanceof SymbolTable){
     	  ifSymbolTable.addChild((SymbolTable)ifStatement.getOperation().accept(this));
-      }
       }
      
       currentScope = ifSymbolTable;
