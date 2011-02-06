@@ -1,9 +1,14 @@
 package IC.SymbolTables;
 
-public class MethodSymbolTable extends SymbolTable {
+import java.util.LinkedList;
+import java.util.List;
 
+public class MethodSymbolTable extends SymbolTable {
+    
+    List<SemanticSymbol> argsList;
     public MethodSymbolTable(String id) {
         super(id);
+        argsList = new LinkedList<SemanticSymbol>();
     }
 
     public void printSymbolTable() { 
@@ -18,4 +23,21 @@ public class MethodSymbolTable extends SymbolTable {
         }
         System.out.println();
     }
+    
+    public boolean insert(String key, SemanticSymbol value) { 
+        if (!super.insert(key, value)) return false;
+        argsList.add(value);
+        return true;
+    }
+
+    public List<SemanticSymbol> getArgsList() {
+        return argsList;
+    }
+
+    public void setArgsList(List<SemanticSymbol> argsList) {
+        this.argsList = argsList;
+    }
+    
+    
+    
 }
