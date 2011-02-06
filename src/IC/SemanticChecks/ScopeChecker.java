@@ -221,14 +221,8 @@ public class ScopeChecker implements Visitor {
            if (temp != null) {  // No error YET 
                Location motherLocation = (Location) temp;
                Type type = motherLocation.getSemanticType();
-               SymbolTable st = getClassSymbolTable(type.toString(),location);
-               if(inStatic){
-            	   check1 = st.staticLookup(location.getName());
-        	   }
-        	   else{
-        		   check1 = st.lookup(location.getName());
-        	   }
-               
+               SymbolTable st = getClassSymbolTable(type.toString(),location);             
+    		   check1 = st.lookup(location.getName());
                if (check1 == null) { // Variable not defined in motherLocation scope
                    System.out.println("semantic error at line " + location.getLine() + ": no such field \"" + location.getName() + "\" in class \"" + type.toString() + "\"");
                    System.exit(-1);

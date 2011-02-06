@@ -391,7 +391,7 @@ public class SymbolTableConstructor implements Visitor {
                            }
                            else {
                                //SemanticSymbol checkMe = st.lookup(location.getName());
-                        	   SemanticSymbol checkMe = find(st,location.getName(),inStatic);
+                        	   SemanticSymbol checkMe = find(st,location.getName(),inStatic); //TODO: maybe with false
                         	   
                                if (checkMe == null) { 
                                    System.out.println("semantic error at line " + location.getLine() + ": no such field " + location.getName() + " in class " + className + ".");

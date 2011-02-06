@@ -3,12 +3,12 @@ string str;
 int i;
 
 static int sfunc(boolean b) {
-if (b) {
-{
-int k = 5;
-}
-return 1;
-}
+	if (b) {
+		{
+			int k = 5;
+		}
+	return 1;
+	}
 else {
 A x = new A();
 x.i = 9;
@@ -18,16 +18,16 @@ return 0;
 }
 
 void vfunc(A a, int max, int val) {
-int[] arr = new int[max];
-int i = 0;
-while (i < max){
-arr[i] = val;
-i = i + 1;
-Library.printi(i);
-if (a == null)
-break;
-}
-}
+	int[] arr = new int[max];
+	int i = 0;
+	while (i < max){
+		arr[i] = val;
+		i = i + 1;
+		Library.printi(i);
+		if (a == null)
+			break;
+		}
+	}
 }
 
 class B extends A {
