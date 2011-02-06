@@ -647,7 +647,7 @@ public Object visit(ArrayLocation location) {
                   System.exit(-1);
               }
               forwardRefs.add(call); 
-              
+              return null;
           }
           MethodType realType = (MethodType) funcFromClass.getType();
           Type retType = realType.getReturnType();

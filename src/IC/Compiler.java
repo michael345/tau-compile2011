@@ -199,7 +199,7 @@ public class Compiler {
                 LirProgram lirProg = LirProgram.getInstance();
                 LirTranslator lirTranslator = new LirTranslator();
                 lirTranslator.visit(icProg);
-                System.out.println(lirProg.toString()); 
+                //System.out.println(lirProg.toString()); 
                 
                 if (shouldPrintLir(args)) { // Write lir translation to file.lir
                     FileWriter fw = new FileWriter(args[0].substring(0, args[0].length()-3) + ".lir");
