@@ -181,7 +181,7 @@ public class SymbolTable {
     }
     
     public boolean insert(String key, SemanticSymbol value) { 
-        if (localLookup(key) == null) { 
+        if (localLookup(key) == null && staticLookup(key) == null) { 
             entries.put(key, value);
             return true;
         }

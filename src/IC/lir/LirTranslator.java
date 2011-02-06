@@ -39,6 +39,7 @@ import IC.AST.VariableLocation;
 import IC.AST.VirtualCall;
 import IC.AST.VirtualMethod;
 import IC.AST.While;
+import IC.SymbolTables.MethodSymbolTable;
 import IC.SymbolTables.SemanticSymbol;
 import IC.SymbolTables.SymbolTable;
 import IC.TYPE.BoolType;
@@ -316,6 +317,10 @@ public class LirTranslator implements IC.AST.Visitor{
             lirProg.addInstruction(ret);
             result.makeFreeRegister();
         }
+        else { 
+            ReturnInstruction ret = new ReturnInstruction(LIRDummyReg.getInstance());
+            lirProg.addInstruction(ret);
+        }
         return null;
     }
 
@@ -559,11 +564,11 @@ public class LirTranslator implements IC.AST.Visitor{
                 arguments.add((LIROperand)argument.accept(this));
             }
             LinkedList<ArgumentPair> pairs = new LinkedList<ArgumentPair>();
-            SymbolTable methodSymbolTable = call.getEnclosingScope().getMethod(call.getClassName(), call.getName());
-            int i = arguments.size()-1;
-            for (SemanticSymbol symbol : methodSymbolTable.getEntries().values()) { 
+            MethodSymbolTable methodSymbolTable =  (MethodSymbolTable) call.getEnclosingScope().getMethod(call.getClassName(), call.getName());
+            int i = 0;
+            for (SemanticSymbol symbol : methodSymbolTable.getArgsList()) { 
                 if (symbol.getKind().getKind() == Kind.FORMAL) { 
-                    ArgumentPair pair = new ArgumentPair(symbol.getId() + symbol.getUniqueID(),arguments.get(i--).toString());
+                    ArgumentPair pair = new ArgumentPair(symbol.getId() + symbol.getUniqueID(),arguments.get(i++).toString());
                     pairs.add(pair);
                     
                 }
@@ -618,11 +623,11 @@ public class LirTranslator implements IC.AST.Visitor{
         
         
         LinkedList<ArgumentPair> pairs = new LinkedList<ArgumentPair>();
-        SymbolTable methodSymbolTable = call.getEnclosingScope().getMethod(className, call.getName());
-        int i = arguments.size()-1;
-        for (SemanticSymbol symbol : methodSymbolTable.getEntries().values()) { 
+        MethodSymbolTable methodSymbolTable = (MethodSymbolTable) call.getEnclosingScope().getMethod(className, call.getName());
+        int i = 0 ;
+        for (SemanticSymbol symbol : methodSymbolTable.getArgsList()) { //TODO: need to make this a sorted collection somehow
             if (symbol.getKind().getKind() == Kind.FORMAL) { 
-                ArgumentPair pair = new ArgumentPair(symbol.getId() + symbol.getUniqueID(),arguments.get(i--).toString());
+                ArgumentPair pair = new ArgumentPair(symbol.getId() + symbol.getUniqueID(),arguments.get(i++).toString());
                 pairs.add(pair);
                 
             }
