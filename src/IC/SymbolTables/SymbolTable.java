@@ -181,12 +181,24 @@ public class SymbolTable {
     }
     
     public boolean insert(String key, SemanticSymbol value) { 
-        if (localLookup(key) == null && staticLookup(key) == null) { 
-            entries.put(key, value);
-            return true;
-        }
-        else 
-            return false;
+    	int kind = value.getKind().getKind();
+    	if(kind == Kind.STATICMETHOD || kind == Kind.VIRTUALMETHOD){
+    		if (localLookup(key) == null && staticLocalLookup(key) == null) { 
+                entries.put(key, value);
+                return true;
+            }
+            else 
+                return false;
+    	}
+    	else{
+    		if (localLookup(key) == null) { 
+                entries.put(key, value);
+                return true;
+            }
+            else 
+                return false;
+    	}
+        
     }
     
     public List<SymbolTable> getChildren() {
