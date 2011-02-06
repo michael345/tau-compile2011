@@ -459,7 +459,7 @@ public class LirTranslator implements IC.AST.Visitor{
         
         if (location.isExternal()) { 
             if ((temp = location.getLocation().accept(this)) == null ) {
-                System.out.println("Motherfuck! variableLocation");
+                System.out.println("LIRTranslator ERROR! variableLocation");
                 System.exit(-1);
             }
             LIRReg locationReg = (LIRReg) temp; //R1
@@ -849,7 +849,7 @@ public class LirTranslator implements IC.AST.Visitor{
     public Object visit(MathUnaryOp unaryOp) {
         Object operand = unaryOp.getOperand().accept(this); //ClassCastException expected
         if (operand == null) { 
-            System.out.println("Fuck you! mathUnaryOp");
+            System.out.println("LIR TRANSLATOR ERROR! mathUnaryOp");
             System.exit(-1);
         }
         LIRReg operandReg = null;  
@@ -877,7 +877,7 @@ public class LirTranslator implements IC.AST.Visitor{
     public Object visit(LogicalUnaryOp unaryOp) {
         Object operand = unaryOp.getOperand().accept(this);
         if (operand == null) { 
-            System.out.println("Fuck you! logicalUnaryOp");
+            System.out.println("Lir translator error! logicalUnaryOp");
             System.exit(-1);
         }
         
