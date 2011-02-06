@@ -188,7 +188,21 @@ public class SymbolTableConstructor implements Visitor {
       ifSymbolTable.setParentSymbolTable(currentScope);
       currentScope = ifSymbolTable;
       ifStatement.getCondition().accept(this);
-      ifSymbolTable.addChild((SymbolTable)ifStatement.getOperation().accept(this));
+      BlockSymbolTable operationSymbolTable = new BlockSymbolTable("ifOperationBlock");
+      if(ifStatement.getOperation() instanceof LocalVariable){
+    	  currentScope = operationSymbolTable;
+    	  ifStatement.getOperation().accept(this);
+      	LocalVariable lv = (LocalVariable)ifStatement.getOperation();
+        boolean insertSuccessful = operationSymbolTable.insert(lv.getName(), new SemanticSymbol(lv.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
+        		ifSymbolTable.addChild(operationSymbolTable);
+      	  }
+      else{
+      Object ifOper = ifStatement.getOperation().accept(this);
+      if (ifOper instanceof SymbolTable){
+    	  ifSymbolTable.addChild((SymbolTable)ifStatement.getOperation().accept(this));
+      }
+      }
+     
       currentScope = ifSymbolTable;
 
        if (ifStatement.hasElse()) { 
@@ -199,7 +213,9 @@ public class SymbolTableConstructor implements Visitor {
        return ifSymbolTable;
    }
 
-   public Object visit(While whileStatement) {
+ 
+
+public Object visit(While whileStatement) {
 	   
       SymbolTable whileSymbolTable = new SymbolTable("while");
       whileStatement.setEnclosingScope(whileSymbolTable); 
@@ -207,6 +223,21 @@ public class SymbolTableConstructor implements Visitor {
       whileSymbolTable.setParentSymbolTable(currentScope);
       currentScope = whileSymbolTable;
       whileStatement.getCondition().accept(this);
+      
+      BlockSymbolTable operationSymbolTable = new BlockSymbolTable("whileStatementBlock");
+      if(whileStatement.getOperation() instanceof LocalVariable){
+    	  currentScope = operationSymbolTable;
+    	  whileStatement.getOperation().accept(this);
+      	LocalVariable lv = (LocalVariable)whileStatement.getOperation();
+        boolean insertSuccessful = operationSymbolTable.insert(lv.getName(), new SemanticSymbol(lv.getSemanticType(), new Kind(Kind.VAR), lv.getName(), false));
+        		whileSymbolTable.addChild(operationSymbolTable);
+      	  }
+      else{
+      Object ifOper = whileStatement.getOperation().accept(this);
+      if (ifOper instanceof SymbolTable){
+    	  whileSymbolTable.addChild((SymbolTable)whileStatement.getOperation().accept(this));
+      }
+      }
       whileSymbolTable.addChild((SymbolTable)whileStatement.getOperation().accept(this));
      
       currentScope = whileSymbolTable;
