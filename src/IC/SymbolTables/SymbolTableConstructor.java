@@ -318,7 +318,7 @@ public class SymbolTableConstructor implements Visitor {
                 	   str = vl.getSemanticType().toString();
                 	   st = getClassSymbolTable(vl.getSemanticType().toString(), location);
                    }
-                   else{
+                   else {
                 	   //SemanticSymbol symbolLookup = location.getEnclosingScope().lookup(vl.getName());
                 	   SemanticSymbol symbolLookup = find (location.getEnclosingScope(),vl.getName(),inStatic);
                        if (symbolLookup == null) {
@@ -330,97 +330,97 @@ public class SymbolTableConstructor implements Visitor {
                            
                        }
                        
-                       else {
-                           location.getLocation().setSemanticType(symbolLookup.getType());
-                           Type t = location.getLocation().getSemanticType();
-                           str = t.toString(); //this is the classname, for instance A
-                           st = getClassSymbolTable(str, location); 
+                   else {
+                       location.getLocation().setSemanticType(symbolLookup.getType());
+                       Type t = location.getLocation().getSemanticType();
+                       str = t.toString(); //this is the classname, for instance A
+                       st = getClassSymbolTable(str, location); 
+                       }
                    }
-                   }
+               
                    
                        
-                       if (st == null) { 
-                           if (forwardRef == true) { 
-                               System.out.println("semantic error at line " + location.getLine() + ": no such class - \"" + str + "\".");
-                               System.exit(-1);
-                           }
-                           forwardRefs.add(location);
-                       } 
-                       else {
-                           //SemanticSymbol semSymbol = st.lookup(location.getName());
-                           SemanticSymbol semSymbol = find(st,location.getName(),inStatic);
+                   if (st == null) { 
+                       if (forwardRef == true) { 
+                           System.out.println("semantic error at line " + location.getLine() + ": no such class - \"" + str + "\".");
+                           System.exit(-1);
+                       }
+                       forwardRefs.add(location);
+                   } 
+                   else {
+                       //SemanticSymbol semSymbol = st.lookup(location.getName());
+                       SemanticSymbol semSymbol = find(st,location.getName(),false);
 
-                           if (semSymbol == null) { 
-                        	   
-                               System.out.println("semantic error at line " + location.getLine() + ": class " + str + " does not have field " + location.getName() +". " );
-                               System.exit(-1);
-                           }
-                           else {
-                        	   //Type realType = st.lookup(location.getName()).getType();
-                        	   Type realType = find(st,location.getName(),inStatic).getType();
+                       if (semSymbol == null) { 
+                    	   
+                           System.out.println("semantic error at line " + location.getLine() + ": class " + str + " does not have field " + location.getName() +". " );
+                           System.exit(-1);
+                       }
+                       else {
+                    	   //Type realType = st.lookup(location.getName()).getType();
+                        	   Type realType = semSymbol.getType();
    
                                location.setSemanticType(realType);
                            }
                        }
-                   
-               }
-               else { // location.getLocation instanceof ArrayLocation
-                   location.getLocation().accept(this); 
-                   Type t = location.getLocation().getSemanticType();
-                   if (t == null) { 
-                       if (forwardRef) { 
-                           System.out.println("semantic error at line " + location.getLine() + ": unspecified semantic error.");
-                           System.exit(-1);
-                       }
-                       else {
-                           forwardRefs.add(location);
-                           return null;//maybe not needed
-                       }
                    }
-                   else {
-                       String className = t.toString();
-                       SymbolTable st = getClassSymbolTable(className, location);
-                       if (st == null) {
+                   else { // location.getLocation instanceof ArrayLocation
+                       location.getLocation().accept(this); 
+                       Type t = location.getLocation().getSemanticType();
+                       if (t == null) { 
                            if (forwardRef) { 
-                               System.out.println("semantic error at line " + location.getLine() + ": no such class - \"" + className + "\".");
+                               System.out.println("semantic error at line " + location.getLine() + ": unspecified semantic error.");
                                System.exit(-1);
                            }
-                           else { 
+                           else {
                                forwardRefs.add(location);
+                               return null;//maybe not needed
                            }
                        }
                        else {
-                           //SemanticSymbol checkMe = st.lookup(location.getName());
-                    	   SemanticSymbol checkMe = find(st,location.getName(),inStatic);
-                    	   
-                           if (checkMe == null) { 
-                               System.out.println("semantic error at line " + location.getLine() + ": no such field " + location.getName() + " in class " + className + ".");
-                               System.exit(-1);
+                           String className = t.toString();
+                           SymbolTable st = getClassSymbolTable(className, location);
+                           if (st == null) {
+                               if (forwardRef) { 
+                                   System.out.println("semantic error at line " + location.getLine() + ": no such class - \"" + className + "\".");
+                                   System.exit(-1);
+                               }
+                               else { 
+                                   forwardRefs.add(location);
+                               }
                            }
-                           Type realType = checkMe.getType();
-                           location.setSemanticType(realType); 
+                           else {
+                               //SemanticSymbol checkMe = st.lookup(location.getName());
+                        	   SemanticSymbol checkMe = find(st,location.getName(),inStatic);
+                        	   
+                               if (checkMe == null) { 
+                                   System.out.println("semantic error at line " + location.getLine() + ": no such field " + location.getName() + " in class " + className + ".");
+                                   System.exit(-1);
+                               }
+                               Type realType = checkMe.getType();
+                               location.setSemanticType(realType); 
+                           }
                        }
                    }
                }
            }
-       }
-       else {
-          // if ((temp = location.getEnclosingScope().lookup(location.getName())) == null) { 
-    	     if ((temp = find(location.getEnclosingScope(),location.getName(),inStatic)) == null) { 
-                   System.out.println("Semantic error at line " + location.getLine() + ": var " + location.getName() + " used before definition.");
-                   System.exit(-1); 
+           else {
+              // if ((temp = location.getEnclosingScope().lookup(location.getName())) == null) { 
+        	     if ((temp = find(location.getEnclosingScope(),location.getName(),inStatic)) == null) { 
+                       System.out.println("Semantic error at line " + location.getLine() + ": var " + location.getName() + " used before definition.");
+                       System.exit(-1); 
+               }
+               else { 
+                   location.setSemanticType(temp.getType());
+               }
            }
-           else { 
-               location.setSemanticType(temp.getType());
+           
+           if (location.getLocation() != null) {
+                  location.getLocation().accept(this);
            }
+           
+           return null;
        }
-       
-       if (location.getLocation() != null) {
-              location.getLocation().accept(this);
-       }
-       
-       return null;
-   }
 
    
 
@@ -633,11 +633,10 @@ public Object visit(ArrayLocation location) {
    }
 
    public Object visit(This thisExpression) {
-	   boolean inStatic = thisExpression.getEnclosingScope().isStatic(); 
        if (!forwardRef) {
            thisExpression.setEnclosingScope(currentScope);
          //thisExpression.setSemanticType(currentScope.lookup("this").getType());
-           thisExpression.setSemanticType(find(currentScope,"this",inStatic).getType());
+           thisExpression.setSemanticType(find(currentScope,"this",false).getType());
        }
        return null;
    }
