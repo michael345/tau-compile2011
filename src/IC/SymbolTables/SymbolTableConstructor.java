@@ -233,12 +233,9 @@ public Object visit(While whileStatement) {
         		whileSymbolTable.addChild(operationSymbolTable);
       	  }
       else{
-      Object ifOper = whileStatement.getOperation().accept(this);
-      if (ifOper instanceof SymbolTable){
     	  whileSymbolTable.addChild((SymbolTable)whileStatement.getOperation().accept(this));
       }
-      }
-      whileSymbolTable.addChild((SymbolTable)whileStatement.getOperation().accept(this));
+     
      
       currentScope = whileSymbolTable;
       return whileSymbolTable;
