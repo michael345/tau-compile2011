@@ -1,68 +1,10 @@
-
-// this is made to test complex parameter passing
-
-
-class Chips {	
-	boolean b;
+class A {
+    static void main(string[] params){}
+    
+    static void override() {}
 }
 
-class Shnizel_Dag {
-	int i;
-	string s;
-	int[] arr;
-	Chips[] c;
-}
+class B extends A {
 
-class Gidim {
-	int counter;
-	void test(int i, int[] arr, string s, Shnizel_Dag sd){	
-		counter = counter + 1;
-		if (counter == 3) return;
-		Library.printi(i);
-		Library.printi(arr[arr.length-1]);
-		Library.println(s);
-		Library.printb(sd.c[0].b);
-		Library.printb(sd.c[1].b);
-		sd.i = 4;
-		sd.arr[3] = 55;
-		sd.s = "We"+"Will"+"----"+"You";
-		test(sd.i,sd.arr,sd.s,sd);
-	}
+    static void override() {}
 }
-
-class Falafel {
-	static void test(int i, int[] arr, string s,Chips[] c){
-		Library.printi(i);
-		Library.printi(arr[arr.length-1]);
-		Library.println(s);
-		Library.printb(c[0].b);
-		i = 99;
-		arr[arr.length-1] = 88;		
-		s = "exit";
-		Library.printi(i);
-		Library.printi(arr[arr.length-1]);
-		Library.println(s);
-	}
-}
-
-class Shnizel_Ayala {
-	static void main(string[] args){
-		Shnizel_Dag sd = new Shnizel_Dag();
-		sd.i = 7;
-		sd.arr = new int[4];
-		sd.arr[0] = 0;
-		sd.arr[1] = 1;
-		sd.arr[2] = 2;
-		sd.arr[3] = 3;
-		sd.s = "We"+"Will"+"Rock"+"You";
-		sd.c = new Chips[2];
-		sd.c[0] = new Chips();
-		sd.c[1] = new Chips();
-		sd.c[0].b = true;
-		sd.c[1].b = false;
-		Gidim g = new Gidim();
-		g.test(sd.i,sd.arr,sd.s,sd);
-		Falafel.test(sd.i,sd.arr,sd.s,sd.c);
-	}
-}
-		
