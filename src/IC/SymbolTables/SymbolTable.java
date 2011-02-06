@@ -30,6 +30,9 @@ public class SymbolTable {
         }
         String funcName = temp.getId();
         temp = temp.getParentSymbolTable();
+        if (temp.staticLookup(funcName) == null) { 
+            return false;
+        }
         if (temp.staticLookup(funcName).getKind().getKind() == Kind.STATICMETHOD) 
             return true;
         else 

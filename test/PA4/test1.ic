@@ -1,26 +1,45 @@
-class B extends A{
-int x;
-string y;
-	void runny(){
-		Library.println("this is class B");
-	}
+class A {
+string str;
+int i;
+
+static int sfunc(boolean b) {
+if (b) {
+{
+int k = 5;
+}
+return 1;
+}
+else {
+A x = new A();
+x.i = 9;
+x.str = "hello";
+return 0;
+}
 }
 
-class A{
-int b;
-
-	static void main(string[] args){
-		B b = new B();
-		int x = b.checker();
-		Library.printi(x);
-
-		} 
-
-	void runny(){
-		Library.println("this is class A");
-		}
-	
-	int checker(){
-		return 1;
-	} 
+void vfunc(A a, int max, int val) {
+int[] arr = new int[max];
+int i = 0;
+while (i < max){
+arr[i] = val;
+i = i + 1;
+Library.printi(i);
+if (a == null)
+break;
 }
+}
+}
+
+class B extends A {
+int j;
+
+void vfunc(A a, int max, int val) {
+}
+}
+
+class C {
+static void main(string[] args) {
+A[][] a;
+}
+}
+

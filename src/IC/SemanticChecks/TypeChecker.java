@@ -138,7 +138,15 @@ public class TypeChecker implements Visitor {
 
    public Object visit(Return returnStatement) {      
        String methodId = getEnclosingMethod(returnStatement).getId();
-       MethodType methodType = (MethodType) getEnclosingMethod(returnStatement).getParentSymbolTable().lookup(methodId).getType();
+       boolean inStatic = returnStatement.getEnclosingScope().isStatic();
+       MethodType methodType = null;
+       if (inStatic) { 
+           methodType = (MethodType) getEnclosingMethod(returnStatement).getParentSymbolTable().staticLookup(methodId).getType();
+       }
+       else { 
+           methodType = (MethodType) getEnclosingMethod(returnStatement).getParentSymbolTable().lookup(methodId).getType();
+
+       }
        Type formalReturnType = methodType.getReturnType();
        Type actualRetType = null;
        boolean returned = false;
@@ -237,9 +245,10 @@ public class TypeChecker implements Visitor {
    }
 
    public Object visit(VariableLocation location) {
+       boolean inStatic = location.getEnclosingScope().isStatic();
        if (location.getLocation() == null) { 
-           location.setSemanticType(location.getEnclosingScope().lookup(location.getName()).getType());
-           SemanticSymbol symbol = location.getEnclosingScope().lookup(location.getName());
+           location.setSemanticType(find(location.getEnclosingScope(),location.getName(),inStatic).getType());
+           SemanticSymbol symbol = find(location.getEnclosingScope(),location.getName(),inStatic);
            Type t = symbol.getType();
            location.setSemanticType(t);
            
@@ -248,14 +257,14 @@ public class TypeChecker implements Visitor {
                location.getLocation().accept(this);
            return null;
        }
-       else if (location.getLocation() instanceof VariableLocation ) {
+       else if (location.getLocation() instanceof VariableLocation) {
            VariableLocation vl = (VariableLocation) location.getLocation();
            SymbolTable st;
-           if(vl.getSemanticType() instanceof ClassType){
+           if (vl.getSemanticType() instanceof ClassType){
         	   st = getClassSymbolTable(vl.getSemanticType().toString(), location);
            }
            else{
-	           SemanticSymbol smbo = location.getEnclosingScope().lookup(vl.getName());
+	           SemanticSymbol smbo = find(location.getEnclosingScope(),vl.getName(),inStatic);
 	           location.getLocation().setSemanticType(smbo.getType());
 	           Type t = location.getLocation().getSemanticType();
 	           String str = t.toString(); //this is the classname, for instance A
@@ -265,7 +274,7 @@ public class TypeChecker implements Visitor {
            location.setSemanticType(realType);
            return null;
        }
-       else { //take care of static cases, e.g. A.x instead of beler.x
+       else { 
            return null;
        }
        
@@ -312,8 +321,9 @@ public Object visit(ArrayLocation location) {
 
    public Object visit(VirtualCall call) {
        String funcName = call.getName();
+       boolean inStatic = call.getEnclosingScope().isStatic();
        if (call.getLocation() == null) { // method is in the same class as the call
-           SemanticSymbol methodSymbol = call.getEnclosingScope().lookup(funcName); 
+           SemanticSymbol methodSymbol = find(call.getEnclosingScope(),funcName,inStatic);
            if(!(methodSymbol.getType() instanceof MethodType)){
         	   System.out.println("semantic error at line " + call.getLine() + ": there is no method in the name of '" + call.getName() +"'.");
                System.exit(-1); 
@@ -324,11 +334,11 @@ public Object visit(ArrayLocation location) {
            if (call.getLocation() instanceof VariableLocation) {
                VariableLocation objectName = (VariableLocation) call.getLocation();
                SymbolTable st;
-               if(objectName.getSemanticType() instanceof ClassType){
+               if (objectName.getSemanticType() instanceof ClassType){
             	   st = getClassSymbolTable(objectName.getSemanticType().toString(), call);
                }
-               else{
-               SemanticSymbol smbo = call.getEnclosingScope().lookup(objectName.getName());
+               else {
+               SemanticSymbol smbo = find(call.getEnclosingScope(),objectName.getName(),inStatic);
               // call.getLocation().setSemanticType(smbo.getType());
                
                Type t = call.getLocation().getSemanticType();
@@ -336,10 +346,10 @@ public Object visit(ArrayLocation location) {
                st = getClassSymbolTable(str, call);
                }
                
-               SemanticSymbol methodSymbol = st.lookup(funcName);
+               SemanticSymbol methodSymbol = st.lookup(funcName); // has to be VIRTUAL lookup at this line because this is a virtual call. e.g "a.foo()"
                return checkFormalsToArgs(call, methodSymbol);
            }
-           else {  //copy this from scopeChecker VirtualCall 
+           else {  
                return null;
                
            }
@@ -524,5 +534,17 @@ public Object visit(ArrayLocation location) {
            temp = temp.getParentSymbolTable();
        }
        return null;
+   }
+   private SemanticSymbol find(SymbolTable sTable, String name, boolean inStatic) {
+       SemanticSymbol stbl;
+       
+       if(inStatic){
+           stbl = sTable.staticLookup(name);
+       }
+       else{
+           stbl = sTable.lookup(name);
+       }
+
+       return stbl;
    }
 }
