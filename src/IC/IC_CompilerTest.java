@@ -22,6 +22,7 @@ public class IC_CompilerTest {
             "unexpected_eof"
     };
     
+    
     @Test
     public void test() throws Exception {
         
