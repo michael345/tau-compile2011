@@ -26,6 +26,7 @@ public class SymbolTableConstructor implements Visitor {
    private List<ASTNode> forwardRefs;
    
  
+   
    public SymbolTableConstructor(String ICFilePath) {
        this.ICFilePath = ICFilePath;
        this.st = new GlobalSymbolTable(ICFilePath);
